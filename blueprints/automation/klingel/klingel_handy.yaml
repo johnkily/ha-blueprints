@@ -1,0 +1,164 @@
+blueprint:
+  name: Klingel – Nachricht mit Kamerabild aufs Handy
+  description: >
+    Klingelt es, bekommst du sofort eine Nachricht mit einem Bild von der Tür
+    aufs Handy. Funktioniert mit jedem Sensor, der beim Klingeln anspringt:
+    einem Vibrationssensor am Gong (unter 10 €), einem smarten Klingeltaster
+    oder einem Kontakt am Klingeltrafo.
+
+
+    Optional: schwenkbare Kamera vorher auf die Tür drehen, mehrere Handys,
+    beim Antippen ein Dashboard öffnen, eigene Zusatzaktionen (z. B.
+    Tablet-Pop-up oder Ansage).
+
+    Anleitung: https://github.com/johnkily/ha-blueprints/blob/main/docs/klingel.md
+
+
+    Doorbell: sends a push notification with a live camera image to your phones.
+  domain: automation
+  author: johnkily
+  homeassistant:
+    min_version: 2024.10.0
+  source_url: https://github.com/johnkily/ha-blueprints/blob/main/blueprints/automation/klingel/klingel_handy.yaml
+  input:
+    klingel:
+      name: Klingel-Sensor
+      description: Springt auf „an“, wenn es klingelt – z. B. der Vibrationssensor am Gong.
+      selector:
+        entity:
+          filter:
+            - domain: binary_sensor
+    handys:
+      name: Handys
+      description: Die Home-Assistant-App muss auf den Handys eingerichtet sein.
+      selector:
+        device:
+          multiple: true
+          filter:
+            - integration: mobile_app
+    kamera:
+      name: Kamera (optional)
+      description: Von dieser Kamera kommt das Bild. Leer = Nachricht ohne Bild.
+      default: ""
+      selector:
+        entity:
+          filter:
+            - domain: camera
+    titel:
+      name: Titel
+      default: 🔔 Es hat geklingelt!
+      selector:
+        text:
+    nachricht:
+      name: Text
+      default: Jemand steht vor der Tür.
+      selector:
+        text:
+    ziel:
+      name: Beim Antippen öffnen (optional)
+      description: >
+        Pfad eines Dashboards, z. B. „/lovelace/kamera“. Leer = die App öffnet
+        sich normal.
+      default: ""
+      selector:
+        text:
+    schwenk_auswahl:
+      name: Kamera schwenken – Auswahl-Entität (optional)
+      description: >
+        Für schwenkbare Kameras: die Auswahl der gespeicherten Positionen,
+        z. B. „PTZ-Voreinstellung“ bei Reolink.
+      default: ""
+      selector:
+        entity:
+          filter:
+            - domain: select
+            - domain: input_select
+    schwenk_position:
+      name: Kamera schwenken – Position (optional)
+      description: Name der gespeicherten Position, z. B. „Haustür“.
+      default: ""
+      selector:
+        text:
+    wartezeit:
+      name: Wartezeit vor der Nachricht
+      description: Zeit, bis die Kamera ausgerichtet und scharf ist (nur mit Kamera).
+      default: 2
+      selector:
+        number:
+          min: 0
+          max: 10
+          unit_of_measurement: s
+    sperrzeit:
+      name: Sperrzeit
+      description: So lange wird nach einem Klingeln nicht noch einmal gemeldet.
+      default: 30
+      selector:
+        number:
+          min: 0
+          max: 300
+          unit_of_measurement: s
+    zusatz:
+      name: Zusätzliche Aktionen (optional)
+      description: >
+        Läuft nach der Nachricht – z. B. Tablet-Bildschirm einschalten,
+        Pop-up mit Livebild, Ansage auf einem Lautsprecher.
+      default: []
+      selector:
+        action:
+
+mode: single
+max_exceeded: silent
+
+triggers:
+  - trigger: state
+    entity_id: !input klingel
+    from: "off"
+    to: "on"
+
+variables:
+  handys: !input handys
+  kamera: !input kamera
+  titel: !input titel
+  nachricht: !input nachricht
+  ziel: !input ziel
+  schwenk_auswahl: !input schwenk_auswahl
+  schwenk_position: !input schwenk_position
+  sperrzeit: !input sperrzeit
+
+actions:
+  - if:
+      - condition: template
+        value_template: "{{ schwenk_auswahl != '' and schwenk_position != '' }}"
+    then:
+      - action: "{{ schwenk_auswahl.split('.')[0] }}.select_option"
+        target:
+          entity_id: "{{ schwenk_auswahl }}"
+        data:
+          option: "{{ schwenk_position }}"
+        continue_on_error: true
+  # Erst warten, damit die Kamera ausgerichtet ist. Das Bild holt die App
+  # direkt bei Home Assistant (camera_proxy) – keine Datei, kein www-Ordner,
+  # kein Neustart nötig.
+  - if:
+      - condition: template
+        value_template: "{{ kamera != '' }}"
+    then:
+      - delay:
+          seconds: !input wartezeit
+  - repeat:
+      for_each: "{{ handys }}"
+      sequence:
+        - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+          continue_on_error: true
+          data:
+            title: "{{ titel }}"
+            message: "{{ nachricht }}"
+            data: >
+              {% set d = {'priority': 'high', 'ttl': 0, 'tag': 'klingel'} %}
+              {% if kamera != '' %}{% set d = dict(d, image='/api/camera_proxy/' ~ kamera, entity_id=kamera) %}{% endif %}
+              {% if ziel != '' %}{% set d = dict(d, clickAction=ziel, url=ziel) %}{% endif %}
+              {{ d }}
+  - choose: []
+    default: !input zusatz
+  - delay:
+      seconds: "{{ sperrzeit | int }}"
