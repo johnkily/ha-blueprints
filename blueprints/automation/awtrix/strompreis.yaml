@@ -1,0 +1,142 @@
+blueprint:
+  name: AWTRIX – aktueller Strompreis
+  description: >
+    Zeigt den aktuellen Strompreis als eigene App auf einer oder mehreren
+    AWTRIX-Pixeluhren (z. B. Ulanzi TC001 mit AWTRIX 3) – grün, gelb oder rot
+    je nach Preis. Funktioniert mit jedem Preissensor (Tibber, Nordpool,
+    EPEX Spot …), egal ob er in €/kWh oder ct/kWh misst.
+
+
+    Voraussetzung: AWTRIX 3 ist mit demselben MQTT-Broker verbunden wie Home
+    Assistant. Anleitung: https://github.com/johnkily/ha-blueprints
+
+
+    Shows the current electricity price on AWTRIX pixel clocks, coloured by price.
+  domain: automation
+  author: johnkily
+  homeassistant:
+    min_version: 2024.10.0
+  source_url: https://github.com/johnkily/ha-blueprints/blob/main/blueprints/automation/awtrix/strompreis.yaml
+  input:
+    preis:
+      name: Strompreis-Sensor
+      description: Der Sensor mit dem aktuellen Preis, z. B. von Tibber.
+      selector:
+        entity:
+          filter:
+            - domain: sensor
+    uhren:
+      name: MQTT-Name der Uhr(en)
+      description: >
+        Steht in der AWTRIX-Weboberfläche unter MQTT → Prefix, z. B.
+        „awtrix_a1b2c3“. Mehrere Uhren mit Komma trennen.
+      selector:
+        text:
+    guenstig:
+      name: Grün bis (ct/kWh)
+      description: Bis zu diesem Preis leuchtet die Zahl grün.
+      default: 25
+      selector:
+        number:
+          min: 0
+          max: 100
+          step: 0.5
+          unit_of_measurement: ct/kWh
+    teuer:
+      name: Rot ab (ct/kWh)
+      description: Ab diesem Preis leuchtet die Zahl rot, dazwischen gelb.
+      default: 33
+      selector:
+        number:
+          min: 0
+          max: 100
+          step: 0.5
+          unit_of_measurement: ct/kWh
+    nachkomma:
+      name: Nachkommastellen
+      default: "1"
+      selector:
+        select:
+          options:
+            - "0"
+            - "1"
+            - "2"
+    icon_guenstig:
+      name: Icon bei günstigem Preis (optional)
+      description: >
+        ID oder Name eines Icons, das auf der Uhr gespeichert ist (in der
+        AWTRIX-Weboberfläche unter „Icons“ von LaMetric laden). Leer = kein Icon.
+      default: ""
+      selector:
+        text:
+    icon_teuer:
+      name: Icon bei mittlerem und hohem Preis (optional)
+      default: ""
+      selector:
+        text:
+    dauer:
+      name: Anzeigedauer (Sekunden)
+      description: Wie lange die App bei jedem Durchlauf zu sehen ist.
+      default: 10
+      selector:
+        number:
+          min: 3
+          max: 60
+          unit_of_measurement: s
+    app:
+      name: Name der App auf der Uhr
+      description: Nur ändern, wenn du den Blueprint mehrfach nutzt.
+      default: strompreis
+      selector:
+        text:
+
+mode: restart
+
+triggers:
+  - trigger: state
+    entity_id: !input preis
+  - trigger: time_pattern
+    minutes: /15
+  - trigger: homeassistant
+    event: start
+
+variables:
+  preis_entity: !input preis
+  uhren_text: !input uhren
+  guenstig: !input guenstig
+  teuer: !input teuer
+  nachkomma: !input nachkomma
+  icon_guenstig: !input icon_guenstig
+  icon_teuer: !input icon_teuer
+  dauer: !input dauer
+  app: !input app
+  roh: "{{ states(preis_entity) }}"
+  einheit: "{{ state_attr(preis_entity, 'unit_of_measurement') or '' }}"
+  # €/kWh -> ct/kWh; Sensoren in ct (oder Cent) bleiben, wie sie sind.
+  ct: >
+    {% set p = roh | float(0) %}
+    {{ p if 'ct' in einheit | lower or 'cent' in einheit | lower else p * 100 }}
+  uhren: "{{ uhren_text.split(',') | map('trim') | reject('eq', '') | list }}"
+
+conditions:
+  - condition: template
+    value_template: "{{ roh | is_number and uhren | count > 0 }}"
+
+actions:
+  - repeat:
+      for_each: "{{ uhren }}"
+      sequence:
+        - action: mqtt.publish
+          data:
+            topic: "{{ repeat.item }}/custom/{{ app }}"
+            # Text, Farbe und Icon erst hier: als eigene Variable würde HA „24,1“
+            # als Zahlenpaar (24, 1) lesen.
+            payload: >
+              {% set g = guenstig | float %}
+              {% set farbe = '#00FF00' if ct <= g else ('#FFFF00' if ct < teuer | float else '#FF0000') %}
+              {% set icon = (icon_guenstig if ct <= g else icon_teuer) | string | trim %}
+              {% set text = (('%.' ~ nachkomma ~ 'f') | format(ct | float)) | replace('.', ',') %}
+              {# lifetime: kommt 30 min kein neuer Preis, verschwindet die App, statt einen alten Preis zu zeigen #}
+              {% set d = {'text': text, 'color': farbe, 'duration': dauer | int, 'lifetime': 1800} %}
+              {% if icon != '' %}{% set d = dict(d, icon=icon) %}{% endif %}
+              {{ d | to_json }}

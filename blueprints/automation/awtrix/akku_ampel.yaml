@@ -1,0 +1,81 @@
+blueprint:
+  name: AWTRIX – Akku-Ampel in der Ecke
+  description: >
+    Färbt eine Ecke (Indikator) einer oder mehrerer AWTRIX-Pixeluhren nach dem
+    Ladestand eines Akkus: stufenlos von Rot (leer) über Gelb (halb) nach Grün
+    (voll). Ideal für den Hausakku, geht aber mit jedem Sensor in Prozent – auch
+    für das E-Auto.
+
+
+    Voraussetzung: AWTRIX 3 ist mit demselben MQTT-Broker verbunden wie Home
+    Assistant. Anleitung: https://github.com/johnkily/ha-blueprints
+
+
+    Colours a corner indicator of AWTRIX pixel clocks by battery level, red to green.
+  domain: automation
+  author: johnkily
+  homeassistant:
+    min_version: 2024.10.0
+  source_url: https://github.com/johnkily/ha-blueprints/blob/main/blueprints/automation/awtrix/akku_ampel.yaml
+  input:
+    akku:
+      name: Ladestand-Sensor
+      description: Ein Sensor in Prozent, z. B. der Ladestand deines Hausakkus.
+      selector:
+        entity:
+          filter:
+            - domain: sensor
+              device_class: battery
+            - domain: sensor
+    uhren:
+      name: MQTT-Name der Uhr(en)
+      description: >
+        Steht in der AWTRIX-Weboberfläche unter MQTT → Prefix, z. B.
+        „awtrix_a1b2c3“. Mehrere Uhren mit Komma trennen.
+      selector:
+        text:
+    ecke:
+      name: Ecke
+      description: AWTRIX hat drei Indikatoren am rechten Rand.
+      default: "2"
+      selector:
+        select:
+          options:
+            - label: Oben rechts (1)
+              value: "1"
+            - label: Mitte rechts (2)
+              value: "2"
+            - label: Unten rechts (3)
+              value: "3"
+
+mode: restart
+
+triggers:
+  - trigger: state
+    entity_id: !input akku
+  - trigger: homeassistant
+    event: start
+
+variables:
+  akku_entity: !input akku
+  uhren_text: !input uhren
+  ecke: !input ecke
+  roh: "{{ states(akku_entity) }}"
+  stand: "{{ [[roh | float(0), 0] | max, 100] | min }}"
+  # 0 % rot (255,0,0) -> 50 % gelb (255,255,0) -> 100 % grün (0,255,0)
+  rot: "{{ 255 if stand <= 50 else (255 - (stand - 50) * 5.1) | round | int }}"
+  gruen: "{{ (stand * 5.1) | round | int if stand <= 50 else 255 }}"
+  uhren: "{{ uhren_text.split(',') | map('trim') | reject('eq', '') | list }}"
+
+conditions:
+  - condition: template
+    value_template: "{{ roh | is_number and uhren | count > 0 }}"
+
+actions:
+  - repeat:
+      for_each: "{{ uhren }}"
+      sequence:
+        - action: mqtt.publish
+          data:
+            topic: "{{ repeat.item }}/indicator{{ ecke }}"
+            payload: "{{ {'color': [rot | int, gruen | int, 0]} | to_json }}"

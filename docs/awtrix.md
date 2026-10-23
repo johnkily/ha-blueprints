@@ -1,0 +1,89 @@
+# AWTRIX-Blueprints – Schritt für Schritt
+
+Zwei Blueprints für die Pixeluhr AWTRIX:
+
+- **Strompreis** – eine eigene App auf der Uhr zeigt den aktuellen Preis, z. B. `24,1` in Grün, `29,0` in Gelb, `33,0` in Rot.
+- **Akku-Ampel** – eine Ecke der Uhr leuchtet je nach Ladestand: leer rot, halb gelb, voll grün, stufenlos dazwischen.
+
+Beide lassen sich einzeln nutzen und funktionieren mit mehreren Uhren gleichzeitig.
+
+## Was du brauchst
+
+| | |
+|---|---|
+| **Uhr** | Ulanzi TC001 Smart Pixel Clock* ([Amazon](https://link.amazon/B06xvJcpa)) mit der kostenlosen Firmware **AWTRIX 3** |
+| **MQTT** | Das Add-on **Mosquitto broker** und die Integration **MQTT** in Home Assistant |
+| **Strompreis** | Ein Sensor mit dem aktuellen Preis – z. B. aus der Tibber-Integration*, Nordpool oder EPEX Spot. €/kWh und ct/kWh werden beide erkannt. |
+| **Akku-Ampel** | Ein Sensor in Prozent, z. B. der Ladestand deines Hausakkus oder E-Autos |
+
+*Noch kein dynamischer Stromtarif? Mit meinem [Tibber-Einladungslink](https://invite.tibber.com/pu65s7le)\* bekommen wir beide 50 € für den Tibber Store oder 6 Monate ohne Tibber-Gebühr.*
+
+## 1. Uhr vorbereiten (einmalig)
+
+1. **AWTRIX 3 aufspielen:** Uhr per USB-C an den Rechner, im Chrome- oder Edge-Browser den [AWTRIX-3-Flasher](https://blueforcer.github.io/awtrix3/#/flasher) öffnen und den Anweisungen folgen. **Beim ersten Mal das Häkchen „Erase“ setzen**, sonst bleibt die Original-Firmware im Weg. Dauert etwa zwei Minuten.
+2. **WLAN:** Die Uhr öffnet danach ein eigenes WLAN „awtrix_…“. Damit verbinden, dein Heim-WLAN eintragen. Die Uhr zeigt anschließend ihre IP-Adresse.
+3. **MQTT in Home Assistant:** *Einstellungen → Add-ons → Add-on-Store* → **Mosquitto broker** installieren und starten. Home Assistant bietet danach die Integration **MQTT** an – hinzufügen.
+4. **Benutzer für die Uhr:** *Einstellungen → Personen → Benutzer* → neuen Benutzer anlegen, z. B. `awtrix` mit einem Passwort. (Mosquitto nimmt die Benutzer von Home Assistant.)
+5. **Uhr mit MQTT verbinden:** Die IP der Uhr im Browser öffnen → **MQTT**:
+   - Broker: IP-Adresse deines Home Assistant
+   - Port: `1883`
+   - Benutzer und Passwort aus Schritt 4
+   - **Prefix** merken (z. B. `awtrix_a1b2c3`) – das ist der *MQTT-Name der Uhr*, den die Blueprints brauchen.
+
+   Speichern, die Uhr startet neu. In Home Assistant erscheint sie jetzt als Gerät unter *MQTT*.
+
+## 2. Blueprint importieren
+
+| Strompreis | Akku-Ampel |
+|---|---|
+| [![Importieren](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fawtrix%2Fstrompreis.yaml) | [![Importieren](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fawtrix%2Fakku_ampel.yaml) |
+
+Knopf antippen → **„Blueprint importieren“**.
+
+## 3. Automation anlegen
+
+*Einstellungen → Automationen & Szenen → Blueprints* → Blueprint antippen.
+
+### Strompreis
+
+| Feld | Was eintragen |
+|---|---|
+| Strompreis-Sensor | dein Preissensor, z. B. „Strompreis“ von Tibber |
+| MQTT-Name der Uhr(en) | der Prefix aus Schritt 1.5 – mehrere Uhren mit Komma: `awtrix_a1b2c3, awtrix_d4e5f6` |
+| Grün bis / Rot ab | deine Preisgrenzen in ct/kWh (Vorgabe: grün bis 25, rot ab 33) |
+| Nachkommastellen | 1 passt gut auf die Uhr; mit Icon sind 2 Nachkommastellen eng |
+| Icons (optional) | ein Icon, das auf der Uhr liegt (siehe unten); leer lassen geht auch |
+| Anzeigedauer | Sekunden pro Durchlauf (Vorgabe 10) |
+
+Der Preis wird bei jeder Änderung und zusätzlich alle 15 Minuten neu geschickt. Meldet sich der Sensor 30 Minuten nicht, verschwindet die App, statt einen veralteten Preis zu zeigen.
+
+### Akku-Ampel
+
+| Feld | Was eintragen |
+|---|---|
+| Ladestand-Sensor | z. B. „Batterie Ladezustand“ deines Wechselrichters |
+| MQTT-Name der Uhr(en) | wie oben |
+| Ecke | eine der drei Ecken rechts (Vorgabe: Mitte) |
+
+**Speichern** – fertig. Die Uhr reagiert beim nächsten neuen Wert, spätestens nach einem Neustart von Home Assistant.
+
+## Icons auf die Uhr laden
+
+AWTRIX zeigt nur Icons, die auf der Uhr gespeichert sind:
+
+1. In der [LaMetric-Icon-Galerie](https://developer.lametric.com/icons) ein Icon suchen, die Nummer merken (z. B. `53295`).
+2. Weboberfläche der Uhr → **Icons** → Nummer eintragen → herunterladen.
+3. Die Nummer im Blueprint ins Icon-Feld eintragen.
+
+## Klappt nicht?
+
+| Problem | Lösung |
+|---|---|
+| Uhr zeigt nichts | Stimmt der **Prefix** exakt (Groß-/Kleinschreibung)? Ist die Uhr unter *Einstellungen → Geräte → MQTT* zu sehen? |
+| Preis ist 100-mal zu groß oder zu klein | Welche Einheit zeigt dein Sensor? Erkannt werden alles mit „ct“ oder „Cent“ als Cent, alles andere als Euro. Bitte ein Issue anlegen, wenn dein Sensor anders heißt. |
+| Icon fehlt | Das Icon ist nicht auf der Uhr gespeichert – siehe oben. |
+| Automation läuft nicht | Automation öffnen → **Traces** (oben rechts) zeigt, woran es hängt. |
+
+---
+
+*Mit \* gekennzeichnete Links sind Affiliate-Links. Kaufst du darüber, bekomme ich eine kleine Provision, für dich ändert sich am Preis nichts. Als Amazon-Partner verdiene ich an qualifizierten Verkäufen.*
