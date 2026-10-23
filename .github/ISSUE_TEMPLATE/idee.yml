@@ -1,0 +1,10 @@
+name: Idee / Wunsch
+description: Ein neuer Blueprint oder eine Verbesserung.
+labels: ["idee"]
+body:
+  - type: textarea
+    id: idee
+    attributes:
+      label: Was wünschst du dir? / What would you like?
+    validations:
+      required: true

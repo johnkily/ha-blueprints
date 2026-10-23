@@ -1,0 +1,38 @@
+name: Etwas klappt nicht / Something doesn't work
+description: Ein Blueprint oder eine Karte verhält sich nicht wie erwartet.
+labels: ["fehler"]
+body:
+  - type: dropdown
+    id: baustein
+    attributes:
+      label: Welcher Baustein? / Which one?
+      options:
+        - AWTRIX – Strompreis
+        - AWTRIX – Akku-Ampel
+        - AWTRIX – Müll-Ampel
+        - Klingel – Nachricht mit Kamerabild
+        - Sonnenschutz je Fassade
+        - Waschmaschine, Trockner & Co.
+        - Müll – Erinnerung / Plan / Karte
+        - Anderes / other
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Home-Assistant-Version
+      description: Einstellungen → Info
+      placeholder: "2026.10.1"
+    validations:
+      required: true
+  - type: textarea
+    id: was
+    attributes:
+      label: Was ist passiert, was hättest du erwartet? / What happened, what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: trace
+    attributes:
+      label: Trace (optional)
+      description: Automation öffnen → oben rechts „Traces“ → Herunterladen. Bitte persönliche Daten entfernen.
