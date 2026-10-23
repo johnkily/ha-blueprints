@@ -38,6 +38,10 @@ Alles hier ist kostenlos und bleibt es. Wenn dir ein Blueprint Zeit oder Strom s
 
 Oder einfach den Blog weiterempfehlen – das hilft genauso.
 
+## Im Home-Assistant-Forum
+
+- [AWTRIX 3 – current electricity price in traffic-light colours](https://community.home-assistant.io/t/awtrix-3-current-electricity-price-in-traffic-light-colours-works-with-any-price-sensor-tibber-nordpool-epex/1030093)
+
 ## Probleme oder Ideen?
 
 Bitte ein [Issue](https://github.com/johnkily/ha-blueprints/issues) anlegen – mit Home-Assistant-Version und dem, was du erwartet hättest.

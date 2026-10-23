@@ -42,6 +42,8 @@ Alle lassen sich einzeln nutzen und funktionieren mit mehreren Uhren gleichzeiti
 
 Knopf antippen → **„Blueprint importieren“**.
 
+Fragen und Erfahrungen zum Strompreis-Blueprint: [Thema im Home-Assistant-Forum](https://community.home-assistant.io/t/awtrix-3-current-electricity-price-in-traffic-light-colours-works-with-any-price-sensor-tibber-nordpool-epex/1030093) (Englisch).
+
 ## 3. Automation anlegen
 
 *Einstellungen → Automationen & Szenen → Blueprints* → Blueprint antippen.
