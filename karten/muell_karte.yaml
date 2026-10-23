@@ -1,0 +1,38 @@
+# Müll-Karte für Home Assistant – nur eingebaute Karten, kein HACS.
+# Einfügen: Dashboard bearbeiten → Karte hinzufügen → ganz unten „Manuell“ →
+# alles hier hineinkopieren → in Zeile 11 und 38 „calendar.abfall“ durch deinen
+# Abfallkalender ersetzen → Speichern.
+# Anleitung: https://github.com/johnkily/ha-blueprints/blob/main/docs/muell.md
+type: vertical-stack
+cards:
+  - type: markdown
+    title: 🗑️ Müllabfuhr
+    content: |
+      {%- set k = 'calendar.abfall' -%}
+      {%- set titel = state_attr(k, 'message') -%}
+      {%- set beginn = state_attr(k, 'start_time') -%}
+      {%- if titel and beginn -%}
+      {%- set tag = as_datetime(beginn).date() -%}
+      {%- set tage = (tag - now().date()).days -%}
+      {%- set t = titel | lower -%}
+      {%- if 'papier' in t or 'blau' in t or 'ppk' in t -%}{%- set z = '🟦' -%}
+      {%- elif 'gelb' in t or 'wertstoff' in t or 'verpackung' in t -%}{%- set z = '🟨' -%}
+      {%- elif 'bio' in t or 'grün' in t or 'braun' in t or 'kompost' in t -%}{%- set z = '🟫' -%}
+      {%- elif 'rest' in t or 'grau' in t or 'schwarz' in t -%}{%- set z = '⬛' -%}
+      {%- else -%}{%- set z = '🗑️' -%}{%- endif -%}
+      {%- set wt = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag'][tag.weekday()] %}
+      ## {{ z }} {{ titel }}
+
+      **{% if tage <= 0 %}Heute{% elif tage == 1 %}Morgen{% else %}In {{ tage }} Tagen{% endif %}** · {{ wt }}, {{ tag.strftime('%d.%m.') }}
+      {% if tage == 1 and now().hour >= 15 %}
+      <ha-alert alert-type="warning">Heute Abend rausstellen!</ha-alert>
+      {% elif tage <= 0 %}
+      <ha-alert alert-type="info">Heute ist Abholung.</ha-alert>
+      {% endif %}
+      {%- else -%}
+      Kein Termin im Kalender.
+      {%- endif %}
+  - type: calendar
+    initial_view: listWeek
+    entities:
+      - calendar.abfall

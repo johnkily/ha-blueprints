@@ -1,0 +1,136 @@
+blueprint:
+  name: Müll – Erinnerung am Vorabend
+  description: >
+    Schickt am Vorabend eine Nachricht aufs Handy, welche Tonne morgen
+    abgeholt wird – zum Beispiel „🟦 Morgen: Papier“. Liest jeden
+    Abfallkalender, der in Home Assistant als Kalender vorliegt (ICS-Link der
+    Stadt über „Remote Calendar“, Waste Collection Schedule, eigener Kalender).
+    Stehen mehrere Tonnen an, kommen alle in eine Nachricht.
+
+
+    Anleitung: https://github.com/johnkily/ha-blueprints/blob/main/docs/muell.md
+
+
+    Waste reminder: notifies your phones the evening before a pickup.
+  domain: automation
+  author: johnkily
+  homeassistant:
+    min_version: 2024.10.0
+  source_url: https://github.com/johnkily/ha-blueprints/blob/main/blueprints/automation/muell/muell_erinnerung.yaml
+  input:
+    kalender:
+      name: Abfallkalender
+      selector:
+        entity:
+          filter:
+            - domain: calendar
+    uhrzeit:
+      name: Uhrzeit der Erinnerung
+      default: "19:00:00"
+      selector:
+        time:
+    handys:
+      name: Handys
+      selector:
+        device:
+          multiple: true
+          filter:
+            - integration: mobile_app
+    nur_zuhause:
+      name: Nur Handys, die zu Hause sind
+      description: Unterwegs kann niemand die Tonne rausstellen. Aus = alle Handys.
+      default: false
+      selector:
+        boolean:
+    sorten:
+      name: Tonnen
+      description: Welche Wörter im Kalendereintrag zu welcher Tonne gehören.
+      collapsed: true
+      input:
+        rest_woerter:
+          name: Restmüll – Stichwörter
+          default: Rest, Grau, Schwarz
+          selector:
+            text:
+        papier_woerter:
+          name: Papier – Stichwörter
+          default: Papier, Blau, PPK
+          selector:
+            text:
+        gelb_woerter:
+          name: Gelber Sack / Wertstoff – Stichwörter
+          default: Gelb, Wertstoff, Verpackung, Leichtverpackung
+          selector:
+            text:
+        bio_woerter:
+          name: Bio – Stichwörter
+          default: Bio, Grün, Braun, Kompost
+          selector:
+            text:
+
+mode: single
+
+triggers:
+  - trigger: time
+    at: !input uhrzeit
+
+variables:
+  kalender: !input kalender
+  handys: !input handys
+  nur_zuhause: !input nur_zuhause
+  sorten:
+    - name: Restmüll
+      zeichen: ⬛
+      woerter: !input rest_woerter
+    - name: Papier
+      zeichen: 🟦
+      woerter: !input papier_woerter
+    - name: Gelber Sack
+      zeichen: 🟨
+      woerter: !input gelb_woerter
+    - name: Bio
+      zeichen: 🟫
+      woerter: !input bio_woerter
+
+actions:
+  - action: calendar.get_events
+    target:
+      entity_id: "{{ kalender }}"
+    data:
+      start_date_time: "{{ today_at('00:00') + timedelta(days=1) }}"
+      end_date_time: "{{ today_at('00:00') + timedelta(days=2) }}"
+    response_variable: termine
+  - variables:
+      morgen: "{{ (now() + timedelta(days=1)).date().isoformat() }}"
+      # Jede Tonne nur einmal; unbekannte Einträge mit ihrem eigenen Titel
+      tonnen: >
+        {% set ns = namespace(l=[]) %}
+        {% for e in termine[kalender].events if e.start[:10] == morgen %}
+          {% set titel = e.summary | lower %}
+          {% set ns2 = namespace(t=none) %}
+          {% for s in sorten if ns2.t is none %}
+            {% set w = s.woerter.split(',') | map('trim') | map('lower') | reject('eq', '') | list %}
+            {% if w | select('in', titel) | list | count > 0 %}{% set ns2.t = s.zeichen ~ ' ' ~ s.name %}{% endif %}
+          {% endfor %}
+          {% set t = ns2.t if ns2.t is not none else '🗑️ ' ~ e.summary %}
+          {% if t not in ns.l %}{% set ns.l = ns.l + [t] %}{% endif %}
+        {% endfor %}
+        {{ ns.l }}
+      empfaenger: >
+        {% set ns = namespace(l=[]) %}
+        {% for d in handys %}
+          {% set tr = device_entities(d) | select('match', 'device_tracker\.') | list %}
+          {% if not nur_zuhause or (tr | count > 0 and is_state(tr[0], 'home')) %}{% set ns.l = ns.l + [d] %}{% endif %}
+        {% endfor %}{{ ns.l }}
+  - condition: template
+    value_template: "{{ tonnen | count > 0 }}"
+  - repeat:
+      for_each: "{{ empfaenger }}"
+      sequence:
+        - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+          continue_on_error: true
+          data:
+            title: "Morgen ist Abholung"
+            message: "{{ tonnen | join(', ') }} – bitte heute Abend rausstellen."
+            data:
+              tag: muell
