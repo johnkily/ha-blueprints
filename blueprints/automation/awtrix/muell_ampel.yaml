@@ -1,0 +1,178 @@
+blueprint:
+  name: AWTRIX – Müll-Ampel in der Ecke
+  description: >
+    Eine Ecke der AWTRIX-Pixeluhr leuchtet in der Farbe der Tonne, die morgen
+    abgeholt wird – ab dem Vorabend, am Abholtag morgens blinkend. Liest jeden
+    Abfallkalender, der in Home Assistant als Kalender vorliegt: den ICS-Link
+    deiner Stadt über die Integration „Remote Calendar“, Waste Collection
+    Schedule oder einen eigenen Kalender.
+
+
+    Voraussetzung: AWTRIX 3 ist mit demselben MQTT-Broker verbunden wie Home
+    Assistant. Anleitung: https://github.com/johnkily/ha-blueprints/blob/main/docs/awtrix.md
+
+
+    Lights a corner of AWTRIX pixel clocks in the colour of tomorrow's waste bin.
+  domain: automation
+  author: johnkily
+  homeassistant:
+    min_version: 2024.10.0
+  source_url: https://github.com/johnkily/ha-blueprints/blob/main/blueprints/automation/awtrix/muell_ampel.yaml
+  input:
+    kalender:
+      name: Abfallkalender
+      selector:
+        entity:
+          filter:
+            - domain: calendar
+    uhren:
+      name: MQTT-Name der Uhr(en)
+      description: >
+        Steht in der AWTRIX-Weboberfläche unter MQTT → Prefix, z. B.
+        „awtrix_a1b2c3“. Mehrere Uhren mit Komma trennen.
+      selector:
+        text:
+    ecke:
+      name: Ecke
+      default: "1"
+      selector:
+        select:
+          options:
+            - label: Oben rechts (1)
+              value: "1"
+            - label: Mitte rechts (2)
+              value: "2"
+            - label: Unten rechts (3)
+              value: "3"
+    vorabend:
+      name: Anzeigen ab (Vortag)
+      default: "15:00:00"
+      selector:
+        time:
+    bis:
+      name: Anzeigen bis (Abholtag)
+      default: "10:00:00"
+      selector:
+        time:
+    blinken:
+      name: Am Abholtag blinken
+      default: true
+      selector:
+        boolean:
+    sorten:
+      name: Tonnen
+      description: Welche Wörter im Kalendereintrag zu welcher Tonne gehören.
+      collapsed: true
+      input:
+        rest_woerter:
+          name: Restmüll – Stichwörter
+          description: Mehrere mit Komma trennen. Groß-/Kleinschreibung egal.
+          default: Rest, Grau, Schwarz
+          selector:
+            text:
+        rest_farbe:
+          name: Restmüll – Farbe
+          default: [160, 160, 160]
+          selector:
+            color_rgb:
+        papier_woerter:
+          name: Papier – Stichwörter
+          default: Papier, Blau, PPK
+          selector:
+            text:
+        papier_farbe:
+          name: Papier – Farbe
+          default: [0, 80, 255]
+          selector:
+            color_rgb:
+        gelb_woerter:
+          name: Gelber Sack / Wertstoff – Stichwörter
+          default: Gelb, Wertstoff, Verpackung, Leichtverpackung
+          selector:
+            text:
+        gelb_farbe:
+          name: Gelber Sack – Farbe
+          default: [255, 200, 0]
+          selector:
+            color_rgb:
+        bio_woerter:
+          name: Bio – Stichwörter
+          default: Bio, Grün, Braun, Kompost
+          selector:
+            text:
+        bio_farbe:
+          name: Bio – Farbe
+          default: [0, 200, 0]
+          selector:
+            color_rgb:
+
+mode: restart
+
+triggers:
+  - trigger: time_pattern
+    minutes: /10
+  - trigger: homeassistant
+    event: start
+  - trigger: state
+    entity_id: !input kalender
+
+variables:
+  kalender: !input kalender
+  uhren_text: !input uhren
+  ecke: !input ecke
+  vorabend: !input vorabend
+  bis: !input bis
+  blinken: !input blinken
+  sorten:
+    - woerter: !input rest_woerter
+      farbe: !input rest_farbe
+    - woerter: !input papier_woerter
+      farbe: !input papier_farbe
+    - woerter: !input gelb_woerter
+      farbe: !input gelb_farbe
+    - woerter: !input bio_woerter
+      farbe: !input bio_farbe
+  uhren: "{{ uhren_text.split(',') | map('trim') | reject('eq', '') | list }}"
+
+conditions:
+  - condition: template
+    value_template: "{{ uhren | count > 0 }}"
+
+actions:
+  - action: calendar.get_events
+    target:
+      entity_id: "{{ kalender }}"
+    data:
+      start_date_time: "{{ today_at('00:00') }}"
+      end_date_time: "{{ today_at('00:00') + timedelta(days=2) }}"
+    response_variable: termine
+    continue_on_error: true
+  - variables:
+      zeit: "{{ now().strftime('%H:%M:%S') }}"
+      # Vorabend: Termine von morgen; am Abholtag bis „bis“: Termine von heute
+      phase: >
+        {% if zeit >= vorabend %}morgen{% elif zeit < bis %}heute{% else %}aus{% endif %}
+      tag: >
+        {{ (now() + timedelta(days=1 if phase == 'morgen' else 0)).date().isoformat() }}
+      farbe: >
+        {% set ns = namespace(f=[0, 0, 0]) %}
+        {% if phase != 'aus' and termine is defined and kalender in termine %}
+          {% for e in termine[kalender].events if e.start[:10] == tag and ns.f == [0, 0, 0] %}
+            {% set titel = e.summary | lower %}
+            {% for s in sorten if ns.f == [0, 0, 0] %}
+              {% set w = s.woerter.split(',') | map('trim') | map('lower') | reject('eq', '') | list %}
+              {% if w | select('in', titel) | list | count > 0 %}{% set ns.f = s.farbe | map('int') | list %}{% endif %}
+            {% endfor %}
+          {% endfor %}
+        {% endif %}
+        {{ ns.f }}
+  - repeat:
+      for_each: "{{ uhren }}"
+      sequence:
+        - action: mqtt.publish
+          data:
+            topic: "{{ repeat.item }}/indicator{{ ecke }}"
+            payload: >
+              {% set d = {'color': farbe} %}
+              {% if phase == 'heute' and blinken and farbe != [0, 0, 0] %}{% set d = dict(d, blink=800) %}{% endif %}
+              {{ d | to_json }}

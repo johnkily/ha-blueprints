@@ -1,11 +1,12 @@
 # AWTRIX-Blueprints – Schritt für Schritt
 
-Zwei Blueprints für die Pixeluhr AWTRIX:
+Drei Blueprints für die Pixeluhr AWTRIX:
 
 - **Strompreis** – eine eigene App auf der Uhr zeigt den aktuellen Preis, z. B. `24,1` in Grün, `29,0` in Gelb, `33,0` in Rot.
 - **Akku-Ampel** – eine Ecke der Uhr leuchtet je nach Ladestand: leer rot, halb gelb, voll grün, stufenlos dazwischen.
+- **Müll-Ampel** – eine Ecke leuchtet ab dem Vorabend in der Farbe der Tonne, die abgeholt wird; am Abholtag morgens blinkt sie.
 
-Beide lassen sich einzeln nutzen und funktionieren mit mehreren Uhren gleichzeitig.
+Alle lassen sich einzeln nutzen und funktionieren mit mehreren Uhren gleichzeitig.
 
 ## Was du brauchst
 
@@ -15,6 +16,7 @@ Beide lassen sich einzeln nutzen und funktionieren mit mehreren Uhren gleichzeit
 | **MQTT** | Das Add-on **Mosquitto broker** und die Integration **MQTT** in Home Assistant |
 | **Strompreis** | Ein Sensor mit dem aktuellen Preis – z. B. aus der Tibber-Integration*, Nordpool oder EPEX Spot. €/kWh und ct/kWh werden beide erkannt. |
 | **Akku-Ampel** | Ein Sensor in Prozent, z. B. der Ladestand deines Hausakkus oder E-Autos |
+| **Müll-Ampel** | Dein Abfallkalender als Kalender in Home Assistant (siehe [unten](#abfallkalender-einbinden)) |
 
 *Noch kein dynamischer Stromtarif? Mit meinem [Tibber-Einladungslink](https://invite.tibber.com/pu65s7le)\* bekommen wir beide 50 € für den Tibber Store oder 6 Monate ohne Tibber-Gebühr.*
 
@@ -34,9 +36,9 @@ Beide lassen sich einzeln nutzen und funktionieren mit mehreren Uhren gleichzeit
 
 ## 2. Blueprint importieren
 
-| Strompreis | Akku-Ampel |
-|---|---|
-| [![Importieren](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fawtrix%2Fstrompreis.yaml) | [![Importieren](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fawtrix%2Fakku_ampel.yaml) |
+| Strompreis | Akku-Ampel | Müll-Ampel |
+|---|---|---|
+| [![Importieren](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fawtrix%2Fstrompreis.yaml) | [![Importieren](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fawtrix%2Fakku_ampel.yaml) | [![Importieren](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fawtrix%2Fmuell_ampel.yaml) |
 
 Knopf antippen → **„Blueprint importieren“**.
 
@@ -67,6 +69,29 @@ Der Preis wird bei jeder Änderung und zusätzlich alle 15 Minuten neu geschickt
 
 **Speichern** – fertig. Die Uhr reagiert beim nächsten neuen Wert, spätestens nach einem Neustart von Home Assistant.
 
+### Müll-Ampel
+
+| Feld | Was eintragen |
+|---|---|
+| Abfallkalender | dein Abfallkalender (siehe nächster Abschnitt) |
+| MQTT-Name der Uhr(en) | wie oben |
+| Ecke | Vorgabe: oben rechts. Nicht dieselbe Ecke wie die Akku-Ampel nehmen. |
+| Anzeigen ab / bis | Vorgabe: ab 15 Uhr am Vortag bis 10 Uhr am Abholtag |
+| Am Abholtag blinken | morgens als Erinnerung, dass die Tonne raus muss |
+| Tonnen *(aufklappen)* | Welche Wörter im Kalendereintrag zu welcher Tonne gehören, und die Farben. Die Vorgaben (Rest/Grau, Papier/Blau, Gelb/Wertstoff, Bio/Braun …) passen für die meisten Städte. Heißt es bei dir anders, z. B. „Altpapier-Tonne“, reicht das Wort „Papier“. |
+
+Die Ampel prüft alle 10 Minuten. Stehen zwei Tonnen am selben Tag an, zeigt sie die erste aus der Liste.
+
+## Abfallkalender einbinden
+
+Fast jede Stadt oder jeder Entsorger bietet den Abfuhrkalender als **ICS-Datei** oder **Kalender-Abo** an (Suchbegriffe: „Abfallkalender ICS“ + Stadtname).
+
+1. Den Link zur ICS-Datei kopieren (er endet meist auf `.ics`).
+2. In Home Assistant: *Einstellungen → Geräte & Dienste → Integration hinzufügen* → **Remote Calendar**.
+3. Einen Namen vergeben (z. B. „Abfall“) und den Link einfügen. Fertig – der Kalender heißt dann `calendar.abfall`.
+
+Alternativ liefert die HACS-Integration [Waste Collection Schedule](https://github.com/mampfes/hacs_waste_collection_schedule) für sehr viele Städte direkt einen Kalender.
+
 ## Icons auf die Uhr laden
 
 AWTRIX zeigt nur Icons, die auf der Uhr gespeichert sind:
@@ -82,6 +107,7 @@ AWTRIX zeigt nur Icons, die auf der Uhr gespeichert sind:
 | Uhr zeigt nichts | Stimmt der **Prefix** exakt (Groß-/Kleinschreibung)? Ist die Uhr unter *Einstellungen → Geräte → MQTT* zu sehen? |
 | Preis ist 100-mal zu groß oder zu klein | Welche Einheit zeigt dein Sensor? Erkannt werden alles mit „ct“ oder „Cent“ als Cent, alles andere als Euro. Bitte ein Issue anlegen, wenn dein Sensor anders heißt. |
 | Icon fehlt | Das Icon ist nicht auf der Uhr gespeichert – siehe oben. |
+| Müll-Ampel bleibt dunkel | Steht morgen wirklich ein Termin im Kalender? Kommt eines der Stichwörter im Titel des Termins vor? Ist es schon nach dem „Anzeigen bis“ am Abholtag? |
 | Automation läuft nicht | Automation öffnen → **Traces** (oben rechts) zeigt, woran es hängt. |
 
 ---

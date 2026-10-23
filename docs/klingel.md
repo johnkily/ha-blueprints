@@ -6,9 +6,9 @@ Klingelt es, kommt sofort eine Nachricht aufs Handy – mit einem Bild von der T
 
 | | |
 |---|---|
-| **Sensor** | Irgendetwas, das beim Klingeln „an“ meldet. Am einfachsten: ein **Zigbee-Vibrationssensor** (z. B. von Aqara oder Tuya, ca. 10 €), mit doppelseitigem Klebeband innen auf den Gong geklebt. Ein smarter Klingeltaster oder ein Kontakt am Klingeltrafo geht genauso. |
+| **Sensor** | Irgendetwas, das beim Klingeln „an“ meldet. Am einfachsten: ein **Zigbee-Vibrationssensor**, z. B. ein [Tuya-Vibrationssensor TS0210](https://www.amazon.de/dp/B0G4R5VWXW?tag=elcamdob-21)\* wie bei uns, mit doppelseitigem Klebeband innen auf den Gong geklebt. Ein smarter Klingeltaster oder ein Kontakt am Klingeltrafo geht genauso. |
 | **Handy** | Die **Home-Assistant-App** auf jedem Handy, das benachrichtigt werden soll, angemeldet an deinem Home Assistant. |
-| **Kamera** *(optional)* | Jede Kamera, die in Home Assistant eingebunden ist. Schwenkbare Kameras (z. B. Reolink) kann der Blueprint vorher auf die Tür drehen. |
+| **Kamera** *(optional)* | Jede Kamera, die in Home Assistant eingebunden ist. Schwenkbare Kameras kann der Blueprint vorher auf die Tür drehen – bei uns hängt eine [Reolink TrackMix WiFi](https://www.amazon.de/dp/B0B4KB6CTB?tag=elcamdob-21)\* über dem Eingang. |
 
 ## 1. Sensor einrichten
 
@@ -47,7 +47,7 @@ Das Bild holt die App direkt bei Home Assistant, im Moment, in dem die Nachricht
 
 Im Feld *Zusätzliche Aktionen* auf **„Aktion hinzufügen“** tippen:
 
-- **Tablet aufwecken:** *Schalter einschalten* → der Bildschirm-Schalter deines Tablets (z. B. aus der Fully-Kiosk-Integration).
+- **Tablet aufwecken:** *Schalter einschalten* → der Bildschirm-Schalter deines Tablets (z. B. aus der Fully-Kiosk-Integration). Bei uns hängt ein [Lenovo Tab M11](https://www.amazon.de/dp/B0CQT8CKNZ?tag=elcamdob-21)\* an der Wand.
 - **Livebild als Pop-up auf dem Tablet:** *Browser Mod: Popup* (Integration [Browser Mod](https://github.com/thomasloven/hass-browser_mod) aus HACS) mit einer Picture-Entity-Karte deiner Kamera.
 - **Ansage:** *Text-to-Speech* auf einem Lautsprecher: „Es hat geklingelt.“
 - **Licht im Flur an**, wenn es dunkel ist.
@@ -61,3 +61,7 @@ Im Feld *Zusätzliche Aktionen* auf **„Aktion hinzufügen“** tippen:
 | Nachricht ohne Bild | Ist die Kamera in Home Assistant zu sehen? Auf iPhones das Bild lange drücken, dann erscheint es groß. |
 | Meldet ein Klingeln mehrfach | Sperrzeit erhöhen. |
 | Meldet ohne Klingeln (Türenknallen, Lkw) | Empfindlichkeit des Sensors senken oder einen anderen Platz am Gong suchen. |
+
+---
+
+*Mit \* gekennzeichnete Links sind Affiliate-Links. Kaufst du darüber, bekomme ich eine kleine Provision, für dich ändert sich am Preis nichts. Als Amazon-Partner verdiene ich an qualifizierten Verkäufen.*
