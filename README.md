@@ -21,6 +21,14 @@ Hintergründe und Erfahrungen stehen im Blog: **[Kily's World](https://kilysworl
 
 **Aktualisieren:** Kommt eine neue Version, unter *Blueprints* auf die drei Punkte → **„Blueprint erneut importieren“**. Deine Einstellungen bleiben erhalten.
 
+## Unterstützen
+
+Alles hier ist kostenlos und bleibt es. Wenn dir ein Blueprint Zeit oder Strom spart, freue ich mich über einen Kaffee:
+
+[![Unterstütze mich auf Ko-fi](https://storage.ko-fi.com/cdn/kofi2.png?v=3)](https://ko-fi.com/johnkily)
+
+Oder einfach den Blog weiterempfehlen – das hilft genauso.
+
 ## Probleme oder Ideen?
 
 Bitte ein [Issue](https://github.com/johnkily/ha-blueprints/issues) anlegen – mit Home-Assistant-Version und dem, was du erwartet hättest.
@@ -31,6 +39,6 @@ Bitte ein [Issue](https://github.com/johnkily/ha-blueprints/issues) anlegen – 
 
 ## English
 
-Ready-made Home Assistant automations: click **Import**, pick your devices, done. Each blueprint has an English summary in its description; the step-by-step guide is in German for now – feel free to open an issue in English.
+Ready-made Home Assistant automations: click **Import**, pick your devices, done. Like them? [Buy me a coffee on Ko-fi](https://ko-fi.com/johnkily). Each blueprint has an English summary in its description; the step-by-step guide is in German for now – feel free to open an issue in English.
 
 Lizenz / License: [MIT](LICENSE)
