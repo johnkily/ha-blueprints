@@ -1,10 +1,12 @@
-# Müll: Dashboard-Karte und Erinnerung am Vorabend
+# Müll: Kachel-Karte, Erinnerung und Ampel
 
-Drei Bausteine, alle mit demselben Abfallkalender:
+Alles aus einem Abfallkalender – ohne HACS, ohne `configuration.yaml`:
 
-- **Müll-Karte** fürs Dashboard: die nächste Tonne in ihrer Farbe, „Heute / Morgen / In 3 Tagen“, abends ein Hinweis zum Rausstellen – darunter die Termine der Woche. Nur eingebaute Karten, kein HACS.
+- **Kachel-Karte** fürs Dashboard: vier Tonnen mit „in 6 Tagen“, darunter zwei Wochen als Mini-Kalender mit farbigen Punkten und „Als Nächstes“.
 - **Erinnerung am Vorabend** (Blueprint): „🟦 Papier, 🟨 Gelber Sack – bitte heute Abend rausstellen.“
 - **Müll-Ampel** auf der AWTRIX-Pixeluhr (Blueprint): siehe [AWTRIX-Anleitung](awtrix.md#müll-ampel).
+
+![Müll-Kachel-Karte](bilder/muell_kacheln.png)
 
 ## 1. Abfallkalender einbinden
 
@@ -16,12 +18,77 @@ Fast jede Stadt oder jeder Entsorger bietet den Abfuhrkalender als **ICS-Datei**
 
 Alternativ liefert die HACS-Integration [Waste Collection Schedule](https://github.com/mampfes/hacs_waste_collection_schedule) für sehr viele Städte direkt einen Kalender.
 
-## 2. Müll-Karte einfügen
+## 2. Kachel-Karte
 
-1. Dashboard öffnen → oben rechts **Bearbeiten** → **Karte hinzufügen** → ganz unten **Manuell**.
-2. Den gesamten Text unten hineinkopieren.
-3. Heißt dein Kalender nicht `calendar.abfall`, die zwei Stellen mit `calendar.abfall` anpassen.
-4. **Speichern.**
+Die Karte braucht die Termine **je Tonne**. Die sammelt ein Blueprint in einem Text-Helfer.
+
+**a) Helfer anlegen:** *Einstellungen → Geräte & Dienste → Helfer → Helfer erstellen → **Text***. Name **Müll-Plan**, maximale Länge **255**. (Home Assistant nennt ihn dann `input_text.mull_plan` – das „ü“ wird zu „u“.)
+
+**b) Blueprint „Müll – Plan für die Kachel-Karte“:**
+
+[![Importieren](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fmuell%2Fmuell_plan.yaml)
+
+Unter *Einstellungen → Automationen & Szenen → Blueprints* öffnen, **Abfallkalender** und den Helfer **Müll-Plan** auswählen, speichern. Er aktualisiert sich alle drei Stunden, nach Mitternacht und beim Start von Home Assistant.
+
+**c) Karte einfügen:** Dashboard → **Bearbeiten** → **Karte hinzufügen** → ganz unten **Manuell** → alles hineinkopieren → **Speichern**.
+
+```yaml
+# Müll-Kachel-Karte für Home Assistant – nur die eingebaute Markdown-Karte, kein HACS.
+# Braucht den Text-Helfer „Müll-Plan“ (input_text.mull_plan), den der Blueprint
+# „Müll – Plan für die Kachel-Karte“ füllt.
+# Einfügen: Dashboard bearbeiten → Karte hinzufügen → ganz unten „Manuell“ →
+# alles hier hineinkopieren → Speichern. Heißt dein Helfer anders, Zeile 14 anpassen.
+# Anleitung: https://github.com/johnkily/ha-blueprints/blob/main/docs/muell.md
+type: markdown
+content: |
+  {%- set tonnen = {
+    'p': {'name': 'Papier', 'icon': 'mdi:package-variant', 'farbe': '#42a5f5'},
+    'b': {'name': 'Bio', 'icon': 'mdi:leaf', 'farbe': '#66bb6a'},
+    'g': {'name': 'Gelb', 'icon': 'mdi:recycle-variant', 'farbe': '#ffb300'},
+    'r': {'name': 'Rest', 'icon': 'mdi:trash-can-outline', 'farbe': '#9e9e9e'}} -%}
+  {%- set roh = states('input_text.mull_plan') -%}
+  {%- set wt = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'] -%}
+  {%- set heute = now().date() -%}
+  {%- set teile = roh.split('|') if '|' in roh else ['', ''] -%}
+  {%- set ns = namespace(l=[]) -%}
+  {%- for x in teile[0].split() if x[0] in tonnen and x[1:] | as_datetime is not none -%}
+    {%- set tag = (x[1:] | as_datetime).date() -%}
+    {%- set ns.l = ns.l + [{'k': x[0], 'tag': tag, 'tage': (tag - heute).days}] -%}
+  {%- endfor -%}
+  {%- set liste = ns.l | sort(attribute='tage') -%}
+  {%- if liste | count == 0 -%}
+  Noch keine Abholtermine – läuft der Blueprint „Müll – Plan für die Kachel-Karte“?
+  {%- else -%}
+  <table width="100%"><tr>
+  {%- for t in liste %}{% set c = tonnen[t.k] %}
+  <td align="center" width="25%"><font color="{{ c.farbe }}"><ha-icon icon="{{ c.icon }}"></ha-icon></font><br><b>{{ c.name | upper }}</b><br><font color="{{ c.farbe }}"><b>{% if t.tage <= 0 %}Heute{% elif t.tage == 1 %}Morgen{% else %}{{ t.tage }} Tage{% endif %}</b></font><br><small>{{ wt[t.tag.weekday()] }} {{ t.tag.strftime('%d.%m.') }}</small></td>
+  {%- endfor %}
+  </tr></table>
+
+  <table width="100%">
+  {%- for woche in [0, 7] %}<tr>
+  {%- for i in range(woche, woche + 7) %}{% set d = heute + timedelta(days=i) %}
+  <td align="center" width="14%"><small>{{ wt[d.weekday()] }}<br>{% if i == 0 %}<b>{{ d.day }}</b>{% else %}{{ d.day }}{% endif %}</small><br>{% for s in teile[1].split() if s[:10] == d.isoformat() and s[10:] in tonnen %}<font color="{{ tonnen[s[10:]].farbe }}">●</font>{% else %}&nbsp;{% endfor %}</td>
+  {%- endfor %}</tr>
+  {%- endfor %}
+  </table>
+
+  {% set n = liste[0] %}{% set c = tonnen[n.k] -%}
+  <ha-icon icon="{{ c.icon }}"></ha-icon> Als Nächstes: **{{ c.name }}** · {{ wt[n.tag.weekday()] }} {{ n.tag.strftime('%d.%m.') }} · {% if n.tage <= 0 %}heute{% elif n.tage == 1 %}morgen{% else %}in {{ n.tage }} Tagen{% endif %}
+  {%- if n.tage == 1 and now().hour >= 15 %}
+
+  <ha-alert alert-type="warning">Heute Abend rausstellen!</ha-alert>
+  {%- endif %}
+  {%- endif %}
+```
+
+Die Tonnen sind nach der nächsten Abholung sortiert. Nachmittags vor einer Abholung erscheint „Heute Abend rausstellen!“.
+
+### Ohne Helfer: die schlichte Variante
+
+Wer keinen Helfer anlegen möchte: Diese Karte liest den nächsten Termin direkt aus dem Kalender (nur die nächste Tonne, darunter die Wochenliste).
+
+<details><summary>Schlichte Karte anzeigen</summary>
 
 ```yaml
 # Müll-Karte für Home Assistant – nur eingebaute Karten, kein HACS.
@@ -64,15 +131,7 @@ cards:
       - calendar.abfall
 ```
 
-So sieht sie aus:
-
-| Fall | Anzeige |
-|---|---|
-| morgen Papier, nachmittags | 🟦 **Papiertonne** · **Morgen** · Samstag, 24.10. + Hinweis „Heute Abend rausstellen!“ |
-| heute Restmüll | ⬛ **Restmülltonne** · **Heute** + „Heute ist Abholung.“ |
-| in vier Tagen Bio | 🟫 **Biotonne** · **In 4 Tagen** · Dienstag, 27.10. |
-
-Die Farbe kommt aus dem Titel des Termins: Papier/Blau 🟦, Gelb/Wertstoff/Verpackung 🟨, Bio/Grün/Braun 🟫, Rest/Grau/Schwarz ⬛. Steht an einem Tag mehr als eine Tonne an, zeigt die obere Zeile die erste – die Liste darunter zeigt alle.
+</details>
 
 ## 3. Erinnerung am Vorabend
 
@@ -90,10 +149,21 @@ Die Farbe kommt aus dem Titel des Termins: Papier/Blau 🟦, Gelb/Wertstoff/Verp
 
 Stehen mehrere Tonnen an, kommen alle in eine Nachricht. Einträge, die zu keiner Tonne passen (z. B. „Sperrmüll“), erscheinen mit ihrem eigenen Namen.
 
+## Tonnen und Stichwörter
+
+| Tonne | Farbe | erkannt an (Groß-/Kleinschreibung egal) |
+|---|---|---|
+| Papier | blau | Papier, Blau, PPK |
+| Gelber Sack / Wertstoff | gelb | Gelb, Wertstoff, Verpackung, Leichtverpackung |
+| Bio | grün | Bio, Grün, Braun, Kompost |
+| Restmüll | grau | Rest, Grau, Schwarz |
+
+Heißen die Termine in deinem Kalender anders, die Stichwörter im Blueprint (Abschnitt *Tonnen*) ergänzen.
+
 ## Klappt nicht?
 
 | Problem | Lösung |
 |---|---|
-| Karte zeigt „Kein Termin im Kalender.“ | Stimmt der Name `calendar.abfall`? Unter *Einstellungen → Geräte & Dienste → Entitäten* nach „calendar.“ suchen. |
-| Karte zeigt eine falsche Farbe | Der Titel des Termins enthält keines der Stichwörter – im YAML der Karte die Wörter ergänzen. |
-| Keine Erinnerung | *Automation → Traces*: Ist morgen ein Termin im Kalender? Ganztägige Termine von morgen werden erkannt. |
+| „Noch keine Abholtermine“ | Läuft der Blueprint *Müll – Plan*? Einmal in der Automation oben rechts auf **Ausführen** tippen. Heißt der Helfer anders als `input_text.mull_plan`, in Zeile 14 der Karte anpassen. |
+| Eine Tonne fehlt | Der Kalender nennt sie anders – Stichwort ergänzen (siehe oben). |
+| Keine Erinnerung | *Automation → Traces*: Ist morgen ein Termin im Kalender? |

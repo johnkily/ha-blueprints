@@ -1,0 +1,121 @@
+blueprint:
+  name: Müll – Plan für die Kachel-Karte
+  description: >
+    Liest den Abfallkalender und schreibt die nächsten Abholtermine je Tonne in
+    einen Text-Helfer. Daraus zeichnet die Müll-Kachel-Karte die vier Tonnen mit
+    „in 6 Tagen“ und den Zwei-Wochen-Streifen.
+
+
+    Vorher einen Text-Helfer anlegen (Einstellungen → Geräte & Dienste →
+    Helfer → Text, Name „Müll-Plan“, maximale Länge 255).
+
+    Anleitung: https://github.com/johnkily/ha-blueprints/blob/main/docs/muell.md
+
+
+    Waste plan: stores the next pickup per bin in a text helper for the waste tile card.
+  domain: automation
+  author: johnkily
+  homeassistant:
+    min_version: 2024.10.0
+  source_url: https://github.com/johnkily/ha-blueprints/blob/main/blueprints/automation/muell/muell_plan.yaml
+  input:
+    kalender:
+      name: Abfallkalender
+      selector:
+        entity:
+          filter:
+            - domain: calendar
+    ziel:
+      name: Text-Helfer „Müll-Plan“
+      description: Maximale Länge 255.
+      selector:
+        entity:
+          filter:
+            - domain: input_text
+    sorten:
+      name: Tonnen
+      description: Welche Wörter im Kalendereintrag zu welcher Tonne gehören.
+      collapsed: true
+      input:
+        rest_woerter:
+          name: Restmüll – Stichwörter
+          default: Rest, Grau, Schwarz
+          selector:
+            text:
+        papier_woerter:
+          name: Papier – Stichwörter
+          default: Papier, Blau, PPK
+          selector:
+            text:
+        gelb_woerter:
+          name: Gelber Sack / Wertstoff – Stichwörter
+          default: Gelb, Wertstoff, Verpackung, Leichtverpackung
+          selector:
+            text:
+        bio_woerter:
+          name: Bio – Stichwörter
+          default: Bio, Grün, Braun, Kompost
+          selector:
+            text:
+
+mode: restart
+
+triggers:
+  - trigger: homeassistant
+    event: start
+  - trigger: time_pattern
+    hours: /3
+  - trigger: time
+    at: "00:01:00"
+  - trigger: state
+    entity_id: !input kalender
+
+variables:
+  kalender: !input kalender
+  ziel: !input ziel
+  sorten:
+    - k: r
+      woerter: !input rest_woerter
+    - k: p
+      woerter: !input papier_woerter
+    - k: g
+      woerter: !input gelb_woerter
+    - k: b
+      woerter: !input bio_woerter
+
+actions:
+  - action: calendar.get_events
+    target:
+      entity_id: "{{ kalender }}"
+    data:
+      start_date_time: "{{ today_at('00:00') }}"
+      end_date_time: "{{ today_at('00:00') + timedelta(days=60) }}"
+    response_variable: termine
+  - variables:
+      # Schlichtes Textformat (JSON würde HA beim Schreiben in ein Objekt umdeuten):
+      #   „p2026-10-29 b2026-11-05 g2026-11-09 r2026-12-12 | 2026-10-29p 2026-11-05b“
+      #   vorn der nächste Termin je Tonne (p Papier, b Bio, g Gelb, r Rest),
+      #   hinten alle Termine der nächsten 14 Tage für den Streifen.
+      plan: >
+        {% set heute = now().date().isoformat() %}
+        {% set grenze = (now() + timedelta(days=14)).date().isoformat() %}
+        {% set ns = namespace(n=[], keys=[], s=[]) %}
+        {% for e in termine[kalender].events | sort(attribute='start') %}
+          {% set tag = e.start[:10] %}
+          {% if tag >= heute %}
+            {% set titel = e.summary | lower %}
+            {% for s in sorten %}
+              {% set w = s.woerter.split(',') | map('trim') | map('lower') | reject('eq', '') | list %}
+              {% if w | select('in', titel) | list | count > 0 %}
+                {% if s.k not in ns.keys %}{% set ns.keys = ns.keys + [s.k] %}{% set ns.n = ns.n + [s.k ~ tag] %}{% endif %}
+                {% if tag < grenze and (tag ~ s.k) not in ns.s %}{% set ns.s = ns.s + [tag ~ s.k] %}{% endif %}
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+        {{ ns.n | join(' ') }} | {{ ns.s[:12] | join(' ') }}
+  - action: input_text.set_value
+    target:
+      entity_id: "{{ ziel }}"
+    data:
+      value: "{{ plan }}"

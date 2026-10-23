@@ -1,0 +1,47 @@
+# Müll-Kachel-Karte für Home Assistant – nur die eingebaute Markdown-Karte, kein HACS.
+# Braucht den Text-Helfer „Müll-Plan“ (input_text.mull_plan), den der Blueprint
+# „Müll – Plan für die Kachel-Karte“ füllt.
+# Einfügen: Dashboard bearbeiten → Karte hinzufügen → ganz unten „Manuell“ →
+# alles hier hineinkopieren → Speichern. Heißt dein Helfer anders, Zeile 14 anpassen.
+# Anleitung: https://github.com/johnkily/ha-blueprints/blob/main/docs/muell.md
+type: markdown
+content: |
+  {%- set tonnen = {
+    'p': {'name': 'Papier', 'icon': 'mdi:package-variant', 'farbe': '#42a5f5'},
+    'b': {'name': 'Bio', 'icon': 'mdi:leaf', 'farbe': '#66bb6a'},
+    'g': {'name': 'Gelb', 'icon': 'mdi:recycle-variant', 'farbe': '#ffb300'},
+    'r': {'name': 'Rest', 'icon': 'mdi:trash-can-outline', 'farbe': '#9e9e9e'}} -%}
+  {%- set roh = states('input_text.mull_plan') -%}
+  {%- set wt = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'] -%}
+  {%- set heute = now().date() -%}
+  {%- set teile = roh.split('|') if '|' in roh else ['', ''] -%}
+  {%- set ns = namespace(l=[]) -%}
+  {%- for x in teile[0].split() if x[0] in tonnen and x[1:] | as_datetime is not none -%}
+    {%- set tag = (x[1:] | as_datetime).date() -%}
+    {%- set ns.l = ns.l + [{'k': x[0], 'tag': tag, 'tage': (tag - heute).days}] -%}
+  {%- endfor -%}
+  {%- set liste = ns.l | sort(attribute='tage') -%}
+  {%- if liste | count == 0 -%}
+  Noch keine Abholtermine – läuft der Blueprint „Müll – Plan für die Kachel-Karte“?
+  {%- else -%}
+  <table width="100%"><tr>
+  {%- for t in liste %}{% set c = tonnen[t.k] %}
+  <td align="center" width="25%"><font color="{{ c.farbe }}"><ha-icon icon="{{ c.icon }}"></ha-icon></font><br><b>{{ c.name | upper }}</b><br><font color="{{ c.farbe }}"><b>{% if t.tage <= 0 %}Heute{% elif t.tage == 1 %}Morgen{% else %}{{ t.tage }} Tage{% endif %}</b></font><br><small>{{ wt[t.tag.weekday()] }} {{ t.tag.strftime('%d.%m.') }}</small></td>
+  {%- endfor %}
+  </tr></table>
+
+  <table width="100%">
+  {%- for woche in [0, 7] %}<tr>
+  {%- for i in range(woche, woche + 7) %}{% set d = heute + timedelta(days=i) %}
+  <td align="center" width="14%"><small>{{ wt[d.weekday()] }}<br>{% if i == 0 %}<b>{{ d.day }}</b>{% else %}{{ d.day }}{% endif %}</small><br>{% for s in teile[1].split() if s[:10] == d.isoformat() and s[10:] in tonnen %}<font color="{{ tonnen[s[10:]].farbe }}">●</font>{% else %}&nbsp;{% endfor %}</td>
+  {%- endfor %}</tr>
+  {%- endfor %}
+  </table>
+
+  {% set n = liste[0] %}{% set c = tonnen[n.k] -%}
+  <ha-icon icon="{{ c.icon }}"></ha-icon> Als Nächstes: **{{ c.name }}** · {{ wt[n.tag.weekday()] }} {{ n.tag.strftime('%d.%m.') }} · {% if n.tage <= 0 %}heute{% elif n.tage == 1 %}morgen{% else %}in {{ n.tage }} Tagen{% endif %}
+  {%- if n.tage == 1 and now().hour >= 15 %}
+
+  <ha-alert alert-type="warning">Heute Abend rausstellen!</ha-alert>
+  {%- endif %}
+  {%- endif %}
