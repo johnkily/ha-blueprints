@@ -1,0 +1,230 @@
+blueprint:
+  name: Waschmaschine, Trockner & Co. – fertig melden
+  description: >
+    Meldet aufs Handy, wenn Waschmaschine, Trockner oder Spülmaschine fertig
+    ist – erkannt am Stromverbrauch über eine Steckdose mit Strommessung. Mit
+    Laufzeit und (optional) verbrauchten kWh. Auf Wunsch nur an Handys, die
+    gerade zu Hause sind, und mit Erinnerung, wenn die Wäsche noch drin liegt.
+
+
+    Anleitung und empfohlene Werte je Gerät:
+    https://github.com/johnkily/ha-blueprints/blob/main/docs/geraet_fertig.md
+
+
+    Appliance done: notifies your phones when a washer, dryer or dishwasher has
+    finished, detected via a power-monitoring plug.
+  domain: automation
+  author: johnkily
+  homeassistant:
+    min_version: 2024.10.0
+  source_url: https://github.com/johnkily/ha-blueprints/blob/main/blueprints/automation/geraete/geraet_fertig.yaml
+  input:
+    leistung:
+      name: Leistung der Steckdose
+      description: Der Sensor in Watt (W), z. B. „Waschmaschine Leistung“.
+      selector:
+        entity:
+          filter:
+            - domain: sensor
+              device_class: power
+    geraet:
+      name: Name des Geräts
+      default: Waschmaschine
+      selector:
+        text:
+    handys:
+      name: Handys
+      selector:
+        device:
+          multiple: true
+          filter:
+            - integration: mobile_app
+    nur_zuhause:
+      name: Nur Handys, die zu Hause sind
+      description: Ist niemand zu Hause, kommt keine Nachricht.
+      default: true
+      selector:
+        boolean:
+    erkennung:
+      name: Erkennung
+      description: Die Vorgaben passen für die meisten Waschmaschinen. Werte für andere Geräte stehen in der Anleitung.
+      collapsed: true
+      input:
+        start_w:
+          name: Läuft ab
+          default: 20
+          selector:
+            number:
+              min: 2
+              max: 1000
+              unit_of_measurement: W
+        start_min:
+          name: … für mindestens
+          default: 2
+          selector:
+            number:
+              min: 0
+              max: 30
+              step: 0.5
+              unit_of_measurement: min
+        ende_w:
+          name: Fertig unter
+          default: 5
+          selector:
+            number:
+              min: 0.5
+              max: 200
+              step: 0.5
+              unit_of_measurement: W
+        ende_min:
+          name: … für mindestens
+          description: Lang genug, dass Pausen im Programm (Einweichen, Abkühlen) nicht als Ende zählen.
+          default: 5
+          selector:
+            number:
+              min: 0
+              max: 60
+              step: 0.5
+              unit_of_measurement: min
+        max_h:
+          name: Längste Laufzeit
+          description: Danach gibt die Automation auf (z. B. wenn die Steckdose keine Werte mehr schickt).
+          default: 6
+          selector:
+            number:
+              min: 1
+              max: 24
+              unit_of_measurement: h
+    extras:
+      name: Extras (optional)
+      collapsed: true
+      input:
+        energie:
+          name: Energiezähler der Steckdose
+          description: Sensor in kWh – dann steht der Verbrauch in der Nachricht.
+          default: ""
+          selector:
+            entity:
+              filter:
+                - domain: sensor
+                  device_class: energy
+        erinnerung_min:
+          name: Erinnerung nach
+          description: >
+            Zieht das Gerät so lange nach dem Ende noch Strom (Tür zu, Knitterschutz,
+            nicht ausgeschaltet), kommt eine Erinnerung. 0 = keine Erinnerung.
+          default: 0
+          selector:
+            number:
+              min: 0
+              max: 240
+              unit_of_measurement: min
+        standby_w:
+          name: Ausgeschaltet/Tür offen unter
+          default: 1
+          selector:
+            number:
+              min: 0
+              max: 20
+              step: 0.1
+              unit_of_measurement: W
+        zusatz:
+          name: Zusätzliche Aktionen
+          description: Laufen, wenn das Gerät fertig ist – z. B. Ansage, Licht blinken, Anzeige auf einer Pixeluhr.
+          default: []
+          selector:
+            action:
+
+mode: single
+max_exceeded: silent
+
+# Für die Startdauer im Auslöser (normale Variablen gibt es dort noch nicht)
+trigger_variables:
+  start_min_t: !input start_min
+
+triggers:
+  - trigger: numeric_state
+    entity_id: !input leistung
+    above: !input start_w
+    for:
+      seconds: "{{ (start_min_t | float * 60) | int }}"
+
+variables:
+  leistung: !input leistung
+  geraet: !input geraet
+  handys: !input handys
+  nur_zuhause: !input nur_zuhause
+  start_min: !input start_min
+  ende_w: !input ende_w
+  ende_min: !input ende_min
+  max_h: !input max_h
+  energie: !input energie
+  erinnerung_min: !input erinnerung_min
+  standby_w: !input standby_w
+  start: "{{ now().timestamp() }}"
+  kwh_start: "{{ states(energie) | float(0) if energie != '' else 0 }}"
+  tag: "geraet_{{ this.attributes.id | default(geraet | slugify) }}"
+
+actions:
+  - wait_for_trigger:
+      - trigger: numeric_state
+        entity_id: !input leistung
+        below: !input ende_w
+        for:
+          seconds: "{{ (ende_min | float * 60) | int }}"
+    timeout:
+      hours: "{{ max_h | int }}"
+    continue_on_timeout: false
+  - variables:
+      minuten: "{{ ((now().timestamp() - start) / 60) | round(0) | int }}"
+      kwh: "{{ ((states(energie) | float(0)) - kwh_start) | round(2) if energie != '' else -1 }}"
+      text: >
+        {% set h = minuten // 60 %}{% set m = minuten % 60 %}
+        Nach {% if h > 0 %}{{ '%d:%02d' | format(h, m) }} h{% else %}{{ m }} min{% endif %}{% if kwh is number and kwh >= 0 %}, {{ ('%.2f' | format(kwh)) | replace('.', ',') }} kWh{% endif %}.
+      # Handys, die zu Hause sind: über den device_tracker der Home-Assistant-App
+      empfaenger: >
+        {% set ns = namespace(l=[]) %}
+        {% for d in handys %}
+          {% set tr = device_entities(d) | select('match', 'device_tracker\.') | list %}
+          {% if not nur_zuhause or (tr | count > 0 and is_state(tr[0], 'home')) %}{% set ns.l = ns.l + [d] %}{% endif %}
+        {% endfor %}{{ ns.l }}
+  - repeat:
+      for_each: "{{ empfaenger }}"
+      sequence:
+        - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+          continue_on_error: true
+          data:
+            title: "✅ {{ geraet }} ist fertig"
+            message: "{{ text | trim }}"
+            data:
+              tag: "{{ tag }}"
+  - choose: []
+    default: !input zusatz
+  - if:
+      - condition: template
+        value_template: "{{ erinnerung_min | float > 0 }}"
+    then:
+      - wait_template: "{{ states(leistung) | float(0) < standby_w | float }}"
+        timeout:
+          seconds: "{{ (erinnerung_min | float * 60) | int }}"
+      - if:
+          - condition: template
+            value_template: "{{ not wait.completed and states(leistung) | float(0) >= standby_w | float }}"
+        then:
+          - variables:
+              empfaenger: >
+                {% set ns = namespace(l=[]) %}
+                {% for d in handys %}
+                  {% set tr = device_entities(d) | select('match', 'device_tracker\.') | list %}
+                  {% if not nur_zuhause or (tr | count > 0 and is_state(tr[0], 'home')) %}{% set ns.l = ns.l + [d] %}{% endif %}
+                {% endfor %}{{ ns.l }}
+          - repeat:
+              for_each: "{{ empfaenger }}"
+              sequence:
+                - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+                  continue_on_error: true
+                  data:
+                    title: "⏰ {{ geraet }} wartet"
+                    message: "Seit {{ erinnerung_min | int }} Minuten fertig – ist noch etwas drin?"
+                    data:
+                      tag: "{{ tag }}"
