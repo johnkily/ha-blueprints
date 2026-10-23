@@ -2,7 +2,7 @@
 
 Fertige Automationen für [Home Assistant](https://www.home-assistant.io/) – mit einem Klick importieren, Geräte auswählen, fertig. Kein YAML, kein Kopieren von Code.
 
-Hintergründe und Erfahrungen stehen im Blog: **[Kily's World](https://kilysworld.wordpress.com/)**
+Hintergründe und Erfahrungen stehen im Blog: **[Kily's World](https://kilysworld.wordpress.com/)** – zum Beispiel [Strompreis und Hausakku auf der AWTRIX-Uhr](https://kilysworld.wordpress.com/2026/10/23/strompreis-und-hausakku-auf-der-awtrix-uhr-jetzt-mit-einem-klick/).
 
 ## Die Blueprints
 
@@ -41,4 +41,4 @@ Bitte ein [Issue](https://github.com/johnkily/ha-blueprints/issues) anlegen – 
 
 Ready-made Home Assistant automations: click **Import**, pick your devices, done. Like them? [Buy me a coffee on Ko-fi](https://ko-fi.com/johnkily). Each blueprint has an English summary in its description; the step-by-step guide is in German for now – feel free to open an issue in English.
 
-Lizenz / License: [MIT](LICENSE)
+Lizenz / License: [MIT](LICENSE) · [Impressum](https://kilysworld.wordpress.com/impressum/) · [Datenschutz](https://kilysworld.wordpress.com/datenschutz/)
