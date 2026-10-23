@@ -1,0 +1,257 @@
+blueprint:
+  name: Sonnenschutz je Fassade
+  description: >
+    Fährt die Rollos einer Hausseite herunter, wenn die Sonne wirklich auf
+    diese Fassade scheint und es warm genug ist – und erst wieder hoch, wenn
+    die Sonne die Seite verlassen hat. Kein „Rollladen-Jo-Jo“ bei jeder Wolke.
+
+
+    Bedingungen zum Herunterfahren (alle müssen stimmen): Sonnenrichtung im
+    eingestellten Bereich, Sonne hoch genug, optional Raum- und
+    Außentemperatur, optional Bewölkung. Rollos, die du selbst weiter
+    geschlossen hast, werden nicht angefasst; hochgefahren werden nur Rollos,
+    die noch auf der Beschattungs-Position stehen.
+
+
+    Anleitung: https://github.com/johnkily/ha-blueprints/blob/main/docs/sonnenschutz.md
+
+
+    Sun protection per facade: lowers covers when the sun hits this side and it
+    is warm enough, raises them when the sun has left – no yo-yo on every cloud.
+  domain: automation
+  author: johnkily
+  homeassistant:
+    min_version: 2024.10.0
+  source_url: https://github.com/johnkily/ha-blueprints/blob/main/blueprints/automation/beschattung/sonnenschutz.yaml
+  input:
+    rollos:
+      name: Rollos dieser Hausseite
+      description: Rollos oder Raffstores, die eine Position (in %) anfahren können.
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - domain: cover
+    position:
+      name: Beschattungs-Position
+      description: 0 % = ganz zu, 100 % = ganz offen.
+      default: 20
+      selector:
+        number:
+          min: 0
+          max: 90
+          unit_of_measurement: "%"
+    sonne:
+      name: Sonnenstand
+      description: >
+        Ab welcher Himmelsrichtung die Sonne auf diese Fassade scheint
+        (0° Nord, 90° Ost, 180° Süd, 270° West). Tipp: sonnenverlauf.de zeigt
+        die Winkel für deine Adresse.
+      input:
+        azimut_von:
+          name: Sonne kommt ab (Azimut)
+          default: 130
+          selector:
+            number:
+              min: 0
+              max: 360
+              unit_of_measurement: °
+        azimut_bis:
+          name: Sonne ist weg ab (Azimut)
+          default: 250
+          selector:
+            number:
+              min: 0
+              max: 360
+              unit_of_measurement: °
+        hoehe_min:
+          name: Mindesthöhe der Sonne
+          description: Darunter hat die Sonne kaum Kraft (oder steht hinter Nachbarhäusern).
+          default: 20
+          selector:
+            number:
+              min: 0
+              max: 70
+              unit_of_measurement: °
+        hoehe_hoch:
+          name: Hochfahren, wenn die Sonne tiefer steht als
+          description: Spätestens dann fahren die Rollos wieder hoch, auch wenn der Azimut noch passt.
+          default: 5
+          selector:
+            number:
+              min: 0
+              max: 30
+              unit_of_measurement: °
+    bedingungen:
+      name: Temperatur und Wolken (optional)
+      description: Leer gelassene Sensoren werden nicht geprüft.
+      collapsed: true
+      input:
+        innen:
+          name: Raumtemperatur
+          default: ""
+          selector:
+            entity:
+              filter:
+                - domain: sensor
+                  device_class: temperature
+        innen_min:
+          name: Nur wenn drinnen wärmer als
+          default: 22
+          selector:
+            number:
+              min: 10
+              max: 35
+              step: 0.5
+              unit_of_measurement: °C
+        aussen:
+          name: Außentemperatur
+          description: Ein Temperatursensor oder eine Wetter-Entität.
+          default: ""
+          selector:
+            entity:
+              filter:
+                - domain: sensor
+                  device_class: temperature
+                - domain: weather
+        aussen_min:
+          name: Nur wenn draußen wärmer als
+          default: 20
+          selector:
+            number:
+              min: -10
+              max: 40
+              step: 0.5
+              unit_of_measurement: °C
+        wolken:
+          name: Bewölkung
+          description: Eine Wetter-Entität (z. B. Met.no, DWD) oder ein Sensor in Prozent.
+          default: ""
+          selector:
+            entity:
+              filter:
+                - domain: weather
+                - domain: sensor
+        wolken_max:
+          name: Nur wenn weniger bewölkt als
+          default: 80
+          selector:
+            number:
+              min: 0
+              max: 100
+              unit_of_measurement: "%"
+    gedaechtnis:
+      name: Merker „heute schon beschattet“ (optional, empfohlen)
+      description: >
+        Ein Schalter-Helfer (Einstellungen → Geräte & Dienste → Helfer →
+        Schalter). Mit ihm beschattet die Automation nur einmal am Tag: Öffnest
+        du ein Rollo von Hand, bleibt es offen. Wird um Mitternacht
+        zurückgesetzt.
+      default: ""
+      selector:
+        entity:
+          filter:
+            - domain: input_boolean
+    offen:
+      name: Position beim Hochfahren
+      default: 100
+      selector:
+        number:
+          min: 10
+          max: 100
+          unit_of_measurement: "%"
+
+mode: single
+max_exceeded: silent
+
+triggers:
+  - trigger: time_pattern
+    minutes: /10
+    id: pruefen
+  - trigger: homeassistant
+    event: start
+    id: pruefen
+  - trigger: time
+    at: "00:00:00"
+    id: mitternacht
+
+variables:
+  rollos: !input rollos
+  position: !input position
+  azimut_von: !input azimut_von
+  azimut_bis: !input azimut_bis
+  hoehe_min: !input hoehe_min
+  hoehe_hoch: !input hoehe_hoch
+  innen: !input innen
+  innen_min: !input innen_min
+  aussen: !input aussen
+  aussen_min: !input aussen_min
+  wolken: !input wolken
+  wolken_max: !input wolken_max
+  gedaechtnis: !input gedaechtnis
+  offen: !input offen
+  azimut: "{{ state_attr('sun.sun', 'azimuth') | float(0) }}"
+  hoehe: "{{ state_attr('sun.sun', 'elevation') | float(-90) }}"
+  # Sonne hat die Fassade verlassen: hinter dem Endwinkel, oder nachmittags zu tief
+  vorbei: "{{ azimut > azimut_bis | float or (hoehe < hoehe_hoch | float and azimut > 180) }}"
+  sonne_drauf: >
+    {{ azimut >= azimut_von | float and azimut <= azimut_bis | float and hoehe > hoehe_min | float }}
+  innen_ok: "{{ innen == '' or states(innen) | float(-99) > innen_min | float }}"
+  aussen_wert: >
+    {% if aussen == '' %}99{% elif aussen.startswith('weather.') %}{{ state_attr(aussen, 'temperature') | float(-99) }}{% else %}{{ states(aussen) | float(-99) }}{% endif %}
+  aussen_ok: "{{ aussen == '' or aussen_wert | float > aussen_min | float }}"
+  wolken_wert: >
+    {% if wolken == '' %}0{% elif wolken.startswith('weather.') %}{{ state_attr(wolken, 'cloud_coverage') | float(100) }}{% else %}{{ states(wolken) | float(100) }}{% endif %}
+  wolken_ok: "{{ wolken == '' or wolken_wert | float < wolken_max | float }}"
+  schon_heute: "{{ gedaechtnis != '' and is_state(gedaechtnis, 'on') }}"
+  # Nur Rollos, die weiter offen sind als die Beschattungs-Position (von Hand geschlossene bleiben zu)
+  zu_senken: >
+    {% set ns = namespace(l=[]) %}
+    {% for r in rollos %}{% set p = state_attr(r, 'current_position') %}
+      {% if p is number and p > position | int + 2 %}{% set ns.l = ns.l + [r] %}{% endif %}
+    {% endfor %}{{ ns.l }}
+  # Nur Rollos, die noch auf der Beschattungs-Position stehen
+  zu_heben: >
+    {% set ns = namespace(l=[]) %}
+    {% for r in rollos %}{% set p = state_attr(r, 'current_position') %}
+      {% if p is number and (p - position | int) | abs <= 2 %}{% set ns.l = ns.l + [r] %}{% endif %}
+    {% endfor %}{{ ns.l }}
+
+actions:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: mitternacht
+          - condition: template
+            value_template: "{{ gedaechtnis != '' }}"
+        sequence:
+          - action: input_boolean.turn_off
+            target:
+              entity_id: "{{ gedaechtnis }}"
+      - conditions:
+          - condition: template
+            value_template: "{{ vorbei and zu_heben | count > 0 }}"
+        sequence:
+          - action: cover.set_cover_position
+            target:
+              entity_id: "{{ zu_heben }}"
+            data:
+              position: "{{ offen | int }}"
+      - conditions:
+          - condition: template
+            value_template: >
+              {{ not vorbei and not schon_heute and sonne_drauf and innen_ok and aussen_ok and wolken_ok
+                 and zu_senken | count > 0 }}
+        sequence:
+          - action: cover.set_cover_position
+            target:
+              entity_id: "{{ zu_senken }}"
+            data:
+              position: "{{ position | int }}"
+          - if:
+              - condition: template
+                value_template: "{{ gedaechtnis != '' }}"
+            then:
+              - action: input_boolean.turn_on
+                target:
+                  entity_id: "{{ gedaechtnis }}"
