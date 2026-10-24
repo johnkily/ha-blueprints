@@ -6,7 +6,7 @@ Sind alle aus dem Haus, schließt Home Assistant nach einer Wartezeit die smarte
 
 | | |
 |---|---|
-| **Smartes Türschloss** | Jedes Schloss, das in Home Assistant als Schloss erscheint (`lock.…`) – Nuki, Bosch, Yale, Danalock, ein Zigbee- oder Z-Wave-Schloss. Bei uns sind es zwei Nuki an Haustür und Hintertür. |
+| **Smartes Türschloss** | Jedes Schloss, das in Home Assistant als Schloss erscheint (`lock.…`) – Nuki, Bosch, Yale, Danalock, ein Zigbee- oder Z-Wave-Schloss. Bei uns sind es zwei Nuki älterer Bauart an Haustür und Hintertür; aktuell bietet Nuki den [Smart Lock Pro (5. Generation)](https://www.amazon.de/dp/B0DX2FPQFQ?tag=elcamdob-21)\* und den kompakteren [Smart Lock Ultra](https://www.amazon.de/dp/B0DN1SZCTL?tag=elcamdob-21)\* an – beide mit WLAN und Matter. |
 | **Anwesenheit** | Je Person ein Handy mit der Home-Assistant-App (Standortfreigabe an) – oder ein anderer Tracker. Unter *Einstellungen → Personen* muss jeder Person ihr Gerät zugeordnet sein. |
 | **Türkontakt** *(empfohlen)* | Ein Fenster-/Türkontakt am Türblatt, z. B. der [Aqara MCCGQ11LM (Zigbee)](https://www.amazon.de/dp/B07D37VDM3?tag=elcamdob-21)\* – der hängt bei uns an der Hintertür. Viele Schlösser haben auch einen eingebauten Türsensor (Nuki „Door Sensor“), der geht genauso. |
 | **Handy** | Für die Nachricht: die Home-Assistant-App |
