@@ -1,0 +1,177 @@
+blueprint:
+  name: Türen abschließen, wenn niemand zu Hause ist
+  description: >
+    Sind alle ausgewählten Personen eine Weile nicht zu Hause, schließt Home
+    Assistant die smarten Türschlösser ab, die noch offen sind. Eine Tür, die
+    laut Türkontakt tatsächlich offen steht, wird nicht verriegelt (der Riegel
+    würde ins Leere fahren) – dann kommt eine Warnung. Eine Nachricht gibt es
+    nur, wenn etwas passiert ist. Mit Ausnahme-Schalter für Gäste oder
+    Tiersitter.
+
+
+    Anleitung: https://github.com/johnkily/ha-blueprints/blob/main/docs/tueren_abschliessen.md
+
+
+    Lock doors when nobody is home: locks all selected smart locks that are
+    still unlocked once everybody has been away for a while. Doors reported
+    open by their contact sensor are skipped and reported instead. Optional
+    guest switch.
+  domain: automation
+  author: johnkily
+  homeassistant:
+    min_version: 2024.10.0
+  source_url: https://github.com/johnkily/ha-blueprints/blob/main/blueprints/automation/sicherheit/tueren_abschliessen.yaml
+  input:
+    personen:
+      name: Wer muss weg sein
+      description: Abgeschlossen wird erst, wenn keine dieser Personen zu Hause ist.
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - domain: person
+    schloesser:
+      name: Türschlösser
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - domain: lock
+    verzoegerung:
+      name: Abschließen nach
+      description: So lange muss niemand zu Hause sein. Fängt das kurze „Ich hab was vergessen“ ab.
+      default: 30
+      selector:
+        number:
+          min: 1
+          max: 240
+          unit_of_measurement: min
+    handys:
+      name: Nachricht an
+      description: Leer lassen = keine Nachricht.
+      default: []
+      selector:
+        device:
+          multiple: true
+          filter:
+            - integration: mobile_app
+    extras:
+      name: Türkontakte und Ausnahme (empfohlen)
+      collapsed: true
+      input:
+        kontakte:
+          name: Türkontakte
+          description: >
+            In derselben Reihenfolge wie die Schlösser (erster Kontakt gehört zum
+            ersten Schloss usw.). Steht eine Tür offen, wird sie nicht verriegelt,
+            sondern gemeldet. Hat ein Schloss keinen Kontakt, einfach weniger
+            Kontakte auswählen – oder das Schloss ans Ende der Liste setzen.
+          default: []
+          selector:
+            entity:
+              multiple: true
+              filter:
+                - domain: binary_sensor
+        ausnahme:
+          name: Nicht abschließen, solange eingeschaltet
+          description: >
+            Ein Schalter (Helfer „Schalter“), den ihr einschaltet, wenn jemand
+            ohne Handy im Haus ist – Gäste, Tiersitter, Großeltern.
+          default: ""
+          selector:
+            entity:
+              filter:
+                - domain: input_boolean
+
+mode: single
+max_exceeded: silent
+
+# Für die Dauer im Auslöser (normale Variablen gibt es dort noch nicht)
+trigger_variables:
+  personen_t: !input personen
+  verzoegerung_t: !input verzoegerung
+
+triggers:
+  - trigger: template
+    value_template: "{{ personen_t | count > 0 and personen_t | select('is_state', 'home') | list | count == 0 }}"
+    for:
+      seconds: "{{ (verzoegerung_t | float * 60) | int }}"
+  # Nach einem Neustart von Home Assistant fängt die Wartezeit neu an –
+  # sonst würde nie abgeschlossen, wenn das Update fällt, während alle weg sind.
+  - trigger: homeassistant
+    event: start
+    id: start
+
+conditions:
+  - condition: template
+    value_template: "{{ personen_t | count > 0 and personen_t | select('is_state', 'home') | list | count == 0 }}"
+
+variables:
+  personen: !input personen
+  schloesser: !input schloesser
+  verzoegerung: !input verzoegerung
+  handys: !input handys
+  kontakte: !input kontakte
+  ausnahme: !input ausnahme
+  tag: "tueren_{{ this.attributes.id | default('abschliessen') }}"
+
+actions:
+  - if:
+      - condition: trigger
+        id: start
+    then:
+      - wait_template: "{{ personen | select('is_state', 'home') | list | count > 0 }}"
+        timeout:
+          seconds: "{{ (verzoegerung | float * 60) | int }}"
+      - condition: template
+        value_template: "{{ not wait.completed }}"
+  - condition: template
+    value_template: "{{ ausnahme == '' or not is_state(ausnahme, 'on') }}"
+  - variables:
+      # Je Schloss: noch offen? Kontakt (gleiche Position in der Liste) meldet „offen“?
+      tueren: >
+        {% set ns = namespace(l=[]) %}
+        {% for s in schloesser %}
+          {% set k = kontakte[loop.index0] if loop.index0 < kontakte | count else '' %}
+          {% set ns.l = ns.l + [{
+            'schloss': s,
+            'name': state_attr(s, 'friendly_name') or s,
+            'offen': states(s) in ['unlocked', 'open', 'opening', 'jammed'],
+            'steht_offen': k != '' and is_state(k, 'on')
+          }] %}
+        {% endfor %}{{ ns.l }}
+      zu_sperren: "{{ tueren | selectattr('offen') | rejectattr('steht_offen') | map(attribute='schloss') | list }}"
+      steht_offen: "{{ tueren | selectattr('offen') | selectattr('steht_offen') | map(attribute='name') | list }}"
+  - condition: template
+    value_template: "{{ zu_sperren | count > 0 or steht_offen | count > 0 }}"
+  - if:
+      - condition: template
+        value_template: "{{ zu_sperren | count > 0 }}"
+    then:
+      - action: lock.lock
+        target:
+          entity_id: "{{ zu_sperren }}"
+        continue_on_error: true
+      - wait_template: "{{ zu_sperren | reject('is_state', 'locked') | list | count == 0 }}"
+        timeout:
+          seconds: 60
+  - variables:
+      zu: "{{ tueren | selectattr('schloss', 'in', zu_sperren) | selectattr('schloss', 'is_state', 'locked') | map(attribute='name') | list }}"
+      fehler: "{{ tueren | selectattr('schloss', 'in', zu_sperren) | rejectattr('schloss', 'is_state', 'locked') | map(attribute='name') | list }}"
+      titel: "{{ '⚠️ Tür nicht abgeschlossen' if (steht_offen or fehler) else '🔒 Türen abgeschlossen' }}"
+      text: >
+        {% set z = [] %}
+        {% if zu %}{% set z = z + ['Abgeschlossen: ' ~ zu | join(', ') ~ '.'] %}{% endif %}
+        {% if fehler %}{% set z = z + ['Schloss hat nicht reagiert: ' ~ fehler | join(', ') ~ '.'] %}{% endif %}
+        {% if steht_offen %}{% set z = z + ['Steht offen, nicht verriegelt: ' ~ steht_offen | join(', ') ~ '.'] %}{% endif %}
+        Niemand zu Hause. {{ z | join(' ') }}
+  - repeat:
+      for_each: "{{ handys }}"
+      sequence:
+        - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+          continue_on_error: true
+          data:
+            title: "{{ titel }}"
+            message: "{{ text | trim }}"
+            data:
+              tag: "{{ tag }}"
