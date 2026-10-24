@@ -1,5 +1,11 @@
 # Änderungen
 
+## v1.1 – 24.10.2026
+
+**Neu:** AWTRIX – Warnung, solange Tür oder Tor offen ist. Eine Ecke blinkt, optional eine Meldung, die bis zum Schließen stehen bleibt; Verzögerung einstellbar. Angeregt durch eine Frage im Home-Assistant-Forum.
+
+Die übrigen Blueprints sind unverändert.
+
 ## v1.0 – 23.10.2026
 
 Erste Version. Jeder Baustein ist auf einem frisch installierten Home Assistant (HAOS 18.3, Core 2026.10) mit dem Import-Knopf von GitHub installiert und durchgetestet.

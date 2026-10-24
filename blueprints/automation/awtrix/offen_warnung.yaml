@@ -1,0 +1,195 @@
+blueprint:
+  name: AWTRIX – Warnung, solange Tür oder Tor offen ist
+  description: >
+    Eine Ecke der AWTRIX-Pixeluhr blinkt, solange eine Tür, ein Tor oder ein
+    Fenster offen ist – zum Beispiel Garagentor oder Hoftor. Optional erscheint
+    dazu eine Meldung („GARAGE OFFEN“), die stehen bleibt, bis alles wieder zu
+    ist. Mit Verzögerung: Erst warnen, wenn etwas länger als X Minuten offen
+    steht.
+
+
+    Voraussetzung: AWTRIX 3 ist mit demselben MQTT-Broker verbunden wie Home
+    Assistant. Anleitung: https://github.com/johnkily/ha-blueprints/blob/main/docs/awtrix.md
+
+
+    Blinks a corner indicator (and optionally shows a sticky notification) on
+    AWTRIX clocks while a door, gate or window is open; clears when closed.
+  domain: automation
+  author: johnkily
+  homeassistant:
+    min_version: 2024.10.0
+  source_url: https://github.com/johnkily/ha-blueprints/blob/main/blueprints/automation/awtrix/offen_warnung.yaml
+  input:
+    sensoren:
+      name: Türen, Tore, Fenster
+      description: Binärsensoren, die „an“ (offen) melden, z. B. Garagentor und Hoftor.
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - domain: binary_sensor
+            - domain: cover
+    uhren:
+      name: MQTT-Name der Uhr(en)
+      description: >
+        Steht in der AWTRIX-Weboberfläche unter MQTT → Prefix, z. B.
+        „awtrix_a1b2c3“. Mehrere Uhren mit Komma trennen.
+      selector:
+        text:
+    verzoegerung:
+      name: Erst warnen nach
+      description: 0 = sofort. Praktisch fürs Garagentor, das beim Rausfahren kurz offen steht.
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 120
+          step: 0.5
+          unit_of_measurement: min
+    ecke:
+      name: Ecke
+      default: "1"
+      selector:
+        select:
+          options:
+            - label: Oben rechts (1)
+              value: "1"
+            - label: Mitte rechts (2)
+              value: "2"
+            - label: Unten rechts (3)
+              value: "3"
+    farbe:
+      name: Farbe
+      default: [255, 0, 0]
+      selector:
+        color_rgb:
+    blinken:
+      name: Blinken (Millisekunden)
+      description: 0 = Ecke leuchtet dauerhaft.
+      default: 500
+      selector:
+        number:
+          min: 0
+          max: 3000
+          step: 100
+          unit_of_measurement: ms
+    meldung:
+      name: Zusätzlich Meldung anzeigen
+      description: >
+        Eine Meldung, die im Vordergrund bleibt, bis alles wieder zu ist (oder
+        jemand die mittlere Taste drückt).
+      default: false
+      selector:
+        boolean:
+    text:
+      name: Text der Meldung
+      description: "Leer = die Namen der offenen Sensoren, z. B. „OFFEN: Garagentor“."
+      default: ""
+      selector:
+        text:
+    wecken:
+      name: Ausgeschaltete Uhr für die Meldung einschalten
+      default: true
+      selector:
+        boolean:
+
+mode: queued
+max: 10
+
+trigger_variables:
+  verzoegerung_t: !input verzoegerung
+
+triggers:
+  - trigger: state
+    entity_id: !input sensoren
+    to:
+      - "on"
+      - open
+      - opening
+    for:
+      seconds: "{{ (verzoegerung_t | float * 60) | int }}"
+    id: auf
+  - trigger: state
+    entity_id: !input sensoren
+    to:
+      - "off"
+      - closed
+    id: zu
+  - trigger: homeassistant
+    event: start
+    id: pruefen
+  - trigger: time_pattern
+    minutes: /5
+    id: pruefen
+
+variables:
+  sensoren: !input sensoren
+  uhren_text: !input uhren
+  verzoegerung: !input verzoegerung
+  ecke: !input ecke
+  farbe: !input farbe
+  blinken: !input blinken
+  meldung: !input meldung
+  text_vorgabe: !input text
+  wecken: !input wecken
+  uhren: "{{ uhren_text.split(',') | map('trim') | reject('eq', '') | list }}"
+  # Offen = Zustand offen und mindestens so lange wie die Verzögerung
+  offen: >
+    {% set ns = namespace(l=[]) %}
+    {% for s in sensoren %}
+      {% set st = states[s] %}
+      {% if st and st.state in ['on', 'open', 'opening']
+            and (now() - st.last_changed).total_seconds() >= verzoegerung | float * 60 - 1 %}
+        {% set ns.l = ns.l + [st.name] %}
+      {% endif %}
+    {% endfor %}{{ ns.l }}
+  meldungstext: >
+    {{ text_vorgabe if text_vorgabe | trim != '' else 'OFFEN: ' ~ (offen | join(', ')) }}
+
+conditions:
+  - condition: template
+    value_template: "{{ uhren | count > 0 }}"
+
+actions:
+  - repeat:
+      for_each: "{{ uhren }}"
+      sequence:
+        - if:
+            - condition: template
+              value_template: "{{ offen | count > 0 }}"
+          then:
+            - action: mqtt.publish
+              data:
+                topic: "{{ repeat.item }}/indicator{{ ecke }}"
+                payload: >
+                  {% set d = {'color': farbe | map('int') | list} %}
+                  {% if blinken | int > 0 %}{% set d = dict(d, blink=blinken | int) %}{% endif %}
+                  {{ d | to_json }}
+            # Meldung nur beim Öffnen, nicht bei jeder Prüfung alle 5 Minuten
+            - if:
+                - condition: template
+                  value_template: "{{ meldung and trigger.id == 'auf' }}"
+              then:
+                - action: mqtt.publish
+                  data:
+                    topic: "{{ repeat.item }}/notify"
+                    payload: >
+                      {{ {'text': meldungstext | trim, 'color': farbe | map('int') | list, 'hold': true,
+                          'stack': false, 'wakeup': wecken, 'blinkText': 600} | to_json }}
+          else:
+            - action: mqtt.publish
+              data:
+                topic: "{{ repeat.item }}/indicator{{ ecke }}"
+                payload: '{"color": [0, 0, 0]}'
+            - if:
+                - condition: template
+                  # nur wegräumen, wenn vorher gewarnt wurde (sonst träfe es fremde Meldungen)
+                  value_template: >
+                    {{ meldung and trigger.id == 'zu' and
+                       (trigger.to_state.last_changed - trigger.from_state.last_changed).total_seconds()
+                       >= verzoegerung | float * 60 - 1 }}
+              then:
+                - action: mqtt.publish
+                  data:
+                    topic: "{{ repeat.item }}/notify/dismiss"
+                    payload: ""

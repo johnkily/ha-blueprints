@@ -1,10 +1,11 @@
 # AWTRIX-Blueprints – Schritt für Schritt
 
-Drei Blueprints für die Pixeluhr AWTRIX:
+Vier Blueprints für die Pixeluhr AWTRIX:
 
 - **Strompreis** – eine eigene App auf der Uhr zeigt den aktuellen Preis, z. B. `24,1` in Grün, `29,0` in Gelb, `33,0` in Rot.
 - **Akku-Ampel** – eine Ecke der Uhr leuchtet je nach Ladestand: leer rot, halb gelb, voll grün, stufenlos dazwischen.
 - **Müll-Ampel** – eine Ecke leuchtet ab dem Vorabend in der Farbe der Tonne, die abgeholt wird; am Abholtag morgens blinkt sie.
+- **Tür/Tor offen** – eine Ecke blinkt, solange Garagentor, Hoftor oder Fenster offen sind; auf Wunsch mit Meldung, die stehen bleibt, bis alles zu ist.
 
 Alle lassen sich einzeln nutzen und funktionieren mit mehreren Uhren gleichzeitig.
 
@@ -83,6 +84,20 @@ Der Preis wird bei jeder Änderung und zusätzlich alle 15 Minuten neu geschickt
 | Tonnen *(aufklappen)* | Welche Wörter im Kalendereintrag zu welcher Tonne gehören, und die Farben. Die Vorgaben (Rest/Grau, Papier/Blau, Gelb/Wertstoff, Bio/Braun …) passen für die meisten Städte. Heißt es bei dir anders, z. B. „Altpapier-Tonne“, reicht das Wort „Papier“. |
 
 Die Ampel prüft alle 10 Minuten. Stehen zwei Tonnen am selben Tag an, zeigt sie die erste aus der Liste.
+
+### Tür/Tor offen
+
+[![Importieren](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fawtrix%2Foffen_warnung.yaml)
+
+| Feld | Was eintragen |
+|---|---|
+| Türen, Tore, Fenster | die Sensoren, z. B. Garagentor und Hoftor (Binärsensoren oder Tore/Rollläden) |
+| MQTT-Name der Uhr(en) | wie oben |
+| Erst warnen nach | z. B. 5 Minuten – dann warnt die Uhr nicht, wenn das Garagentor beim Rausfahren kurz offen steht. 0 = sofort. |
+| Ecke, Farbe, Blinken | Vorgabe: oben rechts, rot, 500 ms. 0 ms = leuchtet dauerhaft. |
+| Zusätzlich Meldung anzeigen | Meldung „OFFEN: Garagentor“, die im Vordergrund bleibt, bis alles wieder zu ist (oder jemand die mittlere Taste drückt). Weckt auf Wunsch auch eine ausgeschaltete Uhr. |
+
+Sind mehrere offen, nennt die Meldung alle; die Ecke bleibt rot, bis das letzte zu ist. Die Uhr läuft dabei ganz normal weiter durch ihre Anzeigen.
 
 ## Abfallkalender einbinden
 
