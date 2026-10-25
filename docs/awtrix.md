@@ -85,6 +85,8 @@ Der Preis wird bei jeder Änderung und zusätzlich alle 15 Minuten neu geschickt
 
 Die Ampel prüft alle 10 Minuten. Stehen zwei Tonnen am selben Tag an, zeigt sie die erste aus der Liste.
 
+Fragen und Erfahrungen gern im [Home-Assistant-Forum](https://community.home-assistant.io/t/awtrix-3-waste-bin-indicator-corner-lights-up-in-the-colour-of-tomorrows-bin-from-any-waste-calendar-ics/1030267).
+
 ### Tür/Tor offen
 
 [![Importieren](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fawtrix%2Foffen_warnung.yaml)
