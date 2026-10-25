@@ -12,7 +12,7 @@ The blinds on one side of the house go down when the sun really shines on that f
 
 | | |
 |---|---|
-| **Blinds** | Roller shutters, blinds or venetian blinds that can move to a **position in percent** in Home Assistant (e.g. via Shelly, Homematic, Zigbee actuators) |
+| **Blinds** | Roller shutters, blinds or venetian blinds that can move to a **position in percent** in Home Assistant (e.g. via Shelly, Homematic, Zigbee actuators) – we use [Shelly Plus 2PM](https://www.amazon.de/dp/B0B33R523C?tag=elcamdob-21)\* |
 | **Sun position** | built into Home Assistant (`sun.sun`) once your location is set |
 | *optional* **room temperature** | a temperature sensor in the room, e.g. an [Aqara temperature sensor](https://www.amazon.de/dp/B07D37FKGY?tag=elcamdob-21)\* like ours |
 | *optional* **outdoor temperature and cloud cover** | a weather integration (e.g. the built-in *Met.no*) |

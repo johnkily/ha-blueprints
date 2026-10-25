@@ -10,7 +10,7 @@ Die Rollos einer Hausseite fahren herunter, wenn die Sonne wirklich auf diese Fa
 
 | | |
 |---|---|
-| **Rollos** | Rollos, Jalousien oder Raffstores, die in Home Assistant eine **Position in Prozent** anfahren können (z. B. über Shelly, Homematic, Zigbee-Aktoren) |
+| **Rollos** | Rollos, Jalousien oder Raffstores, die in Home Assistant eine **Position in Prozent** anfahren können (z. B. über Shelly, Homematic, Zigbee-Aktoren) – bei uns sind es [Shelly Plus 2PM](https://www.amazon.de/dp/B0B33R523C?tag=elcamdob-21)\* |
 | **Sonnenstand** | ist in Home Assistant eingebaut (`sun.sun`), wenn dein Standort eingetragen ist |
 | *optional* **Raumtemperatur** | ein Temperatursensor im Raum, z. B. ein [Aqara-Temperatursensor](https://www.amazon.de/dp/B07D37FKGY?tag=elcamdob-21)\* wie bei uns |
 | *optional* **Außentemperatur und Bewölkung** | eine Wetter-Integration (z. B. die eingebaute *Met.no*, oder DWD) |
