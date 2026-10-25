@@ -1,5 +1,7 @@
 # Türen abschließen, wenn niemand zu Hause ist
 
+*[English version](en/tueren_abschliessen.md)*
+
 Sind alle aus dem Haus, schließt Home Assistant nach einer Wartezeit die smarten Türschlösser ab, die noch offen sind. Steht eine Tür tatsächlich offen, wird sie **nicht** verriegelt – der Riegel würde ins Leere fahren und die Tür ließe sich nicht mehr zudrücken –, stattdessen kommt eine Warnung aufs Handy. Eine Nachricht gibt es nur, wenn etwas passiert ist; sind die Türen schon zu, bleibt es still.
 
 ## Was du brauchst

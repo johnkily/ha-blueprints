@@ -1,5 +1,7 @@
 # Waschmaschine, Trockner & Co. – fertig melden
 
+*[English version](en/geraet_fertig.md)*
+
 Eine Steckdose mit Strommessung erkennt, wann das Gerät läuft und wann es fertig ist. Dann kommt eine Nachricht aufs Handy – mit Laufzeit und auf Wunsch dem Verbrauch. Funktioniert mit jeder Waschmaschine, jedem Trockner und jeder Spülmaschine, egal wie alt.
 
 ## Was du brauchst

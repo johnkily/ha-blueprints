@@ -1,0 +1,48 @@
+# Waste bin tile card for Home Assistant – core Markdown card only, no HACS.
+# Needs the text helper "Waste plan" (input_text.waste_plan), filled by the
+# blueprint "Müll – Plan für die Kachel-Karte".
+# Add it: edit dashboard → Add card → at the very bottom "Manual" →
+# paste everything → Save. If your helper has a different name, change line 14.
+# Guide: https://github.com/johnkily/ha-blueprints/blob/main/docs/en/muell.md
+type: markdown
+content: |
+  {%- set bins = {
+    'p': {'name': 'Paper', 'icon': 'mdi:package-variant', 'colour': '#42a5f5'},
+    'b': {'name': 'Organic', 'icon': 'mdi:leaf', 'colour': '#66bb6a'},
+    'g': {'name': 'Recycling', 'icon': 'mdi:recycle-variant', 'colour': '#ffb300'},
+    'r': {'name': 'Residual', 'icon': 'mdi:trash-can-outline', 'colour': '#9e9e9e'}} -%}
+  {%- set raw = states('input_text.waste_plan') -%}
+  {%- set wd = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] -%}
+  {%- set mon = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] -%}
+  {%- set today = now().date() -%}
+  {%- set parts = raw.split('|') if '|' in raw else ['', ''] -%}
+  {%- set ns = namespace(l=[]) -%}
+  {%- for x in parts[0].split() if x[0] in bins and x[1:] | as_datetime is not none -%}
+    {%- set day = (x[1:] | as_datetime).date() -%}
+    {%- set ns.l = ns.l + [{'k': x[0], 'day': day, 'days': (day - today).days}] -%}
+  {%- endfor -%}
+  {%- set items = ns.l | sort(attribute='days') -%}
+  {%- if items | count == 0 -%}
+  No pickups yet – is the blueprint “Müll – Plan für die Kachel-Karte” running?
+  {%- else -%}
+  <table width="100%"><tr>
+  {%- for t in items %}{% set c = bins[t.k] %}
+  <td align="center" width="25%"><font color="{{ c.colour }}"><ha-icon icon="{{ c.icon }}"></ha-icon></font><br><b>{{ c.name | upper }}</b><br><font color="{{ c.colour }}"><b>{% if t.days <= 0 %}Today{% elif t.days == 1 %}Tomorrow{% else %}{{ t.days }} days{% endif %}</b></font><br><small>{{ wd[t.day.weekday()] }} {{ t.day.day }} {{ mon[t.day.month - 1] }}</small></td>
+  {%- endfor %}
+  </tr></table>
+
+  <table width="100%">
+  {%- for week in [0, 7] %}<tr>
+  {%- for i in range(week, week + 7) %}{% set d = today + timedelta(days=i) %}
+  <td align="center" width="14%"><small>{{ wd[d.weekday()] }}<br>{% if i == 0 %}<b>{{ d.day }}</b>{% else %}{{ d.day }}{% endif %}</small><br>{% for s in parts[1].split() if s[:10] == d.isoformat() and s[10:] in bins %}<font color="{{ bins[s[10:]].colour }}">●</font>{% else %}&nbsp;{% endfor %}</td>
+  {%- endfor %}</tr>
+  {%- endfor %}
+  </table>
+
+  {% set n = items[0] %}{% set c = bins[n.k] -%}
+  <ha-icon icon="{{ c.icon }}"></ha-icon> Next up: **{{ c.name }}** · {{ wd[n.day.weekday()] }} {{ n.day.day }} {{ mon[n.day.month - 1] }} · {% if n.days <= 0 %}today{% elif n.days == 1 %}tomorrow{% else %}in {{ n.days }} days{% endif %}
+  {%- if n.days == 1 and now().hour >= 15 %}
+
+  <ha-alert alert-type="warning">Put it out tonight!</ha-alert>
+  {%- endif %}
+  {%- endif %}

@@ -4,6 +4,8 @@
 
 Fertige Automationen für [Home Assistant](https://www.home-assistant.io/) – mit einem Klick importieren, Geräte auswählen, fertig. Kein YAML, kein Kopieren von Code.
 
+🇬🇧 *English: guides and overview [below](#english).*
+
 Sortiert nach den Seiten unseres Dashboards. Wie es bei uns aussieht und was noch kommt, steht im Blog: **[Kily's World – Unser Dashboard](https://kilysworld.wordpress.com/dashboard/)**.
 
 ## Übersicht
@@ -74,6 +76,22 @@ Bitte ein [Issue](https://github.com/johnkily/ha-blueprints/issues) anlegen – 
 
 ## English
 
-Ready-made Home Assistant automations: click **Import**, pick your devices, done. Like them? [Buy me a coffee on Ko-fi](https://ko-fi.com/johnkily). Each blueprint has an English summary in its description; the step-by-step guide is in German for now – feel free to open an issue in English.
+Ready-made Home Assistant automations: click **Import**, pick your devices, done. Like them? [Buy me a coffee on Ko-fi](https://ko-fi.com/johnkily).
+
+**Step-by-step guides in English:** [AWTRIX blueprints](docs/en/awtrix.md) · [Doorbell](docs/en/klingel.md) · [Sun protection](docs/en/sonnenschutz.md) · [Washing machine & co.](docs/en/geraet_fertig.md) · [Waste bins](docs/en/muell.md) (with an English tile card) · [Lock the doors](docs/en/tueren_abschliessen.md)
+
+| Blueprint | What it does |
+|---|---|
+| AWTRIX – aktueller Strompreis | Current electricity price on the pixel clock, green/yellow/red |
+| AWTRIX – Akku-Ampel in der Ecke | A corner of the clock shows the battery level, red → yellow → green |
+| AWTRIX – Müll-Ampel in der Ecke | A corner lights up in the colour of tomorrow's bin, from any waste calendar |
+| AWTRIX – Warnung, solange Tür oder Tor offen ist | A corner blinks while the garage door or gate is open, optional notification on the clock |
+| Klingel – Nachricht mit Kamerabild aufs Handy | Doorbell rings → notification with a camera picture, works with a 10 € vibration sensor on an old chime |
+| Sonnenschutz je Fassade | Blinds go down when the sun really hits that side of the house – no up and down with every cloud |
+| Waschmaschine, Trockner & Co. – fertig melden | Notification when the appliance is done, detected via a power-metering plug |
+| Müll – Erinnerung am Vorabend / Plan für die Kachel-Karte | Reminder the evening before and data for the waste bin tile card |
+| Türen abschließen, wenn niemand zu Hause ist | Locks the smart locks once everybody has left – doors that are open are reported, not bolted |
+
+The import buttons are in the tables above and in each guide. **The input labels inside the blueprints are German** – the English guides list every field with its German label and meaning. Questions in English are welcome as an [issue](https://github.com/johnkily/ha-blueprints/issues) or under [Ideas](https://github.com/johnkily/ha-blueprints/discussions/categories/ideas).
 
 Lizenz / License: [MIT](LICENSE) · [Impressum](https://kilysworld.wordpress.com/impressum/) · [Datenschutz](https://kilysworld.wordpress.com/datenschutz/)

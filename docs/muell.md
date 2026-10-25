@@ -1,5 +1,7 @@
 # Müll: Kachel-Karte, Erinnerung und Ampel
 
+*[English version](en/muell.md)*
+
 Alles aus einem Abfallkalender – ohne HACS, ohne `configuration.yaml`:
 
 - **Kachel-Karte** fürs Dashboard: vier Tonnen mit „in 6 Tagen“, darunter zwei Wochen als Mini-Kalender mit farbigen Punkten und „Als Nächstes“ – wahlweise als [Profi-Variante](#profi-variante-unsere-karte-mit-button-card) mit farbigen Kacheln (button-card).

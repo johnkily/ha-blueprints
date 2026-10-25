@@ -1,5 +1,7 @@
 # AWTRIX-Blueprints – Schritt für Schritt
 
+*[English version](en/awtrix.md)*
+
 Vier Blueprints für die Pixeluhr AWTRIX:
 
 - **Strompreis** – eine eigene App auf der Uhr zeigt den aktuellen Preis, z. B. `24,1` in Grün, `29,0` in Gelb, `33,0` in Rot.

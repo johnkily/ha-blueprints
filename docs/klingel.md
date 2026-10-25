@@ -1,5 +1,7 @@
 # Klingel-Blueprint – Schritt für Schritt
 
+*[English version](en/klingel.md)*
+
 Klingelt es, kommt sofort eine Nachricht aufs Handy – mit einem Bild von der Tür, wenn du eine Kamera hast. Dazu braucht es keine neue Video-Klingel: Ein Vibrationssensor am alten Gong reicht.
 
 ## Was du brauchst

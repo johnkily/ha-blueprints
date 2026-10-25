@@ -1,5 +1,7 @@
 # Sonnenschutz je Fassade – Schritt für Schritt
 
+*[English version](en/sonnenschutz.md)*
+
 Die Rollos einer Hausseite fahren herunter, wenn die Sonne wirklich auf diese Fassade scheint und es warm genug ist – und erst wieder hoch, wenn die Sonne weg ist. Keine Wolke bringt sie dazwischen hoch und wieder runter.
 
 **Pro Hausseite eine Automation** – Süd, West und Ost haben unterschiedliche Winkel.
