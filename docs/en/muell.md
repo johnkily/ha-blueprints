@@ -122,6 +122,8 @@ If several bins are due, they all come in one notification. Events that match no
 
 The notification itself is German for now: title *“Morgen ist Abholung”* (pickup tomorrow), text e.g. *“🟦 Papier, 🟨 Gelber Sack – bitte heute Abend rausstellen.”* (please put out tonight). An English option is planned – tell us in the forum if you'd use it.
 
+Questions and feedback are welcome in the [Home Assistant forum](https://community.home-assistant.io/t/waste-collection-dashboard-from-any-calendar-ics-next-pickup-per-bin-two-week-strip-no-hacs-needed/1030765).
+
 ## Not working?
 
 | Problem | Solution |

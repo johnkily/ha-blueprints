@@ -304,6 +304,8 @@ Stehen mehrere Tonnen an, kommen alle in eine Nachricht. Einträge, die zu keine
 
 Heißen die Termine in deinem Kalender anders, die Stichwörter im Blueprint (Abschnitt *Tonnen*) ergänzen.
 
+Fragen und Erfahrungen gern im [Home-Assistant-Forum](https://community.home-assistant.io/t/waste-collection-dashboard-from-any-calendar-ics-next-pickup-per-bin-two-week-strip-no-hacs-needed/1030765) (Englisch).
+
 ## Klappt nicht?
 
 | Problem | Lösung |

@@ -65,6 +65,7 @@ Oder einfach den Blog weiterempfehlen – das hilft genauso.
 
 - [AWTRIX 3 – current electricity price in traffic-light colours](https://community.home-assistant.io/t/awtrix-3-current-electricity-price-in-traffic-light-colours-works-with-any-price-sensor-tibber-nordpool-epex/1030093)
 - [AWTRIX 3 – waste bin indicator from any waste calendar](https://community.home-assistant.io/t/awtrix-3-waste-bin-indicator-corner-lights-up-in-the-colour-of-tomorrows-bin-from-any-waste-calendar-ics/1030267)
+- [Waste collection dashboard from any calendar – next pickup per bin, no HACS](https://community.home-assistant.io/t/waste-collection-dashboard-from-any-calendar-ics-next-pickup-per-bin-two-week-strip-no-hacs-needed/1030765)
 
 ## Probleme oder Ideen?
 
