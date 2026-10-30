@@ -11,6 +11,8 @@ Four blueprints for the AWTRIX pixel clock:
 
 Each can be used on its own, and all of them work with several clocks at once.
 
+![Our AWTRIX clock: time, temperature, humidity, then the electricity price in red – on the right the battery (yellow) and waste bin (red) indicators](../bilder/awtrix_uhr.gif)
+
 > **Note:** the input labels inside the blueprints are German. This guide gives the German label as it appears in Home Assistant, followed by its meaning.
 
 ## What you need

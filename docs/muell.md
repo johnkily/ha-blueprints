@@ -139,6 +139,8 @@ cards:
 
 So sieht die Karte bei uns zu Hause aus – farbige Kacheln, die nächste Tonne leuchtet, bei „Morgen“ wackelt sie, darunter zwei Wochen als farbige Kästchen:
 
+![Müll-Karte, Profi-Variante in Bewegung](bilder/muell_karte.gif)
+
 ![Müll-Karte, Profi-Variante](bilder/muell_profi.png)
 
 Sie nutzt **dieselben Daten** wie die Kachel-Karte oben (Helfer *Müll-Plan* + Blueprint *Müll – Plan*), braucht aber die Frontend-Erweiterung **button-card** aus HACS. Einen Template-Sensor oder YAML-Dateien braucht sie nicht.

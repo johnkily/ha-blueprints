@@ -12,6 +12,8 @@ Sortiert nach den Seiten unseres Dashboards. Wie es bei uns aussieht und was noc
 
 Die Startseite: Strompreis, Müll, Hausgeräte – und alles, was auf den AWTRIX-Pixeluhren landet.
 
+<p><img src="docs/bilder/awtrix_uhr.gif" width="49%" alt="AWTRIX-Uhr mit Strompreis-App und Eck-Ampeln"> <img src="docs/bilder/muell_karte.gif" width="49%" alt="Müll-Kachel-Karte, die morgige Tonne wackelt"></p>
+
 | Blueprint | Was er macht | Importieren |
 |---|---|---|
 | **AWTRIX – aktueller Strompreis** | Zeigt den Strompreis auf der Pixeluhr, grün/gelb/rot je nach Preis | [![Importieren](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fawtrix%2Fstrompreis.yaml) |

@@ -102,6 +102,8 @@ content: |
 
 The bins are sorted by their next pickup. In the afternoon before a pickup, “Put it out tonight!” appears. Names, icons and colours are at the top of the code (`bins`).
 
+![Advanced variant with button-card: tomorrow's bin wobbles](../bilder/muell_karte.gif)
+
 **More cards:** a simpler card without a helper (reads only the next event from the calendar) and our advanced variant with coloured tiles (needs *button-card* from HACS, uses the same helper) are in the [German guide](../muell.md#ohne-helfer-die-schlichte-variante) – their labels are German, but the code works the same way; for the advanced card, change `input_text.mull_plan` to `input_text.waste_plan`.
 
 ## 4. Reminder the evening before
