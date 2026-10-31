@@ -11,7 +11,9 @@ Vier Blueprints für die Pixeluhr AWTRIX:
 
 Alle lassen sich einzeln nutzen und funktionieren mit mehreren Uhren gleichzeitig.
 
-![AWTRIX-Uhr bei uns: Uhrzeit, Temperatur, Luftfeuchte, dann der Strompreis in Rot – rechts die Akku-Ampel (gelb) und die Müll-Ampel (rot)](bilder/awtrix_uhr.gif)
+![AWTRIX-Uhr bei uns: Uhrzeit, Temperatur, Luftfeuchte, dann der Strompreis in Rot. Rechts oben PV-Überschuss (rot = gerade keiner), Mitte Akku-Ampel (gelb), unten Müll-Ampel (grün = morgen Bio)](bilder/awtrix_uhr.gif)
+
+*Rechts die drei Ecken: oben zeigen wir, ob gerade PV-Überschuss da ist, in der Mitte die Akku-Ampel, unten die Müll-Ampel – hier grün für „morgen Bio“.*
 
 ## Was du brauchst
 

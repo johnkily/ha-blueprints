@@ -11,7 +11,9 @@ Four blueprints for the AWTRIX pixel clock:
 
 Each can be used on its own, and all of them work with several clocks at once.
 
-![Our AWTRIX clock: time, temperature, humidity, then the electricity price in red – on the right the battery (yellow) and waste bin (red) indicators](../bilder/awtrix_uhr.gif)
+![Our AWTRIX clock: time, temperature, humidity, then the electricity price in red. On the right: PV surplus (top, red = none right now), battery traffic light (middle, yellow), waste bin indicator (bottom, green = organic tomorrow)](../bilder/awtrix_uhr.gif)
+
+*The three corners on the right: top shows whether there is PV surplus right now, middle the battery traffic light, bottom the waste bin indicator – green here for “organic waste tomorrow”.*
 
 > **Note:** the input labels inside the blueprints are German. This guide gives the German label as it appears in Home Assistant, followed by its meaning.
 
