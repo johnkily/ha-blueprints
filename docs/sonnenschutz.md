@@ -72,6 +72,9 @@ Damit beschattet die Automation **einmal am Tag**: Öffnest du ein Rollo von Han
 | Rollo fährt abends nicht hoch | Steht es noch genau auf der Beschattungs-Position? Von Hand verstellte Rollos fasst die Automation absichtlich nicht an. |
 | Fehler „Position“ | Das Rollo kann keine Position anfahren (nur auf/zu). Dann passt dieser Blueprint nicht. |
 
+
+**Gefällt dir der Blueprint?** Ein ⭐ auf [GitHub](https://github.com/johnkily/ha-blueprints) hilft anderen, ihn zu finden – und Fragen oder Wünsche gern als [Issue](https://github.com/johnkily/ha-blueprints/issues) oder unter [Ideen](https://github.com/johnkily/ha-blueprints/discussions/categories/ideas).
+
 ---
 
 *Mit \* gekennzeichnete Links sind Affiliate-Links. Kaufst du darüber, bekomme ich eine kleine Provision, für dich ändert sich am Preis nichts. Als Amazon-Partner verdiene ich an qualifizierten Verkäufen.*

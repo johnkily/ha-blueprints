@@ -133,3 +133,6 @@ Questions and feedback are welcome in the [Home Assistant forum](https://communi
 | “No pickups yet” | Is the *Müll – Plan* blueprint running? Open the automation and tap **Run** (top right) once. If your helper isn't called `input_text.waste_plan`, change line 14 of the card. |
 | A bin is missing | Your calendar calls it differently – add the keyword (see step 2). |
 | No reminder | *Automation → Traces*: is there an event tomorrow in the calendar? |
+
+**Like it?** A ⭐ on [GitHub](https://github.com/johnkily/ha-blueprints) helps others find it – questions and wishes are welcome as an [issue](https://github.com/johnkily/ha-blueprints/issues) or under [Ideas](https://github.com/johnkily/ha-blueprints/discussions/categories/ideas).
+

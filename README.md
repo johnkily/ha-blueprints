@@ -61,7 +61,7 @@ Alles hier ist kostenlos und bleibt es. Wenn dir ein Blueprint Zeit oder Strom s
 
 [![Unterstütze mich auf Ko-fi](https://storage.ko-fi.com/cdn/kofi2.png?v=3)](https://ko-fi.com/johnkily)
 
-Oder einfach den Blog weiterempfehlen – das hilft genauso.
+Oder einfach den Blog weiterempfehlen – und hier oben rechts einen ⭐ dalassen. Das hilft anderen, die Blueprints zu finden.
 
 ## Im Home-Assistant-Forum
 

@@ -135,6 +135,9 @@ AWTRIX zeigt nur Icons, die auf der Uhr gespeichert sind:
 | Müll-Ampel bleibt dunkel | Steht morgen wirklich ein Termin im Kalender? Kommt eines der Stichwörter im Titel des Termins vor? Ist es schon nach dem „Anzeigen bis“ am Abholtag? |
 | Automation läuft nicht | Automation öffnen → **Traces** (oben rechts) zeigt, woran es hängt. |
 
+
+**Gefällt dir der Blueprint?** Ein ⭐ auf [GitHub](https://github.com/johnkily/ha-blueprints) hilft anderen, ihn zu finden – und Fragen oder Wünsche gern als [Issue](https://github.com/johnkily/ha-blueprints/issues) oder unter [Ideen](https://github.com/johnkily/ha-blueprints/discussions/categories/ideas).
+
 ---
 
 *Mit \* gekennzeichnete Links sind Affiliate-Links. Kaufst du darüber, bekomme ich eine kleine Provision, für dich ändert sich am Preis nichts. Als Amazon-Partner verdiene ich an qualifizierten Verkäufen.*

@@ -64,6 +64,9 @@ Im Feld *Zusätzliche Aktionen* auf **„Aktion hinzufügen“** tippen:
 | Meldet ein Klingeln mehrfach | Sperrzeit erhöhen. |
 | Meldet ohne Klingeln (Türenknallen, Lkw) | Empfindlichkeit des Sensors senken oder einen anderen Platz am Gong suchen. |
 
+
+**Gefällt dir der Blueprint?** Ein ⭐ auf [GitHub](https://github.com/johnkily/ha-blueprints) hilft anderen, ihn zu finden – und Fragen oder Wünsche gern als [Issue](https://github.com/johnkily/ha-blueprints/issues) oder unter [Ideen](https://github.com/johnkily/ha-blueprints/discussions/categories/ideas).
+
 ---
 
 *Mit \* gekennzeichnete Links sind Affiliate-Links. Kaufst du darüber, bekomme ich eine kleine Provision, für dich ändert sich am Preis nichts. Als Amazon-Partner verdiene ich an qualifizierten Verkäufen.*

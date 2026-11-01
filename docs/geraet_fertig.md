@@ -56,6 +56,9 @@ Zwischen Wandsteckdose und Gerät stecken, in Home Assistant einbinden (Zigbee: 
 | Keine Nachricht, obwohl zu Hause | Die Home-Assistant-App braucht die Standortfreigabe, sonst weiß Home Assistant nicht, wer zu Hause ist – oder *Nur Handys, die zu Hause sind* ausschalten. |
 | Nach einem Neustart von Home Assistant keine Meldung | Läuft das Gerät während des Neustarts, verliert die Automation den Lauf. Beim nächsten Mal klappt es wieder. |
 
+
+**Gefällt dir der Blueprint?** Ein ⭐ auf [GitHub](https://github.com/johnkily/ha-blueprints) hilft anderen, ihn zu finden – und Fragen oder Wünsche gern als [Issue](https://github.com/johnkily/ha-blueprints/issues) oder unter [Ideen](https://github.com/johnkily/ha-blueprints/discussions/categories/ideas).
+
 ---
 
 *Mit \* gekennzeichnete Links sind Affiliate-Links. Kaufst du darüber, bekomme ich eine kleine Provision, für dich ändert sich am Preis nichts. Als Amazon-Partner verdiene ich an qualifizierten Verkäufen.*

@@ -66,6 +66,9 @@ In the *Zusätzliche Aktionen* field, tap **“Add action”**:
 | Reports one ring several times | Increase *Sperrzeit*. |
 | Reports without ringing (doors slamming, trucks) | Lower the sensor's sensitivity or find another spot on the chime. |
 
+
+**Like it?** A ⭐ on [GitHub](https://github.com/johnkily/ha-blueprints) helps others find it – questions and wishes are welcome as an [issue](https://github.com/johnkily/ha-blueprints/issues) or under [Ideas](https://github.com/johnkily/ha-blueprints/discussions/categories/ideas).
+
 ---
 
 *Links marked with \* are affiliate links. If you buy through them, I get a small commission; the price stays the same for you. As an Amazon Associate I earn from qualifying purchases.*

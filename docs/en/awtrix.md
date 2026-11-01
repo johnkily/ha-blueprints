@@ -135,6 +135,9 @@ AWTRIX only shows icons that are stored on the clock:
 | Waste indicator stays dark | Is there really an event tomorrow in the calendar? Does one of the keywords appear in the event title? Is it already past the *Anzeigen bis* time on collection day? |
 | Automation doesn't run | Open the automation → **Traces** (top right) shows where it gets stuck. |
 
+
+**Like it?** A ⭐ on [GitHub](https://github.com/johnkily/ha-blueprints) helps others find it – questions and wishes are welcome as an [issue](https://github.com/johnkily/ha-blueprints/issues) or under [Ideas](https://github.com/johnkily/ha-blueprints/discussions/categories/ideas).
+
 ---
 
 *Links marked with \* are affiliate links. If you buy through them, I get a small commission; the price stays the same for you. As an Amazon Associate I earn from qualifying purchases.*

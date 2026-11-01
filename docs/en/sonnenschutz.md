@@ -74,6 +74,9 @@ With it, the automation shades **once a day**: if you open a blind by hand, it s
 | Blind doesn't go up in the evening | Is it still exactly at the shading position? The automation deliberately leaves blinds alone that were moved by hand. |
 | “Position” error | The blind can't move to a position (only open/close). This blueprint doesn't fit then. |
 
+
+**Like it?** A ⭐ on [GitHub](https://github.com/johnkily/ha-blueprints) helps others find it – questions and wishes are welcome as an [issue](https://github.com/johnkily/ha-blueprints/issues) or under [Ideas](https://github.com/johnkily/ha-blueprints/discussions/categories/ideas).
+
 ---
 
 *Links marked with \* are affiliate links. If you buy through them, I get a small commission; the price stays the same for you. As an Amazon Associate I earn from qualifying purchases.*

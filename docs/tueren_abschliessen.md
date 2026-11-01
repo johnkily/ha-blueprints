@@ -59,6 +59,9 @@ Sind Gäste, der Tiersitter oder die Großeltern im Haus, aber ohne Handy in Hom
 | Warnt „steht offen“, obwohl die Tür zu ist | Kontakte und Schlösser stehen in unterschiedlicher Reihenfolge. Reihenfolge prüfen: erster Kontakt = erstes Schloss. |
 | Keine Nachricht | Handy unter *Nachricht an* ausgewählt? Im Zweifel unter *Automation → Traces* nachsehen, ob sie gelaufen ist. |
 
+
+**Gefällt dir der Blueprint?** Ein ⭐ auf [GitHub](https://github.com/johnkily/ha-blueprints) hilft anderen, ihn zu finden – und Fragen oder Wünsche gern als [Issue](https://github.com/johnkily/ha-blueprints/issues) oder unter [Ideen](https://github.com/johnkily/ha-blueprints/discussions/categories/ideas).
+
 ---
 
 *Mit \* gekennzeichnete Links sind Affiliate-Links. Kaufst du darüber, bekomme ich eine kleine Provision, für dich ändert sich am Preis nichts. Als Amazon-Partner verdiene ich an qualifizierten Verkäufen.*
