@@ -11,10 +11,10 @@ blueprint:
     beim Antippen ein Dashboard öffnen, eigene Zusatzaktionen (z. B.
     Tablet-Pop-up oder Ansage).
 
-    Anleitung: https://github.com/johnkily/ha-blueprints/blob/main/docs/klingel.md
+    Anleitung: https://github.com/johnkily/ha-blueprints/blob/main/docs/klingel.md – gefällt er dir? Ein ⭐ auf GitHub hilft anderen, ihn zu finden.
 
 
-    Doorbell: sends a push notification with a live camera image to your phones.
+    Doorbell: sends a push notification with a live camera image to your phones. Like it? A ⭐ on GitHub helps others find it.
   domain: automation
   author: johnkily
   homeassistant:

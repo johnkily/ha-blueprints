@@ -9,10 +9,10 @@ blueprint:
     Vorher einen Text-Helfer anlegen (Einstellungen → Geräte & Dienste →
     Helfer → Text, Name „Müll-Plan“, maximale Länge 255).
 
-    Anleitung: https://github.com/johnkily/ha-blueprints/blob/main/docs/muell.md
+    Anleitung: https://github.com/johnkily/ha-blueprints/blob/main/docs/muell.md – gefällt er dir? Ein ⭐ auf GitHub hilft anderen, ihn zu finden.
 
 
-    Waste plan: stores the next pickup per bin in a text helper for the waste tile card.
+    Waste plan: stores the next pickup per bin in a text helper for the waste tile card. Like it? A ⭐ on GitHub helps others find it.
   domain: automation
   author: johnkily
   homeassistant:

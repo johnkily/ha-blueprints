@@ -8,10 +8,10 @@ blueprint:
 
 
     Voraussetzung: AWTRIX 3 ist mit demselben MQTT-Broker verbunden wie Home
-    Assistant. Anleitung: https://github.com/johnkily/ha-blueprints
+    Assistant. Anleitung: https://github.com/johnkily/ha-blueprints – gefällt er dir? Ein ⭐ auf GitHub hilft anderen, ihn zu finden.
 
 
-    Colours a corner indicator of AWTRIX pixel clocks by battery level, red to green.
+    Colours a corner indicator of AWTRIX pixel clocks by battery level, red to green. Like it? A ⭐ on GitHub helps others find it.
   domain: automation
   author: johnkily
   homeassistant:

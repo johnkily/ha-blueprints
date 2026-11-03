@@ -9,10 +9,10 @@ blueprint:
 
 
     Voraussetzung: AWTRIX 3 ist mit demselben MQTT-Broker verbunden wie Home
-    Assistant. Anleitung: https://github.com/johnkily/ha-blueprints/blob/main/docs/awtrix.md
+    Assistant. Anleitung: https://github.com/johnkily/ha-blueprints/blob/main/docs/awtrix.md – gefällt er dir? Ein ⭐ auf GitHub hilft anderen, ihn zu finden.
 
 
-    Lights a corner of AWTRIX pixel clocks in the colour of tomorrow's waste bin.
+    Lights a corner of AWTRIX pixel clocks in the colour of tomorrow's waste bin. Like it? A ⭐ on GitHub helps others find it.
   domain: automation
   author: johnkily
   homeassistant:

@@ -13,11 +13,11 @@ blueprint:
     die noch auf der Beschattungs-Position stehen.
 
 
-    Anleitung: https://github.com/johnkily/ha-blueprints/blob/main/docs/sonnenschutz.md
+    Anleitung: https://github.com/johnkily/ha-blueprints/blob/main/docs/sonnenschutz.md – gefällt er dir? Ein ⭐ auf GitHub hilft anderen, ihn zu finden.
 
 
     Sun protection per facade: lowers covers when the sun hits this side and it
-    is warm enough, raises them when the sun has left – no yo-yo on every cloud.
+    is warm enough, raises them when the sun has left – no yo-yo on every cloud. Like it? A ⭐ on GitHub helps others find it.
   domain: automation
   author: johnkily
   homeassistant:

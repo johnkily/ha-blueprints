@@ -8,10 +8,10 @@ blueprint:
     Stehen mehrere Tonnen an, kommen alle in eine Nachricht.
 
 
-    Anleitung: https://github.com/johnkily/ha-blueprints/blob/main/docs/muell.md
+    Anleitung: https://github.com/johnkily/ha-blueprints/blob/main/docs/muell.md – gefällt er dir? Ein ⭐ auf GitHub hilft anderen, ihn zu finden.
 
 
-    Waste reminder: notifies your phones the evening before a pickup.
+    Waste reminder: notifies your phones the evening before a pickup. Like it? A ⭐ on GitHub helps others find it.
   domain: automation
   author: johnkily
   homeassistant:

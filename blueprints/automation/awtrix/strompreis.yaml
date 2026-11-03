@@ -8,10 +8,10 @@ blueprint:
 
 
     Voraussetzung: AWTRIX 3 ist mit demselben MQTT-Broker verbunden wie Home
-    Assistant. Anleitung: https://github.com/johnkily/ha-blueprints
+    Assistant. Anleitung: https://github.com/johnkily/ha-blueprints – gefällt er dir? Ein ⭐ auf GitHub hilft anderen, ihn zu finden.
 
 
-    Shows the current electricity price on AWTRIX pixel clocks, coloured by price.
+    Shows the current electricity price on AWTRIX pixel clocks, coloured by price. Like it? A ⭐ on GitHub helps others find it.
   domain: automation
   author: johnkily
   homeassistant:

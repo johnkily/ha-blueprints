@@ -9,11 +9,11 @@ blueprint:
 
 
     Voraussetzung: AWTRIX 3 ist mit demselben MQTT-Broker verbunden wie Home
-    Assistant. Anleitung: https://github.com/johnkily/ha-blueprints/blob/main/docs/awtrix.md
+    Assistant. Anleitung: https://github.com/johnkily/ha-blueprints/blob/main/docs/awtrix.md – gefällt er dir? Ein ⭐ auf GitHub hilft anderen, ihn zu finden.
 
 
     Blinks a corner indicator (and optionally shows a sticky notification) on
-    AWTRIX clocks while a door, gate or window is open; clears when closed.
+    AWTRIX clocks while a door, gate or window is open; clears when closed. Like it? A ⭐ on GitHub helps others find it.
   domain: automation
   author: johnkily
   homeassistant:

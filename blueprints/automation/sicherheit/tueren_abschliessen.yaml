@@ -9,13 +9,13 @@ blueprint:
     Tiersitter.
 
 
-    Anleitung: https://github.com/johnkily/ha-blueprints/blob/main/docs/tueren_abschliessen.md
+    Anleitung: https://github.com/johnkily/ha-blueprints/blob/main/docs/tueren_abschliessen.md – gefällt er dir? Ein ⭐ auf GitHub hilft anderen, ihn zu finden.
 
 
     Lock doors when nobody is home: locks all selected smart locks that are
     still unlocked once everybody has been away for a while. Doors reported
     open by their contact sensor are skipped and reported instead. Optional
-    guest switch.
+    guest switch. Like it? A ⭐ on GitHub helps others find it.
   domain: automation
   author: johnkily
   homeassistant:

@@ -8,11 +8,11 @@ blueprint:
 
 
     Anleitung und empfohlene Werte je Gerät:
-    https://github.com/johnkily/ha-blueprints/blob/main/docs/geraet_fertig.md
+    https://github.com/johnkily/ha-blueprints/blob/main/docs/geraet_fertig.md – gefällt er dir? Ein ⭐ auf GitHub hilft anderen, ihn zu finden.
 
 
     Appliance done: notifies your phones when a washer, dryer or dishwasher has
-    finished, detected via a power-monitoring plug.
+    finished, detected via a power-monitoring plug. Like it? A ⭐ on GitHub helps others find it.
   domain: automation
   author: johnkily
   homeassistant:
