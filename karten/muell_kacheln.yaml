@@ -38,8 +38,8 @@ content: |
   {%- endfor %}
   </table>
 
-  {% set n = liste[0] %}{% set c = tonnen[n.k] -%}
-  <ha-icon icon="{{ c.icon }}"></ha-icon> Als Nächstes: **{{ c.name }}** · {{ wt[n.tag.weekday()] }} {{ n.tag.strftime('%d.%m.') }} · {% if n.tage <= 0 %}heute{% elif n.tage == 1 %}morgen{% else %}in {{ n.tage }} Tagen{% endif %}
+  {% set n = liste[0] %}{% set nx = namespace(icons='', namen=[]) %}{% for t in liste if t.tage == n.tage %}{% set nx.icons = nx.icons ~ '<ha-icon icon="' ~ tonnen[t.k].icon ~ '"></ha-icon>' %}{% set nx.namen = nx.namen + [tonnen[t.k].name] %}{% endfor -%}
+  {{ nx.icons }} Als Nächstes: **{{ nx.namen | join(' + ') }}** · {{ wt[n.tag.weekday()] }} {{ n.tag.strftime('%d.%m.') }} · {% if n.tage <= 0 %}heute{% elif n.tage == 1 %}morgen{% else %}in {{ n.tage }} Tagen{% endif %}
   {%- if n.tage == 1 and now().hour >= 15 %}
 
   <ha-alert alert-type="warning">Heute Abend rausstellen!</ha-alert>

@@ -39,8 +39,8 @@ content: |
   {%- endfor %}
   </table>
 
-  {% set n = items[0] %}{% set c = bins[n.k] -%}
-  <ha-icon icon="{{ c.icon }}"></ha-icon> Next up: **{{ c.name }}** · {{ wd[n.day.weekday()] }} {{ n.day.day }} {{ mon[n.day.month - 1] }} · {% if n.days <= 0 %}today{% elif n.days == 1 %}tomorrow{% else %}in {{ n.days }} days{% endif %}
+  {% set n = items[0] %}{% set nx = namespace(icons='', names=[]) %}{% for t in items if t.days == n.days %}{% set nx.icons = nx.icons ~ '<ha-icon icon="' ~ bins[t.k].icon ~ '"></ha-icon>' %}{% set nx.names = nx.names + [bins[t.k].name] %}{% endfor -%}
+  {{ nx.icons }} Next up: **{{ nx.names | join(' + ') }}** · {{ wd[n.day.weekday()] }} {{ n.day.day }} {{ mon[n.day.month - 1] }} · {% if n.days <= 0 %}today{% elif n.days == 1 %}tomorrow{% else %}in {{ n.days }} days{% endif %}
   {%- if n.days == 1 and now().hour >= 15 %}
 
   <ha-alert alert-type="warning">Put it out tonight!</ha-alert>

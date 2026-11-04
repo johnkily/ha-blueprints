@@ -1,5 +1,9 @@
 # Änderungen
 
+## Seit v1.2
+
+**Müll-Karten:** Werden zwei Tonnen am selben Tag abgeholt, nennt „Als Nächstes“ jetzt beide; in der Profi-Variante leuchten beide Kacheln und das Kästchen im Streifen ist in beide Farben geteilt. Hinweis aus dem simon42-Forum (danke, moonsorrox). Karte neu hineinkopieren – der Blueprint bleibt unverändert.
+
 ## v1.2 – 03.11.2026
 
 **Neu:** Türen abschließen, wenn niemand zu Hause ist – schließt die smarten Schlösser ab, die noch offen sind, sobald alle ausgewählten Personen eine Weile weg sind. Eine Tür, die laut Kontakt offen steht, wird nicht verriegelt, sondern gemeldet. Mit Ausnahme-Schalter für Gäste.

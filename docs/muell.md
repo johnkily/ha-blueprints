@@ -75,8 +75,8 @@ content: |
   {%- endfor %}
   </table>
 
-  {% set n = liste[0] %}{% set c = tonnen[n.k] -%}
-  <ha-icon icon="{{ c.icon }}"></ha-icon> Als Nächstes: **{{ c.name }}** · {{ wt[n.tag.weekday()] }} {{ n.tag.strftime('%d.%m.') }} · {% if n.tage <= 0 %}heute{% elif n.tage == 1 %}morgen{% else %}in {{ n.tage }} Tagen{% endif %}
+  {% set n = liste[0] %}{% set nx = namespace(icons='', namen=[]) %}{% for t in liste if t.tage == n.tage %}{% set nx.icons = nx.icons ~ '<ha-icon icon="' ~ tonnen[t.k].icon ~ '"></ha-icon>' %}{% set nx.namen = nx.namen + [tonnen[t.k].name] %}{% endfor -%}
+  {{ nx.icons }} Als Nächstes: **{{ nx.namen | join(' + ') }}** · {{ wt[n.tag.weekday()] }} {{ n.tag.strftime('%d.%m.') }} · {% if n.tage <= 0 %}heute{% elif n.tage == 1 %}morgen{% else %}in {{ n.tage }} Tagen{% endif %}
   {%- if n.tage == 1 and now().hour >= 15 %}
 
   <ha-alert alert-type="warning">Heute Abend rausstellen!</ha-alert>
@@ -84,7 +84,7 @@ content: |
   {%- endif %}
 ```
 
-Die Tonnen sind nach der nächsten Abholung sortiert. Nachmittags vor einer Abholung erscheint „Heute Abend rausstellen!“.
+Die Tonnen sind nach der nächsten Abholung sortiert. Nachmittags vor einer Abholung erscheint „Heute Abend rausstellen!“. Werden zwei Tonnen am selben Tag abgeholt, nennt „Als Nächstes“ beide, und im Streifen stehen beide Punkte (in der Profi-Variante ist das Kästchen geteilt).
 
 ### Ohne Helfer: die schlichte Variante
 
@@ -225,7 +225,7 @@ custom_fields:
         let tag = WT[t.d.getDay()] + ' ' + t.d.getDate() + '.' + (t.d.getMonth() + 1) + '.';
         let rand = '1px solid rgba(127,127,127,.25)';
         let extra = '';
-        if (i === 0) {
+        if (t.tage === liste[0].tage) {                // alle Tonnen des nächsten Abholtags
           rand = '1px solid rgba(' + c.glow + ',.9)';
           extra = 'box-shadow:inset 0 0 0 1px rgba(' + c.glow + ',.45),0 0 12px rgba(' + c.glow + ',.4);';
         }
@@ -250,24 +250,30 @@ custom_fields:
       for (let i = 0; i < 14; i++) {
         const d = new Date(heute); d.setDate(d.getDate() + i);
         const iso = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-        const treffer = termine.find(s => s.slice(0, 10) === iso && TONNEN[s.slice(10)]);
+        // mehrere Tonnen am selben Tag: Kästchen in gleich breite Farbstreifen teilen
+        const treffer = termine.filter(s => s.slice(0, 10) === iso && TONNEN[s.slice(10)]).map(s => TONNEN[s.slice(10)].pill);
+        const fuellung = treffer.length > 1
+          ? 'linear-gradient(90deg,' + treffer.map((f, j) => f + ' ' + Math.round(j * 100 / treffer.length) + '% '
+            + Math.round((j + 1) * 100 / treffer.length) + '%').join(',') + ')'
+          : (treffer[0] || 'rgba(127,127,127,.12)');
         const we = d.getDay() === 0 || d.getDay() === 6;
         band += '<div style="flex:1;min-width:0;text-align:center;">'
           + '<div style="font-size:9px;opacity:' + (we ? .65 : .4) + ';line-height:1;">' + WT[d.getDay()] + '</div>'
-          + '<div style="height:19px;margin-top:2px;border-radius:5px;background:' + (treffer ? TONNEN[treffer.slice(10)].pill : 'rgba(127,127,127,.12)') + ';'
+          + '<div style="height:19px;margin-top:2px;border-radius:5px;background:' + fuellung + ';'
           + (i === 0 ? 'border:1px solid rgba(127,127,127,.6);' : '')
-          + 'display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:' + (treffer ? 700 : 400) + ';'
-          + 'color:' + (treffer ? '#fff' : 'var(--secondary-text-color)') + ';">' + d.getDate() + '</div></div>';
+          + 'display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:' + (treffer.length ? 700 : 400) + ';'
+          + 'color:' + (treffer.length ? '#fff' : 'var(--secondary-text-color)') + ';">' + d.getDate() + '</div></div>';
       }
 
       const n = liste[0];
-      const c = TONNEN[n.k];
+      const gleich = liste.filter(t => t.tage === n.tage);   // zwei Tonnen am selben Tag
       const wann = n.tage <= 0 ? 'heute' : (n.tage === 1 ? 'morgen' : 'in ' + n.tage + ' Tagen');
       const hinweis = (n.tage === 1 && new Date().getHours() >= 15) ? ' · <b>heute Abend rausstellen!</b>' : '';
       const zeile = '<div style="display:flex;align-items:center;gap:10px;margin-top:10px;padding:10px 14px;border-radius:14px;'
         + 'background:rgba(127,127,127,.1);font-size:13px;text-align:left;">'
-        + '<ha-icon icon="' + c.icon + '" style="--mdc-icon-size:20px;color:' + c.farbe + ';margin:0;"></ha-icon>'
-        + '<span>Als Nächstes: <b>' + c.name + '</b> · ' + WT[n.d.getDay()] + ' ' + n.d.getDate() + '.' + (n.d.getMonth() + 1) + '. · ' + wann + hinweis + '</span></div>';
+        + gleich.map(t => '<ha-icon icon="' + TONNEN[t.k].icon + '" style="--mdc-icon-size:20px;color:' + TONNEN[t.k].farbe
+          + ';margin:0;"></ha-icon>').join('')
+        + '<span>Als Nächstes: <b>' + gleich.map(t => TONNEN[t.k].name).join(' + ') + '</b> · ' + WT[n.d.getDay()] + ' ' + n.d.getDate() + '.' + (n.d.getMonth() + 1) + '. · ' + wann + hinweis + '</span></div>';
 
       return '<div style="white-space:normal;width:100%;">'
         + '<div style="display:flex;gap:8px;">' + kacheln + '</div>'

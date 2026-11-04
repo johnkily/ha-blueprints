@@ -91,8 +91,8 @@ content: |
   {%- endfor %}
   </table>
 
-  {% set n = items[0] %}{% set c = bins[n.k] -%}
-  <ha-icon icon="{{ c.icon }}"></ha-icon> Next up: **{{ c.name }}** · {{ wd[n.day.weekday()] }} {{ n.day.day }} {{ mon[n.day.month - 1] }} · {% if n.days <= 0 %}today{% elif n.days == 1 %}tomorrow{% else %}in {{ n.days }} days{% endif %}
+  {% set n = items[0] %}{% set nx = namespace(icons='', names=[]) %}{% for t in items if t.days == n.days %}{% set nx.icons = nx.icons ~ '<ha-icon icon="' ~ bins[t.k].icon ~ '"></ha-icon>' %}{% set nx.names = nx.names + [bins[t.k].name] %}{% endfor -%}
+  {{ nx.icons }} Next up: **{{ nx.names | join(' + ') }}** · {{ wd[n.day.weekday()] }} {{ n.day.day }} {{ mon[n.day.month - 1] }} · {% if n.days <= 0 %}today{% elif n.days == 1 %}tomorrow{% else %}in {{ n.days }} days{% endif %}
   {%- if n.days == 1 and now().hour >= 15 %}
 
   <ha-alert alert-type="warning">Put it out tonight!</ha-alert>
@@ -100,7 +100,7 @@ content: |
   {%- endif %}
 ```
 
-The bins are sorted by their next pickup. In the afternoon before a pickup, “Put it out tonight!” appears. Names, icons and colours are at the top of the code (`bins`).
+The bins are sorted by their next pickup. In the afternoon before a pickup, “Put it out tonight!” appears. If two bins are collected on the same day, “Next up” names both and the strip shows both dots. Names, icons and colours are at the top of the code (`bins`).
 
 ![Advanced variant with button-card: tomorrow's bin wobbles](../bilder/muell_karte.gif)
 
