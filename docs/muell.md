@@ -84,7 +84,9 @@ content: |
   {%- endif %}
 ```
 
-Die Tonnen sind nach der nächsten Abholung sortiert. Nachmittags vor einer Abholung erscheint „Heute Abend rausstellen!“. Werden zwei Tonnen am selben Tag abgeholt, nennt „Als Nächstes“ beide, und im Streifen stehen beide Punkte (in der Profi-Variante ist das Kästchen geteilt).
+Die Tonnen sind nach der nächsten Abholung sortiert. Nachmittags vor einer Abholung erscheint „Heute Abend rausstellen!“. Werden zwei Tonnen am selben Tag abgeholt, nennt „Als Nächstes“ beide, und im Streifen stehen beide Punkte (in der Profi-Variante ist das Kästchen geteilt):
+
+![Profi-Variante: Gelb und Papier am selben Tag – beide Kacheln leuchten, das Kästchen im Streifen ist geteilt](bilder/muell_zwei_tonnen.png)
 
 ### Ohne Helfer: die schlichte Variante
 

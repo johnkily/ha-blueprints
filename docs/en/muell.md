@@ -100,7 +100,9 @@ content: |
   {%- endif %}
 ```
 
-The bins are sorted by their next pickup. In the afternoon before a pickup, “Put it out tonight!” appears. If two bins are collected on the same day, “Next up” names both and the strip shows both dots. Names, icons and colours are at the top of the code (`bins`).
+The bins are sorted by their next pickup. In the afternoon before a pickup, “Put it out tonight!” appears. If two bins are collected on the same day, “Next up” names both and the strip shows both dots (in the button-card version the day box is split). Names, icons and colours are at the top of the code (`bins`).
+
+![Button-card version: recycling and paper on the same day – both tiles light up, the day box is split](../bilder/muell_zwei_tonnen.png)
 
 ![Advanced variant with button-card: tomorrow's bin wobbles](../bilder/muell_karte.gif)
 
