@@ -42,8 +42,9 @@ Noch kein Blueprint – als Nächstes geplant: Smartladen bis zur Abfahrtszeit. 
 | **Sonnenschutz je Fassade** | Rollos runter, wenn die Sonne wirklich auf die Seite scheint und es warm ist – hoch erst, wenn sie weg ist. Kein Jo-Jo bei Wolken | [![Importieren](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fbeschattung%2Fsonnenschutz.yaml) |
 | **Türen abschließen, wenn niemand zu Hause ist** | Sind alle weg, schließen die smarten Schlösser nach 30 Minuten ab – eine offen stehende Tür wird nicht verriegelt, sondern gemeldet. Mit Schalter für Gäste | [![Importieren](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fsicherheit%2Ftueren_abschliessen.yaml) |
 | **AWTRIX – Warnung, solange Tür oder Tor offen ist** | Eine Ecke blinkt, solange Garagentor oder Hoftor offen sind – auf Wunsch mit Meldung, die bis zum Schließen stehen bleibt | [![Importieren](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fawtrix%2Foffen_warnung.yaml) |
+| **Zigbee-Wächter** | Hängt der Zigbee-Koordinator, startet Home Assistant Chip und Zigbee2MQTT selbst neu und sagt Bescheid – fragt dafür alle 5 Minuten aktiv nach, statt auf Stille zu warten | [![Importieren](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fzigbee%2Fzigbee_waechter.yaml) |
 
-➡️ **Schritt-für-Schritt-Anleitungen:** [AWTRIX-Blueprints](docs/awtrix.md) · [Klingel](docs/klingel.md) · [Sonnenschutz](docs/sonnenschutz.md) · [Waschmaschine & Co.](docs/geraet_fertig.md) · [Müll](docs/muell.md) · [Türen abschließen](docs/tueren_abschliessen.md)
+➡️ **Schritt-für-Schritt-Anleitungen:** [AWTRIX-Blueprints](docs/awtrix.md) · [Klingel](docs/klingel.md) · [Sonnenschutz](docs/sonnenschutz.md) · [Waschmaschine & Co.](docs/geraet_fertig.md) · [Müll](docs/muell.md) · [Türen abschließen](docs/tueren_abschliessen.md) · [Zigbee-Wächter](docs/zigbee_waechter.md)
 
 **Was soll als Nächstes kommen?** Wünsche gern unter [Ideen](https://github.com/johnkily/ha-blueprints/discussions/categories/ideas) oder in den Kommentaren im Blog.
 
@@ -81,7 +82,7 @@ Bitte ein [Issue](https://github.com/johnkily/ha-blueprints/issues) anlegen – 
 
 Ready-made Home Assistant automations: click **Import**, pick your devices, done. Like them? [Buy me a coffee on Ko-fi](https://ko-fi.com/johnkily).
 
-**Step-by-step guides in English:** [AWTRIX blueprints](docs/en/awtrix.md) · [Doorbell](docs/en/klingel.md) · [Sun protection](docs/en/sonnenschutz.md) · [Washing machine & co.](docs/en/geraet_fertig.md) · [Waste bins](docs/en/muell.md) (with an English tile card) · [Lock the doors](docs/en/tueren_abschliessen.md)
+**Step-by-step guides in English:** [AWTRIX blueprints](docs/en/awtrix.md) · [Doorbell](docs/en/klingel.md) · [Sun protection](docs/en/sonnenschutz.md) · [Washing machine & co.](docs/en/geraet_fertig.md) · [Waste bins](docs/en/muell.md) (with an English tile card) · [Lock the doors](docs/en/tueren_abschliessen.md) · [Zigbee watchdog](docs/en/zigbee_waechter.md)
 
 | Blueprint | What it does |
 |---|---|
@@ -94,6 +95,7 @@ Ready-made Home Assistant automations: click **Import**, pick your devices, done
 | Waschmaschine, Trockner & Co. – fertig melden | Notification when the appliance is done, detected via a power-metering plug |
 | Müll – Erinnerung am Vorabend / Plan für die Kachel-Karte | Reminder the evening before and data for the waste bin tile card |
 | Türen abschließen, wenn niemand zu Hause ist | Locks the smart locks once everybody has left – doors that are open are reported, not bolted |
+| Zigbee-Wächter – Koordinator hängt, automatisch neu starten | If the Zigbee coordinator gets stuck, restarts the chip and Zigbee2MQTT and notifies you – asks a device every 5 minutes instead of waiting for silence |
 
 The import buttons are in the tables above and in each guide. **The input labels inside the blueprints are German** – the English guides list every field with its German label and meaning. Questions in English are welcome as an [issue](https://github.com/johnkily/ha-blueprints/issues) or under [Ideas](https://github.com/johnkily/ha-blueprints/discussions/categories/ideas).
 

@@ -1,0 +1,293 @@
+blueprint:
+  name: Zigbee-Wächter – Koordinator hängt, automatisch neu starten
+  description: >
+    Fragt alle 5 Minuten ein Zigbee-Gerät über Zigbee2MQTT nach seinem Zustand
+    und wartet auf die Antwort. Antwortet keines der ausgewählten Geräte, hängt
+    meist der Zigbee-Koordinator: Dann startet Home Assistant den Zigbee-Chip
+    (falls dein Koordinator einen Neustart-Knopf hat, z. B. SMLIGHT SLZB-06)
+    und Zigbee2MQTT neu, prüft danach, ob Zigbee wieder antwortet, und sagt dir
+    Bescheid. Höchstens ein Neustart pro Sperrzeit.
+
+
+    Anleitung: https://github.com/johnkily/ha-blueprints/blob/main/docs/zigbee_waechter.md – gefällt er dir? Ein ⭐ auf GitHub hilft anderen, ihn zu finden.
+
+
+    Zigbee watchdog: every 5 minutes asks a Zigbee device via Zigbee2MQTT for
+    its state and waits for the answer. If none of the selected devices
+    answers, the coordinator is usually stuck: Home Assistant restarts the
+    Zigbee chip (if your coordinator has a restart button, e.g. SMLIGHT
+    SLZB-06) and Zigbee2MQTT, checks whether Zigbee answers again and notifies
+    you. Like it? A ⭐ on GitHub helps others find it.
+  domain: automation
+  author: johnkily
+  homeassistant:
+    min_version: 2024.10.0
+  source_url: https://github.com/johnkily/ha-blueprints/blob/main/blueprints/automation/zigbee/zigbee_waechter.yaml
+  input:
+    geraete:
+      name: Zigbee-Geräte zum Nachfragen
+      description: >
+        Namen der Geräte, wie sie in Zigbee2MQTT heißen (friendly name),
+        durch Kommas getrennt – z. B. „Steckdose Waschmaschine, Steckdose Flur“.
+        Am besten Steckdosen oder andere Geräte am Strom: Sie antworten auch,
+        wenn sie ausgeschaltet sind. Batteriegeräte schlafen und eignen sich nicht.
+        Mehrere angeben, damit ein einzelnes ausgestecktes Gerät keinen
+        Fehlalarm auslöst.
+      selector:
+        text: {}
+    handys:
+      name: Nachricht an
+      description: Leer lassen = keine Handy-Nachricht.
+      default: []
+      selector:
+        device:
+          multiple: true
+          filter:
+            - integration: mobile_app
+    neustart:
+      name: Neustart
+      collapsed: true
+      input:
+        chip_knopf:
+          name: Neustart-Knopf des Zigbee-Chips (empfohlen)
+          description: >
+            Bei SMLIGHT-Koordinatoren bringt die SMLIGHT-Integration den Knopf
+            „Zigbee-Neustart“ mit. Ein Neustart von Zigbee2MQTT allein erreicht
+            einen hängenden Chip nicht zuverlässig. Leer lassen, wenn dein
+            Koordinator keinen solchen Knopf hat.
+          default: ""
+          selector:
+            entity:
+              filter:
+                - domain: button
+        z2m_app:
+          name: Zigbee2MQTT-App (Slug)
+          description: >
+            Kennung der Zigbee2MQTT-App, die neu gestartet wird. Steht unter
+            Einstellungen → Apps → Zigbee2MQTT in der Adresszeile. Der Standard
+            passt für die offizielle Zigbee2MQTT-App. Leer lassen, wenn
+            Zigbee2MQTT nicht als App läuft.
+          default: 45df7312_zigbee2mqtt
+          selector:
+            text: {}
+        bruecke:
+          name: Verbindungsstatus von Zigbee2MQTT (empfohlen)
+          description: >
+            Der Binärsensor „Connection state“ des Zigbee2MQTT-Bridge-Geräts.
+            Der Wächter prüft nur, wenn Zigbee2MQTT seit 5 Minuten verbunden ist –
+            so startet er nichts neu, während Zigbee2MQTT gerade selbst
+            hochfährt oder aktualisiert wird.
+          default: ""
+          selector:
+            entity:
+              filter:
+                - domain: binary_sensor
+        sperre:
+          name: Höchstens ein Neustart pro
+          default: 30
+          selector:
+            number:
+              min: 10
+              max: 240
+              unit_of_measurement: min
+    feinheiten:
+      name: Feinheiten
+      collapsed: true
+      input:
+        wartezeit:
+          name: Auf Antwort warten
+          description: So lange wartet der Wächter je Gerät auf eine Antwort.
+          default: 15
+          selector:
+            number:
+              min: 5
+              max: 60
+              unit_of_measurement: s
+        basis:
+          name: Basis-Topic von Zigbee2MQTT
+          default: zigbee2mqtt
+          selector:
+            text: {}
+        in_ha:
+          name: Meldung auch in Home Assistant anzeigen
+          description: Als Benachrichtigung in der Seitenleiste von Home Assistant.
+          default: false
+          selector:
+            boolean: {}
+
+# single + Sperrzeit am Ende: Solange der Wächter nach einem Neustart wartet,
+# laufen keine weiteren Prüfungen (und damit keine weiteren Neustarts).
+mode: single
+max_exceeded: silent
+
+triggers:
+  - trigger: time_pattern
+    minutes: /5
+
+variables:
+  geraete_text: !input geraete
+  geraete: "{{ geraete_text.split(',') | map('trim') | reject('eq', '') | list }}"
+  handys: !input handys
+  chip_knopf: !input chip_knopf
+  z2m_app: !input z2m_app
+  bruecke: !input bruecke
+  sperre: !input sperre
+  wartezeit: !input wartezeit
+  basis: !input basis
+  in_ha: !input in_ha
+  tag: "zigbee_waechter_{{ this.attributes.id | default('1') }}"
+
+conditions:
+  - condition: template
+    value_template: "{{ geraete | count > 0 }}"
+  - condition: template
+    value_template: >
+      {{ bruecke == '' or (is_state(bruecke, 'on')
+         and (now() - states[bruecke].last_changed).total_seconds() > 300) }}
+
+actions:
+  # 1) Nachfragen – das erste Gerät, das antwortet, beendet den Lauf.
+  - repeat:
+      for_each: "{{ geraete }}"
+      sequence:
+        - action: mqtt.publish
+          data:
+            topic: "{{ basis }}/{{ repeat.item }}/get"
+            payload: '{"state": ""}'
+        - wait_for_trigger:
+            - trigger: mqtt
+              topic: "{{ basis }}/{{ repeat.item }}"
+          timeout:
+            seconds: "{{ wartezeit | int }}"
+          continue_on_timeout: true
+        - if:
+            - condition: template
+              value_template: "{{ wait.trigger is not none }}"
+          then:
+            - stop: Zigbee antwortet
+
+  # 2) Keiner hat geantwortet: melden, Chip und Zigbee2MQTT neu starten.
+  - variables:
+      meldungen:
+        - titel: ⚠️ Zigbee hängt – Neustart
+          text: >-
+            Keines der Geräte ({{ geraete | join(', ') }}) hat geantwortet.
+            {{ 'Zigbee-Chip und Zigbee2MQTT' if chip_knopf != '' else 'Zigbee2MQTT' }} werden neu gestartet.
+  - repeat:
+      for_each: "{{ handys }}"
+      sequence:
+        - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+          continue_on_error: true
+          data:
+            title: "{{ meldungen[0].titel }}"
+            message: "{{ meldungen[0].text }}"
+            data:
+              tag: "{{ tag }}"
+  - if:
+      - condition: template
+        value_template: "{{ in_ha }}"
+    then:
+      - action: persistent_notification.create
+        data:
+          notification_id: "{{ tag }}"
+          title: "{{ meldungen[0].titel }}"
+          message: "{{ meldungen[0].text }}"
+  - if:
+      - condition: template
+        value_template: "{{ chip_knopf != '' }}"
+    then:
+      - action: button.press
+        target:
+          entity_id: "{{ chip_knopf }}"
+        continue_on_error: true
+      - delay:
+          seconds: 20
+  - if:
+      - condition: template
+        value_template: "{{ z2m_app != '' }}"
+    then:
+      - action: hassio.addon_restart
+        data:
+          addon: "{{ z2m_app }}"
+        continue_on_error: true
+  - if:
+      - condition: template
+        value_template: "{{ bruecke != '' }}"
+    then:
+      - wait_template: "{{ is_state(bruecke, 'on') }}"
+        timeout:
+          minutes: 3
+        continue_on_timeout: true
+  - delay:
+      seconds: 30
+
+  # 3) Nachprüfen: Das erste Gerät, das antwortet, meldet „läuft wieder“ und beendet den Lauf
+  #    nach der Sperrzeit. (Ergebnis bewusst in der Schleife – Variablen aus einer Schleife
+  #    heraus zu ändern, klappt erst ab HA 2025.4.)
+  - repeat:
+      for_each: "{{ geraete }}"
+      sequence:
+        - action: mqtt.publish
+          data:
+            topic: "{{ basis }}/{{ repeat.item }}/get"
+            payload: '{"state": ""}'
+        - wait_for_trigger:
+            - trigger: mqtt
+              topic: "{{ basis }}/{{ repeat.item }}"
+          timeout:
+            seconds: 60
+          continue_on_timeout: true
+        - if:
+            - condition: template
+              value_template: "{{ wait.trigger is not none }}"
+          then:
+            - repeat:
+                for_each: "{{ handys }}"
+                sequence:
+                  - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+                    continue_on_error: true
+                    data:
+                      title: ✅ Zigbee läuft wieder
+                      message: Nach dem Neustart antwortet Zigbee wieder.
+                      data:
+                        tag: "{{ tag }}"
+            - if:
+                - condition: template
+                  value_template: "{{ in_ha }}"
+              then:
+                - action: persistent_notification.create
+                  data:
+                    notification_id: "{{ tag }}"
+                    title: ✅ Zigbee läuft wieder
+                    message: Nach dem Neustart antwortet Zigbee wieder.
+            - delay:
+                minutes: "{{ sperre | int }}"
+            - stop: Zigbee läuft wieder
+
+  # 4) Niemand antwortet: melden. Danach Sperrzeit – der Lauf bleibt aktiv,
+  #    neue Prüfungen werden still verworfen (mode: single).
+  - variables:
+      fehltext: >-
+        Der Neustart hat nicht geholfen. Bitte den Zigbee-Koordinator kurz vom Strom
+        nehmen (Kabel bzw. PoE ziehen und wieder stecken).
+  - repeat:
+      for_each: "{{ handys }}"
+      sequence:
+        - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+          continue_on_error: true
+          data:
+            title: ❌ Zigbee antwortet weiter nicht
+            message: "{{ fehltext }}"
+            data:
+              tag: "{{ tag }}"
+  - if:
+      - condition: template
+        value_template: "{{ in_ha }}"
+    then:
+      - action: persistent_notification.create
+        data:
+          notification_id: "{{ tag }}"
+          title: ❌ Zigbee antwortet weiter nicht
+          message: "{{ fehltext }}"
+  - delay:
+      minutes: "{{ sperre | int }}"
