@@ -44,7 +44,10 @@ blueprint:
         boolean:
     sorten:
       name: Tonnen
-      description: Welche Wörter im Kalendereintrag zu welcher Tonne gehören.
+      description: >-
+        Welche Wörter im Kalendereintrag zu welcher Tonne gehören. Mehrere mit Komma trennen,
+        Groß-/Kleinschreibung egal. Ein ! davor schließt aus: `Restmüll, !Container` erkennt
+        „Restmüll“, aber nicht „Restmüll Container“.
       collapsed: true
       input:
         rest_woerter:
@@ -109,8 +112,8 @@ actions:
           {% set titel = e.summary | lower %}
           {% set ns2 = namespace(t=none) %}
           {% for s in sorten if ns2.t is none %}
-            {% set w = s.woerter.split(',') | map('trim') | map('lower') | reject('eq', '') | list %}
-            {% if w | select('in', titel) | list | count > 0 %}{% set ns2.t = s.zeichen ~ ' ' ~ s.name %}{% endif %}
+            {% set w = s.woerter.split(',') | map('trim') | map('lower') | reject('eq', '') | list %}{% set plus = w | reject('match', '!') | list %}{% set minus = w | select('match', '!') | map('replace', '!', '', 1) | map('trim') | reject('eq', '') | list %}
+            {% if plus | select('in', titel) | list | count > 0 and minus | select('in', titel) | list | count == 0 %}{% set ns2.t = s.zeichen ~ ' ' ~ s.name %}{% endif %}
           {% endfor %}
           {% set t = ns2.t if ns2.t is not none else '🗑️ ' ~ e.summary %}
           {% if t not in ns.l %}{% set ns.l = ns.l + [t] %}{% endif %}

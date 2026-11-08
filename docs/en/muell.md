@@ -35,6 +35,8 @@ The blueprints recognise a bin by **words in the event title**. The defaults are
 
 **Replace them with the words your calendar uses** – e.g. `Paper, Cardboard` · `Recycling, Plastic` · `Garden, Food, Organic` · `General, Rubbish, Black`. You'll find them in each blueprint under **Tonnen** (*bins*, expand): *Restmüll – Stichwörter*, *Papier – Stichwörter*, *Gelber Sack / Wertstoff – Stichwörter*, *Bio – Stichwörter*. Several words separated by commas; one matching word is enough. Events that match no bin (e.g. bulky waste) are ignored by the card.
 
+**Exclude with `!`:** a keyword with an exclamation mark in front filters events out. If your collector lists both “Restmüll” and “Restmüll Container”, `Restmüll, !Container` matches only the bin. Works in the plan, reminder and AWTRIX waste blueprints. Requested in [issue #1](https://github.com/johnkily/ha-blueprints/issues/1).
+
 ## 3. Tile card
 
 The card needs the dates **per bin**. A blueprint collects them in a text helper.

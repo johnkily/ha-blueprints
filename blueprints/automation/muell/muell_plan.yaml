@@ -34,7 +34,10 @@ blueprint:
             - domain: input_text
     sorten:
       name: Tonnen
-      description: Welche Wörter im Kalendereintrag zu welcher Tonne gehören.
+      description: >-
+        Welche Wörter im Kalendereintrag zu welcher Tonne gehören. Mehrere mit Komma trennen,
+        Groß-/Kleinschreibung egal. Ein ! davor schließt aus: `Restmüll, !Container` erkennt
+        „Restmüll“, aber nicht „Restmüll Container“.
       collapsed: true
       input:
         rest_woerter:
@@ -105,8 +108,8 @@ actions:
           {% if tag >= heute %}
             {% set titel = e.summary | lower %}
             {% for s in sorten %}
-              {% set w = s.woerter.split(',') | map('trim') | map('lower') | reject('eq', '') | list %}
-              {% if w | select('in', titel) | list | count > 0 %}
+              {% set w = s.woerter.split(',') | map('trim') | map('lower') | reject('eq', '') | list %}{% set plus = w | reject('match', '!') | list %}{% set minus = w | select('match', '!') | map('replace', '!', '', 1) | map('trim') | reject('eq', '') | list %}
+              {% if plus | select('in', titel) | list | count > 0 and minus | select('in', titel) | list | count == 0 %}
                 {% if s.k not in ns.keys %}{% set ns.keys = ns.keys + [s.k] %}{% set ns.n = ns.n + [s.k ~ tag] %}{% endif %}
                 {% if tag < grenze and (tag ~ s.k) not in ns.s %}{% set ns.s = ns.s + [tag ~ s.k] %}{% endif %}
               {% endif %}

@@ -61,7 +61,10 @@ blueprint:
         boolean:
     sorten:
       name: Tonnen
-      description: Welche Wörter im Kalendereintrag zu welcher Tonne gehören.
+      description: >-
+        Welche Wörter im Kalendereintrag zu welcher Tonne gehören. Mehrere mit Komma trennen,
+        Groß-/Kleinschreibung egal. Ein ! davor schließt aus: `Restmüll, !Container` erkennt
+        „Restmüll“, aber nicht „Restmüll Container“.
       collapsed: true
       input:
         rest_woerter:
@@ -160,8 +163,8 @@ actions:
           {% for e in termine[kalender].events if e.start[:10] == tag and ns.f == [0, 0, 0] %}
             {% set titel = e.summary | lower %}
             {% for s in sorten if ns.f == [0, 0, 0] %}
-              {% set w = s.woerter.split(',') | map('trim') | map('lower') | reject('eq', '') | list %}
-              {% if w | select('in', titel) | list | count > 0 %}{% set ns.f = s.farbe | map('int') | list %}{% endif %}
+              {% set w = s.woerter.split(',') | map('trim') | map('lower') | reject('eq', '') | list %}{% set plus = w | reject('match', '!') | list %}{% set minus = w | select('match', '!') | map('replace', '!', '', 1) | map('trim') | reject('eq', '') | list %}
+              {% if plus | select('in', titel) | list | count > 0 and minus | select('in', titel) | list | count == 0 %}{% set ns.f = s.farbe | map('int') | list %}{% endif %}
             {% endfor %}
           {% endfor %}
         {% endif %}
