@@ -2,7 +2,7 @@
 
 ## Seit v1.2
 
-**English versions:** „Türen abschließen“ gibt es jetzt auch mit englischen Feldnamen und Meldungen (`blueprints/automation/en/security/lock_doors_when_away.yaml`). Erzeugt aus dem deutschen Original mit `tools/englisch.py` – die deutsche Datei bleibt unverändert. Weitere folgen. Anregung aus dem HA-Forum (danke, fleskefjes).
+**English versions:** Türen abschließen, AWTRIX-Strompreis, AWTRIX-Müll-Ampel, Müll-Plan und Müll-Erinnerung gibt es jetzt auch mit englischen Feldnamen, Stichwörtern und Meldungen (`blueprints/automation/en/…`, Strompreis mit Dezimalpunkt). Erzeugt aus dem deutschen Original mit `tools/englisch.py` – die deutsche Datei bleibt unverändert. Anregung aus dem HA-Forum (danke, fleskefjes).
 
 **Neu:** Zigbee-Wächter – fragt alle 5 Minuten Zigbee-Geräte über Zigbee2MQTT nach ihrem Zustand; antwortet keines, startet er Zigbee-Chip (z. B. SMLIGHT SLZB-06) und Zigbee2MQTT neu und meldet das Ergebnis. Höchstens ein Neustart pro Sperrzeit.
 

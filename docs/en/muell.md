@@ -5,12 +5,12 @@
 Everything from one waste collection calendar – no HACS, no `configuration.yaml`:
 
 - **Tile card** for your dashboard: four bins with “in 6 days”, below them two weeks as a mini calendar with coloured dots, and “Next up”.
-- **Reminder the evening before** (blueprint): “🟦 Papier, 🟨 Gelber Sack – bitte heute Abend rausstellen.” (the notification text is German for now).
-- **Waste bin indicator** on the AWTRIX pixel clock (blueprint): see the [AWTRIX guide](awtrix.md#waste-bin-indicator-awtrix--müll-ampel-in-der-ecke).
+- **Reminder the evening before** (blueprint): “🟦 Paper, 🟨 Recycling – please put out tonight.”
+- **Waste bin indicator** on the AWTRIX pixel clock (blueprint): see the [AWTRIX guide](awtrix.md#waste-bin-indicator).
 
 ![Waste bin tile card (German labels)](../bilder/muell_kacheln.png)
 
-> **Note:** the input labels inside the blueprints are German, and so are the default keywords for the bins. This guide gives the German label as it appears in Home Assistant, followed by its meaning – and shows where to put the words your calendar uses.
+> **English versions** of the blueprints (English labels, keywords and notifications) are linked below. The original German blueprints stay available – see the [German guide](../muell.md).
 
 ## 1. Add your waste calendar
 
@@ -24,18 +24,18 @@ Alternatively, the HACS integration [Waste Collection Schedule](https://github.c
 
 ## 2. Bins and keywords
 
-The blueprints recognise a bin by **words in the event title**. The defaults are German:
+The blueprints recognise a bin by **words in the event title**. The defaults of the English versions:
 
 | Bin | Colour | default keywords (case doesn't matter) |
 |---|---|---|
-| Paper (*Papier*) | blue | Papier, Blau, PPK |
-| Recycling (*Gelber Sack / Wertstoff*) | yellow | Gelb, Wertstoff, Verpackung, Leichtverpackung |
-| Organic (*Bio*) | green | Bio, Grün, Braun, Kompost |
-| Residual (*Restmüll*) | grey | Rest, Grau, Schwarz |
+| Paper | blue | Paper, Cardboard |
+| Recycling | yellow | Recycling, Plastic, Packaging, Cans |
+| Organic | green | Garden, Food, Organic, Compost |
+| General waste | grey | General, Rubbish, Residual, Refuse, Landfill |
 
-**Replace them with the words your calendar uses** – e.g. `Paper, Cardboard` · `Recycling, Plastic` · `Garden, Food, Organic` · `General, Rubbish, Black`. You'll find them in each blueprint under **Tonnen** (*bins*, expand): *Restmüll – Stichwörter*, *Papier – Stichwörter*, *Gelber Sack / Wertstoff – Stichwörter*, *Bio – Stichwörter*. Several words separated by commas; one matching word is enough. Events that match no bin (e.g. bulky waste) are ignored by the card.
+**Adjust them to the words your calendar uses.** You'll find them in each blueprint under **Bins** (expand): *General waste – keywords*, *Paper – keywords*, *Recycling – keywords*, *Organic – keywords*. Several words separated by commas; one matching word is enough. Events that match no bin (e.g. bulky waste) are ignored by the card.
 
-**Exclude with `!`:** a keyword with an exclamation mark in front filters events out. If your collector lists both “Restmüll” and “Restmüll Container”, `Restmüll, !Container` matches only the bin. Works in the plan, reminder and AWTRIX waste blueprints. Requested in [issue #1](https://github.com/johnkily/ha-blueprints/issues/1).
+**Exclude with `!`:** a keyword with an exclamation mark in front filters events out. If your collector lists both “General waste” and “General waste container”, `General, !Container` matches only the bin. Works in the plan, reminder and AWTRIX waste blueprints. Requested in [issue #1](https://github.com/johnkily/ha-blueprints/issues/1).
 
 ## 3. Tile card
 
@@ -43,18 +43,18 @@ The card needs the dates **per bin**. A blueprint collects them in a text helper
 
 **a) Create the helper:** *Settings → Devices & services → Helpers → Create helper → **Text***. Name **Waste plan**, maximum length **255**. (Home Assistant then calls it `input_text.waste_plan`.)
 
-**b) Blueprint “Müll – Plan für die Kachel-Karte”** (*waste plan for the tile card*):
+**b) Blueprint “Waste – plan for the tile card”:**
 
-[![Import](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fmuell%2Fmuell_plan.yaml)
+[![Import](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fen%2Fwaste%2Fwaste_plan.yaml)
 
-Open it under *Settings → Automations & scenes → Blueprints*, choose **Abfallkalender** (*waste calendar*) and the helper under **Text-Helfer „Müll-Plan“** (pick your *Waste plan* helper), adjust the keywords under **Tonnen**, save. It updates every three hours, after midnight and when Home Assistant starts.
+Open it under *Settings → Automations & scenes → Blueprints*, choose the **Waste calendar** and your *Waste plan* helper under **Text helper “Waste plan”**, adjust the keywords under **Bins**, save. It updates every three hours, after midnight and when Home Assistant starts.
 
 **c) Add the card:** dashboard → **Edit** → **Add card** → at the very bottom **Manual** → paste everything → **Save**.
 
 ```yaml
 # Waste bin tile card for Home Assistant – core Markdown card only, no HACS.
 # Needs the text helper "Waste plan" (input_text.waste_plan), filled by the
-# blueprint "Müll – Plan für die Kachel-Karte".
+# blueprint "Waste – plan for the tile card".
 # Add it: edit dashboard → Add card → at the very bottom "Manual" →
 # paste everything → Save. If your helper has a different name, change line 14.
 # Guide: https://github.com/johnkily/ha-blueprints/blob/main/docs/en/muell.md
@@ -77,7 +77,7 @@ content: |
   {%- endfor -%}
   {%- set items = ns.l | sort(attribute='days') -%}
   {%- if items | count == 0 -%}
-  No pickups yet – is the blueprint “Müll – Plan für die Kachel-Karte” running?
+  No pickups yet – is the blueprint “Waste – plan for the tile card” running?
   {%- else -%}
   <table width="100%"><tr>
   {%- for t in items %}{% set c = bins[t.k] %}
@@ -112,21 +112,21 @@ The bins are sorted by their next pickup. In the afternoon before a pickup, “P
 
 ## 4. Reminder the evening before
 
-[![Import](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fmuell%2Fmuell_erinnerung.yaml)
+[![Import](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fen%2Fwaste%2Fwaste_reminder.yaml)
 
-*Settings → Automations & scenes → Blueprints* → **Müll – Erinnerung am Vorabend**.
+*Settings → Automations & scenes → Blueprints* → **Waste – reminder the evening before**.
 
-| Field (German label) | What to enter |
+| Field | What to enter |
 |---|---|
-| Abfallkalender – *waste calendar* | `calendar.waste` |
-| Uhrzeit der Erinnerung – *time of the reminder* | default 19:00 |
-| Handys – *phones* | who should be reminded |
-| Nur Handys, die zu Hause sind – *only phones at home* | default off – whoever is away still knows |
-| Tonnen – *bins* (expand) | the keywords per bin (see step 2) |
+| Waste calendar | `calendar.waste` |
+| Time of the reminder | default 19:00 |
+| Phones | who should be reminded |
+| Only phones that are at home | default off – whoever is away still knows |
+| Bins (expand) | the keywords per bin (see step 2) |
 
 If several bins are due, they all come in one notification. Events that match no bin (e.g. bulky waste) appear with their own name.
 
-The notification itself is German for now: title *“Morgen ist Abholung”* (pickup tomorrow), text e.g. *“🟦 Papier, 🟨 Gelber Sack – bitte heute Abend rausstellen.”* (please put out tonight). An English option is planned – tell us in the forum if you'd use it.
+The notification: title *“Waste collection tomorrow”*, text e.g. *“🟦 Paper, 🟨 Recycling – please put out tonight.”*
 
 Questions and feedback are welcome in the [Home Assistant forum](https://community.home-assistant.io/t/waste-collection-dashboard-from-any-calendar-ics-next-pickup-per-bin-two-week-strip-no-hacs-needed/1030765).
 
@@ -134,7 +134,7 @@ Questions and feedback are welcome in the [Home Assistant forum](https://communi
 
 | Problem | Solution |
 |---|---|
-| “No pickups yet” | Is the *Müll – Plan* blueprint running? Open the automation and tap **Run** (top right) once. If your helper isn't called `input_text.waste_plan`, change line 14 of the card. |
+| “No pickups yet” | Is the *Waste – plan* blueprint running? Open the automation and tap **Run** (top right) once. If your helper isn't called `input_text.waste_plan`, change line 14 of the card. |
 | A bin is missing | Your calendar calls it differently – add the keyword (see step 2). |
 | No reminder | *Automation → Traces*: is there an event tomorrow in the calendar? |
 

@@ -1,0 +1,136 @@
+blueprint:
+  name: Waste – reminder the evening before
+  description: >
+    Sends a notification to your phones the evening before, telling which bin
+    is collected tomorrow – for example “🟦 Paper – please put it out tonight”.
+    Reads any waste calendar that exists in Home Assistant as a calendar
+    (your city's ICS link via “Remote Calendar”, Waste Collection Schedule,
+    your own calendar). Several bins on the same day go into one notification.
+
+
+    Guide: https://github.com/johnkily/ha-blueprints/blob/main/docs/en/muell.md – like it? A ⭐ on GitHub helps others find it.
+  domain: automation
+  author: johnkily
+  homeassistant:
+    min_version: 2024.10.0
+  source_url: https://github.com/johnkily/ha-blueprints/blob/main/blueprints/automation/en/waste/waste_reminder.yaml
+  input:
+    kalender:
+      name: Waste calendar
+      selector:
+        entity:
+          filter:
+            - domain: calendar
+    uhrzeit:
+      name: Time of the reminder
+      default: "19:00:00"
+      selector:
+        time:
+    handys:
+      name: Phones
+      selector:
+        device:
+          multiple: true
+          filter:
+            - integration: mobile_app
+    nur_zuhause:
+      name: Only phones that are at home
+      description: Nobody can put the bin out while away. Off = all phones.
+      default: false
+      selector:
+        boolean:
+    sorten:
+      name: Bins
+      description: >-
+        Which words in the calendar event belong to which bin. Separate several words with
+        commas, case doesn't matter. A ! in front excludes: `General, !Bulky` matches
+        “General waste” but not “Bulky general waste”.
+      collapsed: true
+      input:
+        rest_woerter:
+          name: General waste – keywords
+          default: General, Rubbish, Residual, Refuse, Landfill
+          selector:
+            text:
+        papier_woerter:
+          name: Paper – keywords
+          default: Paper, Cardboard
+          selector:
+            text:
+        gelb_woerter:
+          name: Recycling – keywords
+          default: Recycling, Plastic, Packaging, Cans
+          selector:
+            text:
+        bio_woerter:
+          name: Organic – keywords
+          default: Garden, Food, Organic, Compost
+          selector:
+            text:
+
+mode: single
+
+triggers:
+  - trigger: time
+    at: !input uhrzeit
+
+variables:
+  kalender: !input kalender
+  handys: !input handys
+  nur_zuhause: !input nur_zuhause
+  sorten:
+    - name: General waste
+      zeichen: ⬛
+      woerter: !input rest_woerter
+    - name: Paper
+      zeichen: 🟦
+      woerter: !input papier_woerter
+    - name: Recycling
+      zeichen: 🟨
+      woerter: !input gelb_woerter
+    - name: Organic
+      zeichen: 🟫
+      woerter: !input bio_woerter
+
+actions:
+  - action: calendar.get_events
+    target:
+      entity_id: "{{ kalender }}"
+    data:
+      start_date_time: "{{ today_at('00:00') + timedelta(days=1) }}"
+      end_date_time: "{{ today_at('00:00') + timedelta(days=2) }}"
+    response_variable: termine
+  - variables:
+      morgen: "{{ (now() + timedelta(days=1)).date().isoformat() }}"
+      # Each bin only once; unknown events with their own title
+      tonnen: >
+        {% set ns = namespace(l=[]) %}
+        {% for e in termine[kalender].events if e.start[:10] == morgen %}
+          {% set titel = e.summary | lower %}
+          {% set ns2 = namespace(t=none) %}
+          {% for s in sorten if ns2.t is none %}
+            {% set w = s.woerter.split(',') | map('trim') | map('lower') | reject('eq', '') | list %}{% set plus = w | reject('match', '!') | list %}{% set minus = w | select('match', '!') | map('replace', '!', '', 1) | map('trim') | reject('eq', '') | list %}
+            {% if plus | select('in', titel) | list | count > 0 and minus | select('in', titel) | list | count == 0 %}{% set ns2.t = s.zeichen ~ ' ' ~ s.name %}{% endif %}
+          {% endfor %}
+          {% set t = ns2.t if ns2.t is not none else '🗑️ ' ~ e.summary %}
+          {% if t not in ns.l %}{% set ns.l = ns.l + [t] %}{% endif %}
+        {% endfor %}
+        {{ ns.l }}
+      empfaenger: >
+        {% set ns = namespace(l=[]) %}
+        {% for d in handys %}
+          {% set tr = device_entities(d) | select('match', 'device_tracker\.') | list %}
+          {% if not nur_zuhause or (tr | count > 0 and is_state(tr[0], 'home')) %}{% set ns.l = ns.l + [d] %}{% endif %}
+        {% endfor %}{{ ns.l }}
+  - condition: template
+    value_template: "{{ tonnen | count > 0 }}"
+  - repeat:
+      for_each: "{{ empfaenger }}"
+      sequence:
+        - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+          continue_on_error: true
+          data:
+            title: "Waste collection tomorrow"
+            message: "{{ tonnen | join(', ') }} – please put out tonight."
+            data:
+              tag: muell

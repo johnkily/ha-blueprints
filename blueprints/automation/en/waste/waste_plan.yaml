@@ -1,0 +1,121 @@
+blueprint:
+  name: Waste – plan for the tile card
+  description: >
+    Reads the waste calendar and writes the next pickup per bin into a text
+    helper. The waste tile card draws the four bins with “in 6 days” and the
+    two-week strip from it.
+
+
+    Create a text helper first (Settings → Devices & services → Helpers →
+    Text, name “Waste plan”, maximum length 255).
+
+    Guide: https://github.com/johnkily/ha-blueprints/blob/main/docs/en/muell.md – like it? A ⭐ on GitHub helps others find it.
+  domain: automation
+  author: johnkily
+  homeassistant:
+    min_version: 2024.10.0
+  source_url: https://github.com/johnkily/ha-blueprints/blob/main/blueprints/automation/en/waste/waste_plan.yaml
+  input:
+    kalender:
+      name: Waste calendar
+      selector:
+        entity:
+          filter:
+            - domain: calendar
+    ziel:
+      name: Text helper “Waste plan”
+      description: Maximum length 255.
+      selector:
+        entity:
+          filter:
+            - domain: input_text
+    sorten:
+      name: Bins
+      description: >-
+        Which words in the calendar event belong to which bin. Separate several words with
+        commas, case doesn't matter. A ! in front excludes: `General, !Bulky` matches
+        “General waste” but not “Bulky general waste”.
+      collapsed: true
+      input:
+        rest_woerter:
+          name: General waste – keywords
+          default: General, Rubbish, Residual, Refuse, Landfill
+          selector:
+            text:
+        papier_woerter:
+          name: Paper – keywords
+          default: Paper, Cardboard
+          selector:
+            text:
+        gelb_woerter:
+          name: Recycling – keywords
+          default: Recycling, Plastic, Packaging, Cans
+          selector:
+            text:
+        bio_woerter:
+          name: Organic – keywords
+          default: Garden, Food, Organic, Compost
+          selector:
+            text:
+
+mode: restart
+
+triggers:
+  - trigger: homeassistant
+    event: start
+  - trigger: time_pattern
+    hours: /3
+  - trigger: time
+    at: "00:01:00"
+  - trigger: state
+    entity_id: !input kalender
+
+variables:
+  kalender: !input kalender
+  ziel: !input ziel
+  sorten:
+    - k: r
+      woerter: !input rest_woerter
+    - k: p
+      woerter: !input papier_woerter
+    - k: g
+      woerter: !input gelb_woerter
+    - k: b
+      woerter: !input bio_woerter
+
+actions:
+  - action: calendar.get_events
+    target:
+      entity_id: "{{ kalender }}"
+    data:
+      start_date_time: "{{ today_at('00:00') }}"
+      end_date_time: "{{ today_at('00:00') + timedelta(days=60) }}"
+    response_variable: termine
+  - variables:
+      # Plain text format (HA would turn JSON into an object when writing it):
+      #   “p2026-10-29 b2026-11-05 g2026-11-09 r2026-12-12 | 2026-10-29p 2026-11-05b”
+      #   first the next pickup per bin (p paper, b organic, g recycling, r general),
+      #   then all pickups of the next 14 days for the strip.
+      plan: >
+        {% set heute = now().date().isoformat() %}
+        {% set grenze = (now() + timedelta(days=14)).date().isoformat() %}
+        {% set ns = namespace(n=[], keys=[], s=[]) %}
+        {% for e in termine[kalender].events | sort(attribute='start') %}
+          {% set tag = e.start[:10] %}
+          {% if tag >= heute %}
+            {% set titel = e.summary | lower %}
+            {% for s in sorten %}
+              {% set w = s.woerter.split(',') | map('trim') | map('lower') | reject('eq', '') | list %}{% set plus = w | reject('match', '!') | list %}{% set minus = w | select('match', '!') | map('replace', '!', '', 1) | map('trim') | reject('eq', '') | list %}
+              {% if plus | select('in', titel) | list | count > 0 and minus | select('in', titel) | list | count == 0 %}
+                {% if s.k not in ns.keys %}{% set ns.keys = ns.keys + [s.k] %}{% set ns.n = ns.n + [s.k ~ tag] %}{% endif %}
+                {% if tag < grenze and (tag ~ s.k) not in ns.s %}{% set ns.s = ns.s + [tag ~ s.k] %}{% endif %}
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+        {{ ns.n | join(' ') }} | {{ ns.s[:12] | join(' ') }}
+  - action: input_text.set_value
+    target:
+      entity_id: "{{ ziel }}"
+    data:
+      value: "{{ plan }}"

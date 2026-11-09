@@ -1,0 +1,178 @@
+blueprint:
+  name: AWTRIX – waste bin indicator in the corner
+  description: >
+    A corner of the AWTRIX pixel clock lights up in the colour of the bin that
+    is collected tomorrow – from the evening before, blinking in the morning of
+    collection day. Reads any waste calendar that exists in Home Assistant as a
+    calendar: your city's ICS link via the “Remote Calendar” integration, Waste
+    Collection Schedule or your own calendar.
+
+
+    Requirement: AWTRIX 3 is connected to the same MQTT broker as Home
+    Assistant. Guide: https://github.com/johnkily/ha-blueprints/blob/main/docs/en/awtrix.md – like it? A ⭐ on GitHub helps others find it.
+  domain: automation
+  author: johnkily
+  homeassistant:
+    min_version: 2024.10.0
+  source_url: https://github.com/johnkily/ha-blueprints/blob/main/blueprints/automation/en/awtrix/waste_bin_indicator.yaml
+  input:
+    kalender:
+      name: Waste calendar
+      selector:
+        entity:
+          filter:
+            - domain: calendar
+    uhren:
+      name: MQTT name of the clock(s)
+      description: >
+        Shown in the AWTRIX web interface under MQTT → Prefix, e.g.
+        “awtrix_a1b2c3”. Separate several clocks with commas.
+      selector:
+        text:
+    ecke:
+      name: Corner
+      default: "1"
+      selector:
+        select:
+          options:
+            - label: Top right (1)
+              value: "1"
+            - label: Middle right (2)
+              value: "2"
+            - label: Bottom right (3)
+              value: "3"
+    vorabend:
+      name: Show from (day before)
+      default: "15:00:00"
+      selector:
+        time:
+    bis:
+      name: Show until (collection day)
+      default: "10:00:00"
+      selector:
+        time:
+    blinken:
+      name: Blink on collection day
+      default: true
+      selector:
+        boolean:
+    sorten:
+      name: Bins
+      description: >-
+        Which words in the calendar event belong to which bin. Separate several words with
+        commas, case doesn't matter. A ! in front excludes: `General, !Bulky` matches
+        “General waste” but not “Bulky general waste”.
+      collapsed: true
+      input:
+        rest_woerter:
+          name: General waste – keywords
+          description: Separate several with commas. Case doesn't matter.
+          default: General, Rubbish, Residual, Refuse, Landfill
+          selector:
+            text:
+        rest_farbe:
+          name: General waste – colour
+          default: [160, 160, 160]
+          selector:
+            color_rgb:
+        papier_woerter:
+          name: Paper – keywords
+          default: Paper, Cardboard
+          selector:
+            text:
+        papier_farbe:
+          name: Paper – colour
+          default: [0, 80, 255]
+          selector:
+            color_rgb:
+        gelb_woerter:
+          name: Recycling – keywords
+          default: Recycling, Plastic, Packaging, Cans
+          selector:
+            text:
+        gelb_farbe:
+          name: Recycling – colour
+          default: [255, 200, 0]
+          selector:
+            color_rgb:
+        bio_woerter:
+          name: Organic – keywords
+          default: Garden, Food, Organic, Compost
+          selector:
+            text:
+        bio_farbe:
+          name: Organic – colour
+          default: [0, 200, 0]
+          selector:
+            color_rgb:
+
+mode: restart
+
+triggers:
+  - trigger: time_pattern
+    minutes: /10
+  - trigger: homeassistant
+    event: start
+  - trigger: state
+    entity_id: !input kalender
+
+variables:
+  kalender: !input kalender
+  uhren_text: !input uhren
+  ecke: !input ecke
+  vorabend: !input vorabend
+  bis: !input bis
+  blinken: !input blinken
+  sorten:
+    - woerter: !input rest_woerter
+      farbe: !input rest_farbe
+    - woerter: !input papier_woerter
+      farbe: !input papier_farbe
+    - woerter: !input gelb_woerter
+      farbe: !input gelb_farbe
+    - woerter: !input bio_woerter
+      farbe: !input bio_farbe
+  uhren: "{{ uhren_text.split(',') | map('trim') | reject('eq', '') | list }}"
+
+conditions:
+  - condition: template
+    value_template: "{{ uhren | count > 0 }}"
+
+actions:
+  - action: calendar.get_events
+    target:
+      entity_id: "{{ kalender }}"
+    data:
+      start_date_time: "{{ today_at('00:00') }}"
+      end_date_time: "{{ today_at('00:00') + timedelta(days=2) }}"
+    response_variable: termine
+    continue_on_error: true
+  - variables:
+      zeit: "{{ now().strftime('%H:%M:%S') }}"
+      # Evening before: tomorrow's events; on collection day until “until”: today's events
+      phase: >
+        {% if zeit >= vorabend %}morgen{% elif zeit < bis %}heute{% else %}aus{% endif %}
+      tag: >
+        {{ (now() + timedelta(days=1 if phase == 'morgen' else 0)).date().isoformat() }}
+      farbe: >
+        {% set ns = namespace(f=[0, 0, 0]) %}
+        {% if phase != 'aus' and termine is defined and kalender in termine %}
+          {% for e in termine[kalender].events if e.start[:10] == tag and ns.f == [0, 0, 0] %}
+            {% set titel = e.summary | lower %}
+            {% for s in sorten if ns.f == [0, 0, 0] %}
+              {% set w = s.woerter.split(',') | map('trim') | map('lower') | reject('eq', '') | list %}{% set plus = w | reject('match', '!') | list %}{% set minus = w | select('match', '!') | map('replace', '!', '', 1) | map('trim') | reject('eq', '') | list %}
+              {% if plus | select('in', titel) | list | count > 0 and minus | select('in', titel) | list | count == 0 %}{% set ns.f = s.farbe | map('int') | list %}{% endif %}
+            {% endfor %}
+          {% endfor %}
+        {% endif %}
+        {{ ns.f }}
+  - repeat:
+      for_each: "{{ uhren }}"
+      sequence:
+        - action: mqtt.publish
+          data:
+            topic: "{{ repeat.item }}/indicator{{ ecke }}"
+            payload: >
+              {% set d = {'color': farbe} %}
+              {% if phase == 'heute' and blinken and farbe != [0, 0, 0] %}{% set d = dict(d, blink=800) %}{% endif %}
+              {{ d | to_json }}

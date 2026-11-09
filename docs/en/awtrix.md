@@ -15,7 +15,7 @@ Each can be used on its own, and all of them work with several clocks at once.
 
 *The three corners on the right: top shows whether there is PV surplus right now, middle the battery traffic light, bottom the waste bin indicator – green here for “organic waste tomorrow”.*
 
-> **Note:** the input labels inside the blueprints are German. This guide gives the German label as it appears in Home Assistant, followed by its meaning.
+> **English versions** with English labels exist for the electricity price and the waste bin indicator (import buttons below). The battery traffic light and the open-door warning are still German – this guide gives their German labels followed by the meaning.
 
 ## What you need
 
@@ -45,7 +45,7 @@ Each can be used on its own, and all of them work with several clocks at once.
 
 | Electricity price | Battery traffic light | Waste bin indicator |
 |---|---|---|
-| [![Import](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fawtrix%2Fstrompreis.yaml) | [![Import](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fawtrix%2Fakku_ampel.yaml) | [![Import](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fawtrix%2Fmuell_ampel.yaml) |
+| [![Import](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fen%2Fawtrix%2Felectricity_price.yaml) | [![Import](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fawtrix%2Fakku_ampel.yaml) | [![Import](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fen%2Fawtrix%2Fwaste_bin_indicator.yaml) |
 
 Tap the button → **“Import blueprint”**.
 
@@ -55,16 +55,16 @@ Questions and feedback on the electricity price blueprint: [topic in the Home As
 
 *Settings → Automations & scenes → Blueprints* → tap the blueprint.
 
-### Electricity price (*AWTRIX – aktueller Strompreis*)
+### Electricity price
 
-| Field (German label) | What to enter |
+| Field | What to enter |
 |---|---|
-| Strompreis-Sensor – *price sensor* | your price sensor, e.g. “Electricity price” from Tibber |
-| MQTT-Name der Uhr(en) – *MQTT name of the clock(s)* | the prefix from step 1.5 – several clocks separated by commas: `awtrix_a1b2c3, awtrix_d4e5f6` |
-| Grün bis (ct/kWh) / Rot ab (ct/kWh) – *green up to / red from* | your price limits in ct/kWh (default: green up to 25, red from 33) |
-| Nachkommastellen – *decimal places* | 1 fits the clock well; with an icon, 2 decimals get tight |
-| Icon bei günstigem Preis / Icon bei mittlerem und hohem Preis (optional) – *icons* | an icon stored on the clock (see below); leaving it empty is fine |
-| Anzeigedauer (Sekunden) – *display time* | seconds per cycle (default 10) |
+| Electricity price sensor | your price sensor, e.g. “Electricity price” from Tibber |
+| MQTT name of the clock(s) | the prefix from step 1.5 – several clocks separated by commas: `awtrix_a1b2c3, awtrix_d4e5f6` |
+| Green up to / Red from (ct/kWh) | your price limits in ct/kWh (default: green up to 25, red from 33) |
+| Decimal places | 1 fits the clock well; with an icon, 2 decimals get tight |
+| Icon for a low price / for a medium or high price (optional) | an icon stored on the clock (see below); leaving it empty is fine |
+| Display time (seconds) | seconds per cycle (default 10) |
 
 The price is sent on every change and additionally every 15 minutes. If the sensor stays silent for 30 minutes, the app disappears instead of showing an outdated price.
 
@@ -73,21 +73,21 @@ The price is sent on every change and additionally every 15 minutes. If the sens
 | Field (German label) | What to enter |
 |---|---|
 | Ladestand-Sensor – *state of charge sensor* | e.g. the battery state of charge of your inverter |
-| MQTT-Name der Uhr(en) | as above |
+| MQTT name of the clock(s) | as above |
 | Ecke – *corner* | one of the three corners on the right (default: middle) |
 
 **Save** – done. The clock reacts to the next new value, at the latest after a restart of Home Assistant.
 
-### Waste bin indicator (*AWTRIX – Müll-Ampel in der Ecke*)
+### Waste bin indicator
 
-| Field (German label) | What to enter |
+| Field | What to enter |
 |---|---|
-| Abfallkalender – *waste calendar* | your waste collection calendar (see next section) |
-| MQTT-Name der Uhr(en) | as above |
-| Ecke – *corner* | default: top right. Don't use the same corner as the battery traffic light. |
-| Anzeigen ab (Vortag) / Anzeigen bis (Abholtag) – *show from (day before) / until (collection day)* | default: from 15:00 the day before until 10:00 on collection day |
-| Am Abholtag blinken – *blink on collection day* | in the morning, as a reminder that the bin has to go out |
-| Tonnen – *bins* (expand) | Which words in the calendar event belong to which bin, and the colours. The defaults are German (Rest/Grau = residual, Papier/Blau = paper, Gelb/Wertstoff = recycling, Bio/Braun = organic). **Replace them with the words your calendar uses**, e.g. “Paper”, “Recycling”, “Garden”. Case doesn't matter; several words separated by commas. |
+| Waste calendar | your waste collection calendar (see next section) |
+| MQTT name of the clock(s) | as above |
+| Corner | default: top right. Don't use the same corner as the battery traffic light. |
+| Show from (day before) / Show until (collection day) | default: from 15:00 the day before until 10:00 on collection day |
+| Blink on collection day | in the morning, as a reminder that the bin has to go out |
+| Bins (expand) | Which words in the calendar event belong to which bin, and the colours. Defaults: General/Rubbish/Residual, Paper/Cardboard, Recycling/Plastic/Packaging, Garden/Food/Organic. **Adjust them to the words your calendar uses.** A `!` in front excludes a word. Case doesn't matter; several words separated by commas. |
 
 The indicator checks every 10 minutes. If two bins are collected on the same day, it shows the first one in the list.
 
@@ -100,7 +100,7 @@ Questions and feedback are welcome in the [Home Assistant forum](https://communi
 | Field (German label) | What to enter |
 |---|---|
 | Türen, Tore, Fenster – *doors, gates, windows* | the sensors, e.g. garage door and gate (binary sensors or covers) |
-| MQTT-Name der Uhr(en) | as above |
+| MQTT name of the clock(s) | as above |
 | Erst warnen nach – *warn after* | e.g. 5 minutes – then the clock doesn't warn when the garage door is open briefly while you drive out. 0 = immediately. |
 | Ecke, Farbe, Blinken (Millisekunden) – *corner, colour, blinking* | default: top right, red, 500 ms. 0 ms = steady light. |
 | Zusätzlich Meldung anzeigen – *also show a notification* | the notification “OFFEN: Garagentor” stays in front until everything is closed again (or someone presses the middle button). *Text der Meldung* changes the text; *Ausgeschaltete Uhr für die Meldung einschalten* also wakes a clock that is switched off. |

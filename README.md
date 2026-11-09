@@ -97,12 +97,16 @@ Ready-made Home Assistant automations: click **Import**, pick your devices, done
 | Türen abschließen, wenn niemand zu Hause ist | Locks the smart locks once everybody has left – doors that are open are reported, not bolted |
 | Zigbee-Wächter – Koordinator hängt, automatisch neu starten | If the Zigbee coordinator gets stuck, restarts the chip and Zigbee2MQTT and notifies you – asks a device every 5 minutes instead of waiting for silence |
 
-The import buttons are in the tables above and in each guide. **The input labels inside the blueprints are German** – the English guides list every field with its German label and meaning.
+The import buttons are in the tables above and in each guide. **The original blueprints have German labels** – the English guides list every field with its meaning. For the most popular ones there are English versions:
 
 **English versions** (English labels and notifications, same function – more coming):
 
 | Blueprint | Import |
 |---|---|
+| AWTRIX – current electricity price (green/yellow/red) | [![Import](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fen%2Fawtrix%2Felectricity_price.yaml) |
+| AWTRIX – waste bin indicator in the corner | [![Import](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fen%2Fawtrix%2Fwaste_bin_indicator.yaml) |
+| Waste – plan for the tile card | [![Import](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fen%2Fwaste%2Fwaste_plan.yaml) |
+| Waste – reminder the evening before | [![Import](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fen%2Fwaste%2Fwaste_reminder.yaml) |
 | Lock doors when nobody is home | [![Import](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fen%2Fsecurity%2Flock_doors_when_away.yaml) | Questions in English are welcome as an [issue](https://github.com/johnkily/ha-blueprints/issues) or under [Ideas](https://github.com/johnkily/ha-blueprints/discussions/categories/ideas).
 
 Lizenz / License: [MIT](LICENSE) · [Impressum](https://kilysworld.wordpress.com/impressum/) · [Datenschutz](https://kilysworld.wordpress.com/datenschutz/)
