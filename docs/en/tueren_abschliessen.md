@@ -4,7 +4,7 @@
 
 Once everybody has left, Home Assistant waits a while and then locks the smart locks that are still unlocked. If a door is actually standing open, it is **not** locked – the bolt would shoot into thin air and the door couldn't be pushed shut any more – instead your phone gets a warning. There is only a notification when something happened; if the doors were already locked, it stays quiet.
 
-> **Note:** the input labels inside the blueprint are German. This guide gives the German label as it appears in Home Assistant, followed by its meaning. The notifications are German for now (see below).
+> **English version** with English labels and notifications (since November 2026). The original German blueprint stays available and works the same – see the [German guide](../tueren_abschliessen.md).
 
 ## What you need
 
@@ -17,7 +17,7 @@ Once everybody has left, Home Assistant waits a while and then locks the smart l
 
 ## 1. Import the blueprint
 
-[![Import](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fsicherheit%2Ftueren_abschliessen.yaml)
+[![Import](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fen%2Fsecurity%2Flock_doors_when_away.yaml)
 
 ## 2. Create an exception switch *(recommended)*
 
@@ -27,24 +27,24 @@ If guests, the pet sitter or the grandparents are in the house but have no phone
 
 ## 3. Create the automation
 
-*Settings → Automations & scenes → Blueprints* → **Türen abschließen, wenn niemand zu Hause ist**.
+*Settings → Automations & scenes → Blueprints* → **Lock doors when nobody is home**.
 
-| Field (German label) | What to enter |
+| Field | What to enter |
 |---|---|
-| Wer muss weg sein – *who has to be away* | everyone who has a key |
-| Türschlösser – *door locks* | the locks that should be locked |
-| Abschließen nach – *lock after* | default 30 minutes – catches the “I forgot something” |
-| Nachricht an – *notify* | whose phone gets the notification; empty = no notification |
-| Türkontakte – *door contacts* (expand) | **in the same order as the locks** – the first contact belongs to the first lock |
-| Nicht abschließen, solange eingeschaltet – *don't lock while switched on* | the toggle from step 2 |
+| Who has to be away | everyone who has a key |
+| Door locks | the locks that should be locked |
+| Lock after | default 30 minutes – catches the “I forgot something” |
+| Notify | whose phone gets the notification; empty = no notification |
+| Door contacts (expand *Door contacts and exception*) | **in the same order as the locks** – the first contact belongs to the first lock |
+| Don't lock while this is on | the toggle from step 2 |
 
 ## What you get on your phone
 
-| Case | Notification (German) | Meaning |
+| Case | Notification | Meaning |
 |---|---|---|
-| All good | 🔒 **Türen abgeschlossen** – Niemand zu Hause. Abgeschlossen: Haustür, Hintertür. | Doors locked – nobody home. Locked: front door, back door. |
-| Door is open | ⚠️ **Tür nicht abgeschlossen** – … Steht offen, nicht verriegelt: Hintertür. | Door not locked – it's open, not bolted. |
-| Lock doesn't respond | ⚠️ **Tür nicht abgeschlossen** – … Schloss hat nicht reagiert: Hintertür. | Lock didn't respond (after waiting 60 seconds, e.g. battery empty or bolt jammed). |
+| All good | 🔒 **Doors locked** – Nobody home. Locked: Front door, Back door. | Everything locked. |
+| Door is open | ⚠️ **Door not locked** – … Standing open, not locked: Back door. | The door is open, so it wasn't bolted. |
+| Lock doesn't respond | ⚠️ **Door not locked** – … Lock did not respond: Back door. | Lock didn't respond (after waiting 60 seconds, e.g. battery empty or bolt jammed). |
 
 The door names come from your locks.
 
@@ -59,9 +59,9 @@ The door names come from your locks.
 | Problem | Solution |
 |---|---|
 | Never locks | *Settings → People*: does everybody show “Away” or another place? Without location access in the app, a person stays “Home” forever. |
-| Locks although someone is home | That person is missing under *Wer muss weg sein* – or doesn't have their phone with them. That's what the exception switch is for. |
+| Locks although someone is home | That person is missing under *Who has to be away* – or doesn't have their phone with them. That's what the exception switch is for. |
 | Warns “open” although the door is closed | Contacts and locks are in a different order. Check the order: first contact = first lock. |
-| No notification | Phone selected under *Nachricht an*? If in doubt, check under *Automation → Traces* whether it ran. |
+| No notification | Phone selected under *Notify*? If in doubt, check under *Automation → Traces* whether it ran. |
 
 
 **Like it?** A ⭐ on [GitHub](https://github.com/johnkily/ha-blueprints) helps others find it – questions and wishes are welcome as an [issue](https://github.com/johnkily/ha-blueprints/issues) or under [Ideas](https://github.com/johnkily/ha-blueprints/discussions/categories/ideas).

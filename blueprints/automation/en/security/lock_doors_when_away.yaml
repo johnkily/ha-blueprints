@@ -1,0 +1,170 @@
+blueprint:
+  name: Lock doors when nobody is home
+  description: >
+    Once all selected people have been away for a while, Home Assistant locks
+    the smart locks that are still unlocked. A door that is actually standing
+    open (according to its door contact) is not locked – the bolt would shoot
+    into thin air – you get a warning instead. A notification is only sent
+    when something happened. Optional exception switch for guests or pet sitters.
+
+
+    Guide: https://github.com/johnkily/ha-blueprints/blob/main/docs/en/tueren_abschliessen.md – like it? A ⭐ on GitHub helps others find it.
+  domain: automation
+  author: johnkily
+  homeassistant:
+    min_version: 2024.10.0
+  source_url: https://github.com/johnkily/ha-blueprints/blob/main/blueprints/automation/en/security/lock_doors_when_away.yaml
+  input:
+    personen:
+      name: Who has to be away
+      description: Doors are only locked when none of these people is home.
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - domain: person
+    schloesser:
+      name: Door locks
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - domain: lock
+    verzoegerung:
+      name: Lock after
+      description: How long nobody has to be home. Catches the quick “I forgot something”.
+      default: 30
+      selector:
+        number:
+          min: 1
+          max: 240
+          unit_of_measurement: min
+    handys:
+      name: Notify
+      description: Leave empty for no notification.
+      default: []
+      selector:
+        device:
+          multiple: true
+          filter:
+            - integration: mobile_app
+    extras:
+      name: Door contacts and exception (recommended)
+      collapsed: true
+      input:
+        kontakte:
+          name: Door contacts
+          description: >
+            In the same order as the locks (first contact belongs to the first
+            lock, and so on). A door that is standing open is not locked but
+            reported. If a lock has no contact, select fewer contacts – or move
+            that lock to the end of the list.
+          default: []
+          selector:
+            entity:
+              multiple: true
+              filter:
+                - domain: binary_sensor
+        ausnahme:
+          name: Don't lock while this is on
+          description: >
+            A toggle helper you switch on when someone without a phone is in
+            the house – guests, pet sitter, grandparents.
+          default: ""
+          selector:
+            entity:
+              filter:
+                - domain: input_boolean
+
+mode: single
+max_exceeded: silent
+
+# For the duration in the trigger (normal variables are not available there yet)
+trigger_variables:
+  personen_t: !input personen
+  verzoegerung_t: !input verzoegerung
+
+triggers:
+  - trigger: template
+    value_template: "{{ personen_t | count > 0 and personen_t | select('is_state', 'home') | list | count == 0 }}"
+    for:
+      seconds: "{{ (verzoegerung_t | float * 60) | int }}"
+  # After a Home Assistant restart the waiting time starts again –
+  # otherwise nothing would be locked if an update happens while everybody is away.
+  - trigger: homeassistant
+    event: start
+    id: start
+
+conditions:
+  - condition: template
+    value_template: "{{ personen_t | count > 0 and personen_t | select('is_state', 'home') | list | count == 0 }}"
+
+variables:
+  personen: !input personen
+  schloesser: !input schloesser
+  verzoegerung: !input verzoegerung
+  handys: !input handys
+  kontakte: !input kontakte
+  ausnahme: !input ausnahme
+  tag: "tueren_{{ this.attributes.id | default('abschliessen') }}"
+
+actions:
+  - if:
+      - condition: trigger
+        id: start
+    then:
+      - wait_template: "{{ personen | select('is_state', 'home') | list | count > 0 }}"
+        timeout:
+          seconds: "{{ (verzoegerung | float * 60) | int }}"
+      - condition: template
+        value_template: "{{ not wait.completed }}"
+  - condition: template
+    value_template: "{{ ausnahme == '' or not is_state(ausnahme, 'on') }}"
+  - variables:
+      # Per lock: still unlocked? Does the contact (same position in the list) report “open”?
+      tueren: >
+        {% set ns = namespace(l=[]) %}
+        {% for s in schloesser %}
+          {% set k = kontakte[loop.index0] if loop.index0 < kontakte | count else '' %}
+          {% set ns.l = ns.l + [{
+            'schloss': s,
+            'name': state_attr(s, 'friendly_name') or s,
+            'offen': states(s) in ['unlocked', 'open', 'opening', 'jammed'],
+            'steht_offen': k != '' and is_state(k, 'on')
+          }] %}
+        {% endfor %}{{ ns.l }}
+      zu_sperren: "{{ tueren | selectattr('offen') | rejectattr('steht_offen') | map(attribute='schloss') | list }}"
+      steht_offen: "{{ tueren | selectattr('offen') | selectattr('steht_offen') | map(attribute='name') | list }}"
+  - condition: template
+    value_template: "{{ zu_sperren | count > 0 or steht_offen | count > 0 }}"
+  - if:
+      - condition: template
+        value_template: "{{ zu_sperren | count > 0 }}"
+    then:
+      - action: lock.lock
+        target:
+          entity_id: "{{ zu_sperren }}"
+        continue_on_error: true
+      - wait_template: "{{ zu_sperren | reject('is_state', 'locked') | list | count == 0 }}"
+        timeout:
+          seconds: 60
+  - variables:
+      zu: "{{ tueren | selectattr('schloss', 'in', zu_sperren) | selectattr('schloss', 'is_state', 'locked') | map(attribute='name') | list }}"
+      fehler: "{{ tueren | selectattr('schloss', 'in', zu_sperren) | rejectattr('schloss', 'is_state', 'locked') | map(attribute='name') | list }}"
+      titel: "{{ '⚠️ Door not locked' if (steht_offen or fehler) else '🔒 Doors locked' }}"
+      text: >
+        {% set z = [] %}
+        {% if zu %}{% set z = z + ['Locked: ' ~ zu | join(', ') ~ '.'] %}{% endif %}
+        {% if fehler %}{% set z = z + ['Lock did not respond: ' ~ fehler | join(', ') ~ '.'] %}{% endif %}
+        {% if steht_offen %}{% set z = z + ['Standing open, not locked: ' ~ steht_offen | join(', ') ~ '.'] %}{% endif %}
+        Nobody home. {{ z | join(' ') }}
+  - repeat:
+      for_each: "{{ handys }}"
+      sequence:
+        - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+          continue_on_error: true
+          data:
+            title: "{{ titel }}"
+            message: "{{ text | trim }}"
+            data:
+              tag: "{{ tag }}"

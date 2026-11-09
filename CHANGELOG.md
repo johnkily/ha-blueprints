@@ -2,6 +2,8 @@
 
 ## Seit v1.2
 
+**English versions:** „Türen abschließen“ gibt es jetzt auch mit englischen Feldnamen und Meldungen (`blueprints/automation/en/security/lock_doors_when_away.yaml`). Erzeugt aus dem deutschen Original mit `tools/englisch.py` – die deutsche Datei bleibt unverändert. Weitere folgen. Anregung aus dem HA-Forum (danke, fleskefjes).
+
 **Neu:** Zigbee-Wächter – fragt alle 5 Minuten Zigbee-Geräte über Zigbee2MQTT nach ihrem Zustand; antwortet keines, startet er Zigbee-Chip (z. B. SMLIGHT SLZB-06) und Zigbee2MQTT neu und meldet das Ergebnis. Höchstens ein Neustart pro Sperrzeit.
 
 **Müll: Stichwörter ausschließen** – ein `!` davor sortiert Termine aus, z. B. `Restmüll, !Container`, wenn der Entsorger „Restmüll“ und „Restmüll Container“ getrennt führt. In *Müll – Plan*, *Müll – Erinnerung* und der AWTRIX-Müll-Ampel; bestehende Stichwörter funktionieren unverändert. Wunsch aus Issue #1 (danke, RealMunichMan). Blueprint unter *Blueprints → ⋮ → Blueprint erneut importieren* aktualisieren.
