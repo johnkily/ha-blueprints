@@ -16,11 +16,13 @@ Everything from one waste collection calendar – no HACS, no `configuration.yam
 
 Most cities or waste companies offer the collection calendar as an **ICS file** or **calendar subscription** (search for “waste collection ICS” + your city).
 
-1. Copy the link to the ICS file (it usually ends in `.ics`).
+1. Copy the link to the ICS file (it usually ends in `.ics`). **Don't click it** – the browser would just download the file. On a computer, right-click the link → “Copy link address”; on a phone, long-press the link → “Copy link”.
 2. In Home Assistant: *Settings → Devices & services → Add integration* → **Remote Calendar**.
 3. Enter the name “Waste” and paste the link. The calendar is then called `calendar.waste`.
 
 Alternatively, the HACS integration [Waste Collection Schedule](https://github.com/mampfes/hacs_waste_collection_schedule) provides a calendar directly for a great many cities.
+
+**New year, new link?** Some collectors publish a new calendar link every year. The card then shows no pickups from January. Get the new link, delete the Remote Calendar integration and add it again with the same name – the calendar is `calendar.waste` again, and the card and blueprints keep working. Waste Collection Schedule fetches the new year by itself.
 
 ## 2. Bins and keywords
 

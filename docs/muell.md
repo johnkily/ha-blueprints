@@ -14,11 +14,13 @@ Alles aus einem Abfallkalender – ohne HACS, ohne `configuration.yaml`:
 
 Fast jede Stadt oder jeder Entsorger bietet den Abfuhrkalender als **ICS-Datei** oder **Kalender-Abo** an (Suchbegriffe: „Abfallkalender ICS“ + Stadtname).
 
-1. Den Link zur ICS-Datei kopieren (er endet meist auf `.ics`).
+1. Den Link zur ICS-Datei kopieren (er endet meist auf `.ics`). **Nicht anklicken** – sonst lädt der Browser die Datei nur herunter. Am PC mit der rechten Maustaste auf den Link → „Link-Adresse kopieren“, am Handy den Link lange gedrückt halten → „Link kopieren“.
 2. In Home Assistant: *Einstellungen → Geräte & Dienste → Integration hinzufügen* → **Remote Calendar**.
 3. Name „Abfall“ eintragen und den Link einfügen. Der Kalender heißt dann `calendar.abfall`.
 
 Alternativ liefert die HACS-Integration [Waste Collection Schedule](https://github.com/mampfes/hacs_waste_collection_schedule) für sehr viele Städte direkt einen Kalender.
+
+**Neues Jahr, neuer Link?** Manche Entsorger stellen jedes Jahr einen neuen Kalender-Link bereit. Dann zeigt die Karte ab Januar keine Termine mehr. Neuen Link holen, die Remote-Calendar-Integration löschen und mit demselben Namen neu anlegen – der Kalender heißt dann wieder `calendar.abfall`, Karte und Blueprints laufen ohne Änderung weiter. Waste Collection Schedule holt die Termine fürs neue Jahr dagegen von selbst.
 
 ## 2. Kachel-Karte
 
@@ -186,8 +188,9 @@ styles:
       - width: 100%
 extra_styles: |
   @keyframes muell-wackeln {
-    0% { transform: rotate(0deg); } 25% { transform: rotate(-8deg); }
-    50% { transform: rotate(8deg); } 75% { transform: rotate(-4deg); } 100% { transform: rotate(0deg); }
+    /* beim Drehen leicht verkleinern – sonst schneidet button-card die Ecken ab */
+    0% { transform: rotate(0deg) scale(1); } 25% { transform: rotate(-5deg) scale(.88); }
+    50% { transform: rotate(5deg) scale(.88); } 75% { transform: rotate(-3deg) scale(.94); } 100% { transform: rotate(0deg) scale(1); }
   }
   @keyframes muell-leuchten {
     0%, 100% { box-shadow: inset 0 0 0 1px rgba(255,255,255,.25), 0 0 2px rgba(255,255,255,.1); }

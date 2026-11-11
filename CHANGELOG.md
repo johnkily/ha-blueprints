@@ -2,6 +2,8 @@
 
 ## Seit v1.2
 
+**Müll-Karte Profi:** Die wackelnde Kachel wird beim Drehen leicht verkleinert – vorher schnitt button-card die Ecken ab (Hinweis von Frank auf Facebook). Karte neu hineinkopieren. In der Anleitung: iCal-Link kopieren statt anklicken, und was beim Jahreswechsel zu tun ist.
+
 **English versions:** Türen abschließen, AWTRIX-Strompreis, AWTRIX-Müll-Ampel, Müll-Plan und Müll-Erinnerung gibt es jetzt auch mit englischen Feldnamen, Stichwörtern und Meldungen (`blueprints/automation/en/…`, Strompreis mit Dezimalpunkt). Erzeugt aus dem deutschen Original mit `tools/englisch.py` – die deutsche Datei bleibt unverändert. Anregung aus dem HA-Forum (danke, fleskefjes).
 
 **Neu:** Zigbee-Wächter – fragt alle 5 Minuten Zigbee-Geräte über Zigbee2MQTT nach ihrem Zustand; antwortet keines, startet er Zigbee-Chip (z. B. SMLIGHT SLZB-06) und Zigbee2MQTT neu und meldet das Ergebnis. Höchstens ein Neustart pro Sperrzeit.
