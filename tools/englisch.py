@@ -241,6 +241,79 @@ BLUEPRINTS.update({
             ("– bitte heute Abend rausstellen.", "– please put out tonight."),
         ],
     },
+    "blueprints/automation/zigbee/stumme_geraete.yaml": {
+        "ziel": "blueprints/automation/en/zigbee/silent_devices.yaml",
+        "ersetzen": [
+            ("name: Stumme Geräte melden (leere Batterie)", "name: Report silent devices (empty battery)"),
+            block("  description: >\n    Findet Zigbee-Geräte", "  domain: automation",
+                  "  description: >\n"
+                  "    Finds Zigbee devices that stopped reporting – usually the battery is empty.\n"
+                  "    Home Assistant just keeps showing their last value (“closed”, “80 %”), so\n"
+                  "    nobody notices. Notifies about newly silent devices, says “Back again” after\n"
+                  "    the battery swap and optionally sends a weekly overview of silent devices and\n"
+                  "    nearly empty batteries.\n\n\n"
+                  "    Requirement: Zigbee2MQTT with the “Last seen” entity (in Zigbee2MQTT under\n"
+                  "    Settings → Advanced → “Last seen” = ISO_8601, then enable the entities in Home\n"
+                  "    Assistant). Guide: https://github.com/johnkily/ha-blueprints/blob/main/docs/en/stumme_geraete.md – " + STERN + "\n"),
+            ("name: Nachricht an", "name: Notify"),
+            ("name: Still ab", "name: Silent after"),
+            block("      description: >\n        So lange darf", "      default: 48",
+                  "      description: >\n"
+                  "        How long a device may stay quiet. Window contacts and buttons often only\n"
+                  "        report every few hours – 48 hours works well for us.\n"),
+            ("name: Nur Geräte mit Batterie", "name: Only devices with a battery"),
+            ("description: Aus = auch Steckdosen, Lampen und andere Geräte mit Netzstrom prüfen.",
+             "description: Off = also check plugs, lights and other mains-powered devices."),
+            ("name: Text-Helfer „Stumme Geräte“ (empfohlen)", "name: Text helper “Silent devices” (recommended)"),
+            block("      description: >\n        Damit sich der Blueprint merkt", "      default: \"\"",
+                  "      description: >\n"
+                  "        So the blueprint remembers what it has already reported. Only with a helper\n"
+                  "        you get “Back again” after the battery swap and a single notification if\n"
+                  "        Zigbee2MQTT fails completely. Create it under Helpers → Text, maximum length 255.\n"),
+            ("name: Wochenübersicht und Ausnahmen", "name: Weekly overview and exceptions"),
+            ("name: Wochenübersicht am", "name: Weekly overview on"),
+            ("description: Listet alle stummen Geräte und fast leeren Batterien – nur wenn es etwas gibt.",
+             "description: Lists all silent devices and nearly empty batteries – only if there is something."),
+            ("label: Keine Wochenübersicht", "label: No weekly overview"),
+            ("label: Montag", "label: Monday"), ("label: Dienstag", "label: Tuesday"), ("label: Mittwoch", "label: Wednesday"),
+            ("label: Donnerstag", "label: Thursday"), ("label: Freitag", "label: Friday"), ("label: Samstag", "label: Saturday"),
+            ("label: Sonntag", "label: Sunday"),
+            ("name: Wochenübersicht um (Uhr)", "name: Weekly overview at (hour)"),
+            ("unit_of_measurement: Uhr", "unit_of_measurement: h"),
+            ("name: Batterie fast leer unter", "name: Battery nearly empty below"),
+            ("description: Für die Wochenübersicht. 0 = Batteriestand nicht prüfen.",
+             "description: For the weekly overview. 0 = don't check battery levels."),
+            ("name: Nicht prüfen", "name: Don't check"),
+            ("description: „Last seen“-Entitäten von Geräten, die bewusst lange schweigen dürfen.",
+             "description: “Last seen” entities of devices that are allowed to stay quiet for long."),
+            ("# Jede Stunde zur Minute 7 – keine Liste von Geräten nötig, neue Geräte kommen von selbst dazu.",
+             "# Every hour at minute 7 – no device list needed, new devices are included automatically."),
+            ("  # Alle „Last seen“-Sensoren durchgehen. Still = Zeitstempel älter als die Grenze oder\n"
+             "  # seit mindestens 15 Minuten „nicht verfügbar“ (Zigbee2MQTT-Verfügbarkeit). Direkt nach\n"
+             "  # einem Neustart ist alles kurz nicht verfügbar – deshalb die 15 Minuten.",
+             "  # Check all “Last seen” sensors. Silent = timestamp older than the limit or\n"
+             "  # “unavailable” for at least 15 minutes (Zigbee2MQTT availability). Right after a\n"
+             "  # restart everything is briefly unavailable – hence the 15 minutes."),
+            ("      # Fällt mehr als die Hälfte gleichzeitig aus, liegt es an Zigbee2MQTT, nicht an Batterien.",
+             "      # If more than half go silent at once, it's Zigbee2MQTT, not batteries."),
+            ("'⚠️ Viele Zigbee-Geräte still'", "'⚠️ Many Zigbee devices silent'"),
+            ("' von ' ~ pruef.alle ~ ' Geräten melden sich nicht. Läuft Zigbee2MQTT?'",
+             "' of ' ~ pruef.alle ~ ' devices are not reporting. Is Zigbee2MQTT running?'"),
+            ("'✅ Zigbee wieder normal', 'text': 'Die Geräte melden sich wieder.'",
+             "'✅ Zigbee back to normal', 'text': 'The devices are reporting again.'"),
+            ("('Gerät meldet' if neu | count == 1 else neu | count ~ ' Geräte melden') ~ ' sich nicht mehr'",
+             "('Device stopped' if neu | count == 1 else neu | count ~ ' devices stopped') ~ ' reporting'"),
+            ("' – vermutlich ist die Batterie leer.'", "' – probably the battery is empty.'"),
+            ("'✅ Wieder da'", "'✅ Back again'"),
+            ("('meldet' if wieder | count == 1 else 'melden') ~ ' sich wieder. Danke fürs Batterietauschen!'",
+             "('reports' if wieder | count == 1 else 'report') ~ ' again. Thanks for changing the battery!'"),
+            ("'Still: '", "'Silent: '"),
+            ("'Batterie fast leer: '", "'Battery nearly empty: '"),
+            ("'📋 Wochenübersicht Batterien'", "'📋 Weekly battery overview'"),
+            ("  # Merken, was gerade still ist (passt bis etwa 15 gleichzeitig stumme Geräte).",
+             "  # Remember what is silent right now (fits about 15 silent devices at the same time)."),
+        ],
+    },
 })
 
 

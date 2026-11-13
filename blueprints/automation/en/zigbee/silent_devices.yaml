@@ -1,0 +1,252 @@
+blueprint:
+  name: Report silent devices (empty battery)
+  description: >
+    Finds Zigbee devices that stopped reporting – usually the battery is empty.
+    Home Assistant just keeps showing their last value (“closed”, “80 %”), so
+    nobody notices. Notifies about newly silent devices, says “Back again” after
+    the battery swap and optionally sends a weekly overview of silent devices and
+    nearly empty batteries.
+
+
+    Requirement: Zigbee2MQTT with the “Last seen” entity (in Zigbee2MQTT under
+    Settings → Advanced → “Last seen” = ISO_8601, then enable the entities in Home
+    Assistant). Guide: https://github.com/johnkily/ha-blueprints/blob/main/docs/en/stumme_geraete.md – like it? A ⭐ on GitHub helps others find it.
+  domain: automation
+  author: johnkily
+  homeassistant:
+    min_version: 2024.10.0
+  source_url: https://github.com/johnkily/ha-blueprints/blob/main/blueprints/automation/en/zigbee/silent_devices.yaml
+  input:
+    handys:
+      name: Notify
+      selector:
+        device:
+          multiple: true
+          filter:
+            - integration: mobile_app
+    stunden:
+      name: Silent after
+      description: >
+        How long a device may stay quiet. Window contacts and buttons often only
+        report every few hours – 48 hours works well for us.
+      default: 48
+      selector:
+        number:
+          min: 6
+          max: 336
+          unit_of_measurement: h
+    nur_batterie:
+      name: Only devices with a battery
+      description: Off = also check plugs, lights and other mains-powered devices.
+      default: true
+      selector:
+        boolean:
+    merker:
+      name: Text helper “Silent devices” (recommended)
+      description: >
+        So the blueprint remembers what it has already reported. Only with a helper
+        you get “Back again” after the battery swap and a single notification if
+        Zigbee2MQTT fails completely. Create it under Helpers → Text, maximum length 255.
+      default: ""
+      selector:
+        entity:
+          filter:
+            - domain: input_text
+    extras:
+      name: Weekly overview and exceptions
+      collapsed: true
+      input:
+        wochentag:
+          name: Weekly overview on
+          description: Lists all silent devices and nearly empty batteries – only if there is something.
+          default: "5"
+          selector:
+            select:
+              options:
+                - label: No weekly overview
+                  value: "-1"
+                - label: Monday
+                  value: "0"
+                - label: Tuesday
+                  value: "1"
+                - label: Wednesday
+                  value: "2"
+                - label: Thursday
+                  value: "3"
+                - label: Friday
+                  value: "4"
+                - label: Saturday
+                  value: "5"
+                - label: Sunday
+                  value: "6"
+        stunde_woche:
+          name: Weekly overview at (hour)
+          default: 10
+          selector:
+            number:
+              min: 0
+              max: 23
+              unit_of_measurement: h
+        schwelle:
+          name: Battery nearly empty below
+          description: For the weekly overview. 0 = don't check battery levels.
+          default: 15
+          selector:
+            number:
+              min: 0
+              max: 50
+              unit_of_measurement: "%"
+        ausnahmen:
+          name: Don't check
+          description: “Last seen” entities of devices that are allowed to stay quiet for long.
+          default: []
+          selector:
+            entity:
+              multiple: true
+              filter:
+                - domain: sensor
+                  device_class: timestamp
+
+mode: single
+max_exceeded: silent
+
+# Every hour at minute 7 – no device list needed, new devices are included automatically.
+triggers:
+  - trigger: time_pattern
+    minutes: "7"
+
+variables:
+  handys: !input handys
+  stunden: !input stunden
+  nur_batterie: !input nur_batterie
+  merker: !input merker
+  wochentag: !input wochentag
+  stunde_woche: !input stunde_woche
+  schwelle: !input schwelle
+  ausnahmen: !input ausnahmen
+  # Check all “Last seen” sensors. Silent = timestamp older than the limit or
+  # “unavailable” for at least 15 minutes (Zigbee2MQTT availability). Right after a
+  # restart everything is briefly unavailable – hence the 15 minutes.
+  pruef: >
+    {% set grenze = stunden | float(48) * 3600 %}
+    {% set ns = namespace(alle=0, stumm=[], k=[], namen=[], frisch=[], leer=[]) %}
+    {% for s in states.sensor
+         if s.entity_id.endswith('_last_seen')
+         and s.attributes.device_class | default('') == 'timestamp'
+         and s.entity_id not in ausnahmen %}
+      {% set d = device_id(s.entity_id) %}
+      {% set akku = (device_entities(d) if d else []) | select('match', 'sensor\.')
+                    | select('is_state_attr', 'device_class', 'battery') | list %}
+      {% if akku | count > 0 or not nur_batterie %}
+        {% set ns.alle = ns.alle + 1 %}
+        {% set name = (device_attr(d, 'name_by_user') or device_attr(d, 'name')) if d else none %}
+        {% set name = name or state_attr(s.entity_id, 'friendly_name') or s.entity_id %}
+        {% set t = as_datetime(s.state, none) if s.state not in ['unknown', 'unavailable'] else none %}
+        {% set alter = (now() - t).total_seconds() if t is not none else 0 %}
+        {% set weg = (now() - s.last_changed).total_seconds() %}
+        {% if (t is not none and alter > grenze) or (s.state == 'unavailable' and weg > 900) %}
+          {% set k = s.entity_id[7:-10] %}
+          {% set k = k if k | length <= 16 else k[:8] ~ k[-8:] %}
+          {% set ns.stumm = ns.stumm + [s.entity_id] %}
+          {% set ns.k = ns.k + [k] %}
+          {% set ns.namen = ns.namen + [name] %}
+          {% if (t is not none and alter <= grenze + 3600) or (t is none and weg <= 900 + 3600) %}
+            {% set ns.frisch = ns.frisch + [name] %}
+          {% endif %}
+        {% elif akku | count > 0 and schwelle | float(0) > 0 and states(akku[0]) | is_number
+                and states(akku[0]) | float < schwelle | float %}
+          {% set ns.leer = ns.leer + [name ~ ' (' ~ states(akku[0]) | float | round(0) | int ~ ' %)'] %}
+        {% endif %}
+      {% endif %}
+    {% endfor %}
+    {{ {'alle': ns.alle, 'stumm': ns.stumm, 'k': ns.k, 'namen': ns.namen, 'frisch': ns.frisch, 'leer': ns.leer} }}
+
+actions:
+  - variables:
+      anzahl: "{{ pruef.stumm | count }}"
+      # If more than half go silent at once, it's Zigbee2MQTT, not batteries.
+      ausfall: "{{ anzahl >= 5 and anzahl > pruef.alle / 2 }}"
+      roh: "{{ states(merker) if merker != '' else '' }}"
+      war_ausfall: "{{ roh == '*' }}"
+      vorher: "{{ [] if roh in ['', 'unknown', 'unavailable', '*'] else roh.split(',') }}"
+      neu: >
+        {% if merker == '' %}{{ pruef.frisch }}
+        {% else %}
+          {% set ns2 = namespace(l=[]) %}
+          {% for i in range(pruef.k | count) if pruef.k[i] not in vorher %}{% set ns2.l = ns2.l + [pruef.namen[i]] %}{% endfor %}
+          {{ ns2.l }}
+        {% endif %}
+      wieder: >
+        {% set ns = namespace(l=[]) %}
+        {% for k in vorher if k not in pruef.k %}
+          {% set e = states.sensor | map(attribute='entity_id')
+                     | select('search', '^sensor\.' ~ k[:8]) | select('search', k[-8:] ~ '_last_seen$') | first | default('') %}
+          {% set d = device_id(e) if e else none %}
+          {% set ns.l = ns.l + [(device_attr(d, 'name_by_user') or device_attr(d, 'name')) if d else k] %}
+        {% endfor %}{{ ns.l }}
+      woche: >
+        {{ wochentag | int(-1) >= 0 and now().weekday() == wochentag | int(-1)
+           and now().hour == stunde_woche | int(10) }}
+      meldungen: >
+        {% set m = [] %}
+        {% if ausfall %}
+          {% if merker != '' and not war_ausfall %}
+            {% set m = m + [{'titel': '⚠️ Many Zigbee devices silent',
+                             'text': anzahl ~ ' of ' ~ pruef.alle ~ ' devices are not reporting. Is Zigbee2MQTT running?',
+                             'tag': 'stumme_geraete_ausfall'}] %}
+          {% endif %}
+        {% elif war_ausfall %}
+          {% set m = m + [{'titel': '✅ Zigbee back to normal', 'text': 'The devices are reporting again.', 'tag': 'stumme_geraete_ausfall'}] %}
+        {% else %}
+          {% if neu | count > 0 %}
+            {% set m = m + [{'titel': '🔋 ' ~ ('Device stopped' if neu | count == 1 else neu | count ~ ' devices stopped') ~ ' reporting',
+                             'text': neu | join(', ') ~ ' – probably the battery is empty.', 'tag': 'stumme_geraete'}] %}
+          {% endif %}
+          {% if wieder | count > 0 %}
+            {% set m = m + [{'titel': '✅ Back again',
+                             'text': wieder | join(', ') ~ ' ' ~ ('reports' if wieder | count == 1 else 'report') ~ ' again. Thanks for changing the battery!',
+                             'tag': 'stumme_geraete_ok'}] %}
+          {% endif %}
+        {% endif %}
+        {% if woche and not ausfall and (anzahl > 0 or pruef.leer | count > 0) %}
+          {% set z = [] %}
+          {% if anzahl > 0 %}{% set z = z + ['Silent: ' ~ pruef.namen | join(', ') ~ '.'] %}{% endif %}
+          {% if pruef.leer | count > 0 %}{% set z = z + ['Battery nearly empty: ' ~ pruef.leer | join(', ') ~ '.'] %}{% endif %}
+          {% set m = m + [{'titel': '📋 Weekly battery overview', 'text': z | join(' '), 'tag': 'stumme_geraete_woche'}] %}
+        {% endif %}
+        {{ m }}
+  - repeat:
+      for_each: "{{ meldungen }}"
+      sequence:
+        - variables:
+            meldung: "{{ repeat.item }}"
+        - repeat:
+            for_each: "{{ handys }}"
+            sequence:
+              - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+                continue_on_error: true
+                data:
+                  title: "{{ meldung.titel }}"
+                  message: "{{ meldung.text }}"
+                  data:
+                    tag: "{{ meldung.tag }}"
+  # Remember what is silent right now (fits about 15 silent devices at the same time).
+  - if:
+      - condition: template
+        value_template: "{{ merker != '' }}"
+    then:
+      - variables:
+          neuer_stand: >
+            {% if ausfall %}*{% else %}
+              {% set ns = namespace(s='') %}
+              {% for k in pruef.k if (ns.s ~ ',' ~ k) | length <= 255 %}{% set ns.s = (ns.s ~ ',' ~ k) if ns.s else k %}{% endfor %}{{ ns.s }}
+            {% endif %}
+      - if:
+          - condition: template
+            value_template: "{{ neuer_stand | trim != roh }}"
+        then:
+          - action: input_text.set_value
+            target:
+              entity_id: "{{ merker }}"
+            data:
+              value: "{{ neuer_stand | trim }}"

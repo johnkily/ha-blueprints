@@ -2,6 +2,8 @@
 
 ## Seit v1.2
 
+**Neu: Stumme Geräte melden** – prüft stündlich die „Last seen“-Entitäten von Zigbee2MQTT und meldet Geräte, die sich länger als 48 Stunden nicht gemeldet haben (meist leere Batterie), nach dem Tausch „Wieder da“, auf Wunsch eine Wochenübersicht mit fast leeren Batterien. Fällt Zigbee2MQTT ganz aus, gibt es eine einzige Meldung statt vieler. Deutsch und Englisch. Wunsch aus den Blog-Kommentaren zum Batterie-Beitrag.
+
 **Müll-Karte Profi:** Die wackelnde Kachel wird beim Drehen leicht verkleinert – vorher schnitt button-card die Ecken ab (Hinweis von Frank auf Facebook). Karte neu hineinkopieren. In der Anleitung: iCal-Link kopieren statt anklicken, und was beim Jahreswechsel zu tun ist.
 
 **English versions:** Türen abschließen, AWTRIX-Strompreis, AWTRIX-Müll-Ampel, Müll-Plan und Müll-Erinnerung gibt es jetzt auch mit englischen Feldnamen, Stichwörtern und Meldungen (`blueprints/automation/en/…`, Strompreis mit Dezimalpunkt). Erzeugt aus dem deutschen Original mit `tools/englisch.py` – die deutsche Datei bleibt unverändert. Anregung aus dem HA-Forum (danke, fleskefjes).
