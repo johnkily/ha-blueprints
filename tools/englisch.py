@@ -228,8 +228,33 @@ BLUEPRINTS.update({
             ("name: Uhrzeit der Erinnerung", "name: Time of the reminder"),
             ("name: Handys\n", "name: Phones\n"),
             ("name: Nur Handys, die zu Hause sind", "name: Only phones that are at home"),
-            ("description: Unterwegs kann niemand die Tonne rausstellen. Aus = alle Handys.",
-             "description: Nobody can put the bin out while away. Off = all phones."),
+            block("      description: >-\n        Unterwegs kann niemand", "      default: false",
+                  "      description: >-\n"
+                  "        Nobody can put the bin out while away. If nobody is home right now,\n"
+                  "        everybody gets it. Off = always all phones.\n"),
+            ("name: Erinnern, bis jemand „Rausgestellt“ tippt", "name: Remind until someone taps “Put out”"),
+            ("name: Wiederholen, bis bestätigt", "name: Repeat until confirmed"),
+            block("          description: >-\n            Die Nachricht bekommt", "          default: false",
+                  "          description: >-\n"
+                  "            The notification gets a “Put out ✅” button. Until someone taps it, it comes\n"
+                  "            back at the set interval – at the latest until the last reminder (same evening).\n"),
+            ("name: Abstand", "name: Interval"),
+            ("name: Letzte Erinnerung um", "name: Last reminder at"),
+            ("name: Datums-Helfer fürs Dashboard (optional)", "name: Date helper for the dashboard (optional)"),
+            block("          description: >-\n            Helfer „Datum", "          default: \"\"\n          selector:\n            entity:\n              filter:\n                - domain: input_datetime",
+                  "          description: >-\n"
+                  "            A “Date and/or time” helper with date only. After tapping it holds the\n"
+                  "            pickup date – a waste card can then show the bin as put out.\n"),
+            ("name: Nicht erinnern, solange eingeschaltet (optional)", "name: Don't remind while this is on (optional)"),
+            ("description: Zum Beispiel der Schalter für den Urlaubsmodus.", "description: For example your vacation mode toggle."),
+            ("  # Tippen auf „Rausgestellt“, nachdem die Erinnerungen schon vorbei sind",
+             "  # Tapping “Put out” after the reminders have already ended"),
+            ("      - stop: Bestätigt", "      - stop: Confirmed"),
+            ("  # Schon bestätigt (z. B. früher am Abend per Knopf)? Dann Ruhe.",
+             "  # Already confirmed (e.g. earlier this evening)? Then stay quiet."),
+            ("'title': 'Rausgestellt ✅'", "'title': 'Put out ✅'"),
+            ("            # Wer jetzt unterwegs ist, bekommt die nächste Erinnerung nicht mehr",
+             "            # Whoever has left in the meantime doesn't get the next reminder"),
             *TONNEN,
             ("    - name: Restmüll\n", "    - name: General waste\n"),
             ("    - name: Papier\n", "    - name: Paper\n"),

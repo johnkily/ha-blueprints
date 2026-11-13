@@ -35,10 +35,55 @@ blueprint:
             - integration: mobile_app
     nur_zuhause:
       name: Only phones that are at home
-      description: Nobody can put the bin out while away. Off = all phones.
+      description: >-
+        Nobody can put the bin out while away. If nobody is home right now,
+        everybody gets it. Off = always all phones.
       default: false
       selector:
         boolean:
+    bestaetigen:
+      name: Remind until someone taps “Put out”
+      collapsed: true
+      input:
+        wiederholen:
+          name: Repeat until confirmed
+          description: >-
+            The notification gets a “Put out ✅” button. Until someone taps it, it comes
+            back at the set interval – at the latest until the last reminder (same evening).
+          default: false
+          selector:
+            boolean:
+        abstand:
+          name: Interval
+          default: 60
+          selector:
+            number:
+              min: 15
+              max: 180
+              unit_of_measurement: min
+        bis:
+          name: Last reminder at
+          default: "21:00:00"
+          selector:
+            time:
+        merker:
+          name: Date helper for the dashboard (optional)
+          description: >-
+            A “Date and/or time” helper with date only. After tapping it holds the
+            pickup date – a waste card can then show the bin as put out.
+          default: ""
+          selector:
+            entity:
+              filter:
+                - domain: input_datetime
+        pause:
+          name: Don't remind while this is on (optional)
+          description: For example your vacation mode toggle.
+          default: ""
+          selector:
+            entity:
+              filter:
+                - domain: input_boolean
     sorten:
       name: Bins
       description: >-
@@ -69,15 +114,28 @@ blueprint:
             text:
 
 mode: single
+max_exceeded: silent
 
 triggers:
   - trigger: time
     at: !input uhrzeit
+    id: erinnern
+  # Tapping “Put out” after the reminders have already ended
+  - trigger: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: MUELL_RAUS
+    id: bestaetigt
 
 variables:
   kalender: !input kalender
   handys: !input handys
   nur_zuhause: !input nur_zuhause
+  wiederholen: !input wiederholen
+  abstand: !input abstand
+  bis: !input bis
+  merker: !input merker
+  pause: !input pause
   sorten:
     - name: General waste
       zeichen: ⬛
@@ -93,6 +151,31 @@ variables:
       woerter: !input bio_woerter
 
 actions:
+  - if:
+      - condition: template
+        value_template: "{{ trigger.id | default('') == 'bestaetigt' }}"
+    then:
+      - if:
+          - condition: template
+            value_template: "{{ merker != '' }}"
+        then:
+          - action: input_datetime.set_datetime
+            target:
+              entity_id: "{{ merker }}"
+            data:
+              date: "{{ (now() + timedelta(days=0 if now().hour < 12 else 1)).date().isoformat() }}"
+      - repeat:
+          for_each: "{{ handys }}"
+          sequence:
+            - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+              continue_on_error: true
+              data:
+                message: clear_notification
+                data:
+                  tag: muell
+      - stop: Confirmed
+  - condition: template
+    value_template: "{{ pause == '' or not is_state(pause, 'on') }}"
   - action: calendar.get_events
     target:
       entity_id: "{{ kalender }}"
@@ -121,16 +204,73 @@ actions:
         {% for d in handys %}
           {% set tr = device_entities(d) | select('match', 'device_tracker\.') | list %}
           {% if not nur_zuhause or (tr | count > 0 and is_state(tr[0], 'home')) %}{% set ns.l = ns.l + [d] %}{% endif %}
-        {% endfor %}{{ ns.l }}
+        {% endfor %}{{ ns.l if ns.l else handys }}
   - condition: template
     value_template: "{{ tonnen | count > 0 }}"
+  # Already confirmed (e.g. earlier this evening)? Then stay quiet.
+  - condition: template
+    value_template: "{{ merker == '' or states(merker) != morgen }}"
   - repeat:
-      for_each: "{{ empfaenger }}"
       sequence:
-        - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
-          continue_on_error: true
-          data:
-            title: "Waste collection tomorrow"
-            message: "{{ tonnen | join(', ') }} – please put out tonight."
-            data:
-              tag: muell
+        - repeat:
+            for_each: "{{ empfaenger }}"
+            sequence:
+              - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+                continue_on_error: true
+                data:
+                  title: "Waste collection tomorrow"
+                  message: >-
+                    {{ tonnen | join(', ') }} – please put out tonight.
+                  data: >-
+                    {% set d = {'tag': 'muell'} %}
+                    {% if wiederholen %}{% set d = dict(d, actions=[{'action': 'MUELL_RAUS', 'title': 'Put out ✅'}]) %}{% endif %}
+                    {{ d }}
+        - if:
+            - condition: template
+              value_template: "{{ wiederholen }}"
+          then:
+            - wait_for_trigger:
+                - trigger: event
+                  event_type: mobile_app_notification_action
+                  event_data:
+                    action: MUELL_RAUS
+              timeout:
+                minutes: "{{ abstand | float(60) }}"
+              continue_on_timeout: true
+            - if:
+                - condition: template
+                  value_template: "{{ wait.trigger is not none }}"
+              then:
+                - if:
+                    - condition: template
+                      value_template: "{{ merker != '' }}"
+                  then:
+                    - action: input_datetime.set_datetime
+                      target:
+                        entity_id: "{{ merker }}"
+                      data:
+                        date: "{{ morgen }}"
+                - repeat:
+                    for_each: "{{ handys }}"
+                    sequence:
+                      - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+                        continue_on_error: true
+                        data:
+                          message: clear_notification
+                          data:
+                            tag: muell
+            # Whoever has left in the meantime doesn't get the next reminder
+            - variables:
+                empfaenger: >
+                  {% set ns = namespace(l=[]) %}
+                  {% for d in handys %}
+                    {% set tr = device_entities(d) | select('match', 'device_tracker\.') | list %}
+                    {% if not nur_zuhause or (tr | count > 0 and is_state(tr[0], 'home')) %}{% set ns.l = ns.l + [d] %}{% endif %}
+                  {% endfor %}{{ ns.l if ns.l else handys }}
+      until:
+        - condition: template
+          value_template: >
+            {{ not wiederholen
+               or (wait is defined and wait.trigger is not none)
+               or (pause != '' and is_state(pause, 'on'))
+               or now().strftime('%H:%M') > bis[:5] }}

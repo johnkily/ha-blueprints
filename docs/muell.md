@@ -163,12 +163,15 @@ Sie nutzt **dieselben Daten** wie die Kachel-Karte oben (Helfer *Müll-Plan* + B
 # „Müll – Plan für die Kachel-Karte“. Keine YAML-Dateien, kein Template-Sensor.
 # Einfügen: Dashboard bearbeiten → Karte hinzufügen → „Manuell“ → hineinkopieren.
 # Heißt dein Helfer anders, Zeile 9 anpassen.
+# Optional: Datums-Helfer „Müll rausgestellt“ (input_datetime.mull_rausgestellt) aus dem
+# Blueprint „Müll – Erinnerung“ – nach dem Tippen auf „Rausgestellt“ zeigt die Tonne „✓ Draußen“.
 # Anleitung: https://github.com/johnkily/ha-blueprints/blob/main/docs/muell.md#profi-variante
 type: custom:button-card
 entity: input_text.mull_plan
 # sun.sun ändert sich alle paar Minuten – so zählt die Karte auch nach Mitternacht richtig weiter
 triggers_update:
   - sun.sun
+  - input_datetime.mull_rausgestellt
 show_name: false
 show_icon: false
 show_state: false
@@ -210,6 +213,8 @@ custom_fields:
              bg: 'linear-gradient(145deg, rgba(66,66,66,.4) 0%, rgba(33,33,33,.18) 100%)' }
       };
       const WT = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
+      // per Knopf in der Erinnerung als rausgestellt bestätigt (optional, Abholdatum)
+      const RAUS = (states['input_datetime.mull_rausgestellt'] || {}).state || '';
       const roh = (entity && entity.state) || '';
       if (!roh.includes('|')) {
         return '<div style="white-space:normal;opacity:.6;padding:12px;">Noch keine Abholtermine – läuft der Blueprint „Müll – Plan für die Kachel-Karte“?</div>';
@@ -218,7 +223,7 @@ custom_fields:
       const heute = new Date(); heute.setHours(0, 0, 0, 0);
       const datum = (iso) => new Date(iso + 'T00:00:00');
       const liste = teile[0].trim().split(/\s+/).filter(x => TONNEN[x[0]])
-        .map(x => ({ k: x[0], d: datum(x.slice(1)) }))
+        .map(x => ({ k: x[0], iso: x.slice(1), d: datum(x.slice(1)) }))
         .map(t => ({ ...t, tage: Math.round((t.d - heute) / 86400000) }))
         .sort((a, b) => a.tage - b.tage);
       if (!liste.length) return '<div style="opacity:.6;padding:12px;">Keine Abholtermine.</div>';
@@ -241,12 +246,19 @@ custom_fields:
           label = 'Morgen'; tag = '';
           extra += 'animation:muell-wackeln 2.5s ease-in-out infinite;';
         }
+        let pill = c.pill, schrift = '#fff';
+        if (t.tage <= 1 && RAUS === t.iso) {           // rausgestellt: Haken statt Wackeln
+          label = '✓ Draußen'; tag = '';
+          rand = '1px solid rgba(' + c.glow + ',.9)';
+          extra = 'box-shadow:inset 0 0 0 1px rgba(' + c.glow + ',.45),0 0 12px rgba(' + c.glow + ',.4);';
+          pill = 'rgba(255,255,255,.92)'; schrift = '#1b5e20';
+        }
         kacheln += '<div style="flex:1;min-width:0;background:' + c.bg + ';border:' + rand + ';border-radius:18px;'
           + 'display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:8px 2px;'
           + 'height:115px;box-sizing:border-box;' + extra + '">'
           + '<ha-icon icon="' + c.icon + '" style="--mdc-icon-size:36px;color:' + c.farbe + ';margin:0;"></ha-icon>'
           + '<div style="font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;opacity:.8;line-height:1;">' + c.name + '</div>'
-          + '<div style="background:' + c.pill + ';color:#fff;font-size:11px;font-weight:800;padding:2px 9px;border-radius:12px;line-height:1.3;">' + label + '</div>'
+          + '<div style="background:' + pill + ';color:' + schrift + ';font-size:11px;font-weight:800;padding:2px 9px;border-radius:12px;line-height:1.3;">' + label + '</div>'
           + '<div style="font-size:9px;opacity:.55;line-height:1.2;min-height:11px;">' + tag + '</div></div>';
       });
 
@@ -273,7 +285,9 @@ custom_fields:
       const n = liste[0];
       const gleich = liste.filter(t => t.tage === n.tage);   // zwei Tonnen am selben Tag
       const wann = n.tage <= 0 ? 'heute' : (n.tage === 1 ? 'morgen' : 'in ' + n.tage + ' Tagen');
-      const hinweis = (n.tage === 1 && new Date().getHours() >= 15) ? ' · <b>heute Abend rausstellen!</b>' : '';
+      const draussen = n.tage <= 1 && RAUS === n.iso;
+      const hinweis = draussen ? ' · <b style="color:#66bb6a;">✓ steht draußen</b>'
+        : ((n.tage === 1 && new Date().getHours() >= 15) ? ' · <b>heute Abend rausstellen!</b>' : '');
       const zeile = '<div style="display:flex;align-items:center;gap:10px;margin-top:10px;padding:10px 14px;border-radius:14px;'
         + 'background:rgba(127,127,127,.1);font-size:13px;text-align:left;">'
         + gleich.map(t => '<ha-icon icon="' + TONNEN[t.k].icon + '" style="--mdc-icon-size:20px;color:' + TONNEN[t.k].farbe
@@ -301,10 +315,26 @@ Farben, Icons und Namen stehen oben im Code im Block `TONNEN` – dort lassen si
 | Abfallkalender | `calendar.abfall` |
 | Uhrzeit | Vorgabe 19:00 |
 | Handys | wer erinnert werden soll |
-| Nur Handys, die zu Hause sind | Vorgabe aus – wer unterwegs ist, weiß dann trotzdem Bescheid |
+| Nur Handys, die zu Hause sind | Vorgabe aus. An: nur wer zu Hause ist – ist gerade niemand da, bekommen alle Bescheid |
+| Erinnern, bis jemand „Rausgestellt“ tippt *(aufklappen)* | siehe unten |
 | Tonnen *(aufklappen)* | Stichwörter je Tonne, falls dein Kalender die Tonnen anders nennt |
 
 Stehen mehrere Tonnen an, kommen alle in eine Nachricht. Einträge, die zu keiner Tonne passen (z. B. „Sperrmüll“), erscheinen mit ihrem eigenen Namen.
+
+### Erinnern, bis die Tonne draußen ist
+
+Eine Nachricht am Abend ist schnell weggewischt. Mit **„Wiederholen, bis bestätigt“** bekommt sie einen Knopf **„Rausgestellt ✅“** und kommt im eingestellten Abstand wieder (Vorgabe stündlich), bis jemand tippt – längstens bis zur **letzten Erinnerung** (Vorgabe 21 Uhr). Wer tippt, beendet die Erinnerungen für alle; die Nachricht verschwindet auf allen Handys.
+
+| Feld | Was eintragen |
+|---|---|
+| Wiederholen, bis bestätigt | an |
+| Abstand / Letzte Erinnerung um | Vorgabe 60 Minuten / 21:00 |
+| Datums-Helfer fürs Dashboard *(optional)* | einen Helfer *Datum und/oder Uhrzeit* (nur Datum) namens **Müll rausgestellt** anlegen und hier auswählen – die Profi-Karte zeigt die Tonne dann mit **„✓ Draußen“** statt zu wackeln |
+| Nicht erinnern, solange eingeschaltet *(optional)* | z. B. euer Urlaubsmodus-Schalter |
+
+![Profi-Karte nach „Rausgestellt“: die Tonne von morgen mit „✓ Draußen“](bilder/muell_draussen.png)
+
+Idee von Stefan auf Facebook – danke!
 
 ## Tonnen und Stichwörter
 

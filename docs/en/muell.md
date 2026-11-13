@@ -123,12 +123,26 @@ The bins are sorted by their next pickup. In the afternoon before a pickup, “P
 | Waste calendar | `calendar.waste` |
 | Time of the reminder | default 19:00 |
 | Phones | who should be reminded |
-| Only phones that are at home | default off – whoever is away still knows |
+| Only phones that are at home | default off. On: only people at home – if nobody is home, everybody gets it |
+| Remind until someone taps “Put out” (expand) | see below |
 | Bins (expand) | the keywords per bin (see step 2) |
 
 If several bins are due, they all come in one notification. Events that match no bin (e.g. bulky waste) appear with their own name.
 
 The notification: title *“Waste collection tomorrow”*, text e.g. *“🟦 Paper, 🟨 Recycling – please put out tonight.”*
+
+### Remind until the bin is out
+
+A single notification in the evening is easily swiped away. With **“Repeat until confirmed”** it gets a **“Put out ✅”** button and comes back at the set interval (default hourly) until someone taps it – at the latest until the **last reminder** (default 21:00). Whoever taps ends the reminders for everybody; the notification disappears on all phones.
+
+| Field | What to enter |
+|---|---|
+| Repeat until confirmed | on |
+| Interval / Last reminder at | default 60 minutes / 21:00 |
+| Date helper for the dashboard *(optional)* | a *Date and/or time* helper (date only). After tapping it holds the pickup date – the button-card variant in the [German guide](../muell.md#erinnern-bis-die-tonne-draußen-ist) then shows “✓ Draußen” instead of wobbling |
+| Don't remind while this is on *(optional)* | e.g. your vacation mode toggle |
+
+Idea by Stefan on Facebook – thanks!
 
 Questions and feedback are welcome in the [Home Assistant forum](https://community.home-assistant.io/t/waste-collection-dashboard-from-any-calendar-ics-next-pickup-per-bin-two-week-strip-no-hacs-needed/1030765).
 

@@ -38,10 +38,55 @@ blueprint:
             - integration: mobile_app
     nur_zuhause:
       name: Nur Handys, die zu Hause sind
-      description: Unterwegs kann niemand die Tonne rausstellen. Aus = alle Handys.
+      description: >-
+        Unterwegs kann niemand die Tonne rausstellen. Ist gerade niemand zu Hause,
+        bekommen alle Bescheid. Aus = immer alle Handys.
       default: false
       selector:
         boolean:
+    bestaetigen:
+      name: Erinnern, bis jemand „Rausgestellt“ tippt
+      collapsed: true
+      input:
+        wiederholen:
+          name: Wiederholen, bis bestätigt
+          description: >-
+            Die Nachricht bekommt einen Knopf „Rausgestellt ✅“. Bis jemand tippt, kommt sie
+            im eingestellten Abstand wieder – längstens bis zur letzten Erinnerung (am selben Abend).
+          default: false
+          selector:
+            boolean:
+        abstand:
+          name: Abstand
+          default: 60
+          selector:
+            number:
+              min: 15
+              max: 180
+              unit_of_measurement: min
+        bis:
+          name: Letzte Erinnerung um
+          default: "21:00:00"
+          selector:
+            time:
+        merker:
+          name: Datums-Helfer fürs Dashboard (optional)
+          description: >-
+            Helfer „Datum und/oder Uhrzeit“ mit nur Datum. Nach dem Tippen steht dort das
+            Abholdatum – die Müll-Karte zeigt dann „✓ Draußen“ statt zu wackeln.
+          default: ""
+          selector:
+            entity:
+              filter:
+                - domain: input_datetime
+        pause:
+          name: Nicht erinnern, solange eingeschaltet (optional)
+          description: Zum Beispiel der Schalter für den Urlaubsmodus.
+          default: ""
+          selector:
+            entity:
+              filter:
+                - domain: input_boolean
     sorten:
       name: Tonnen
       description: >-
@@ -72,15 +117,28 @@ blueprint:
             text:
 
 mode: single
+max_exceeded: silent
 
 triggers:
   - trigger: time
     at: !input uhrzeit
+    id: erinnern
+  # Tippen auf „Rausgestellt“, nachdem die Erinnerungen schon vorbei sind
+  - trigger: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: MUELL_RAUS
+    id: bestaetigt
 
 variables:
   kalender: !input kalender
   handys: !input handys
   nur_zuhause: !input nur_zuhause
+  wiederholen: !input wiederholen
+  abstand: !input abstand
+  bis: !input bis
+  merker: !input merker
+  pause: !input pause
   sorten:
     - name: Restmüll
       zeichen: ⬛
@@ -96,6 +154,31 @@ variables:
       woerter: !input bio_woerter
 
 actions:
+  - if:
+      - condition: template
+        value_template: "{{ trigger.id | default('') == 'bestaetigt' }}"
+    then:
+      - if:
+          - condition: template
+            value_template: "{{ merker != '' }}"
+        then:
+          - action: input_datetime.set_datetime
+            target:
+              entity_id: "{{ merker }}"
+            data:
+              date: "{{ (now() + timedelta(days=0 if now().hour < 12 else 1)).date().isoformat() }}"
+      - repeat:
+          for_each: "{{ handys }}"
+          sequence:
+            - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+              continue_on_error: true
+              data:
+                message: clear_notification
+                data:
+                  tag: muell
+      - stop: Bestätigt
+  - condition: template
+    value_template: "{{ pause == '' or not is_state(pause, 'on') }}"
   - action: calendar.get_events
     target:
       entity_id: "{{ kalender }}"
@@ -124,16 +207,73 @@ actions:
         {% for d in handys %}
           {% set tr = device_entities(d) | select('match', 'device_tracker\.') | list %}
           {% if not nur_zuhause or (tr | count > 0 and is_state(tr[0], 'home')) %}{% set ns.l = ns.l + [d] %}{% endif %}
-        {% endfor %}{{ ns.l }}
+        {% endfor %}{{ ns.l if ns.l else handys }}
   - condition: template
     value_template: "{{ tonnen | count > 0 }}"
+  # Schon bestätigt (z. B. früher am Abend per Knopf)? Dann Ruhe.
+  - condition: template
+    value_template: "{{ merker == '' or states(merker) != morgen }}"
   - repeat:
-      for_each: "{{ empfaenger }}"
       sequence:
-        - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
-          continue_on_error: true
-          data:
-            title: "Morgen ist Abholung"
-            message: "{{ tonnen | join(', ') }} – bitte heute Abend rausstellen."
-            data:
-              tag: muell
+        - repeat:
+            for_each: "{{ empfaenger }}"
+            sequence:
+              - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+                continue_on_error: true
+                data:
+                  title: "Morgen ist Abholung"
+                  message: >-
+                    {{ tonnen | join(', ') }} – bitte heute Abend rausstellen.
+                  data: >-
+                    {% set d = {'tag': 'muell'} %}
+                    {% if wiederholen %}{% set d = dict(d, actions=[{'action': 'MUELL_RAUS', 'title': 'Rausgestellt ✅'}]) %}{% endif %}
+                    {{ d }}
+        - if:
+            - condition: template
+              value_template: "{{ wiederholen }}"
+          then:
+            - wait_for_trigger:
+                - trigger: event
+                  event_type: mobile_app_notification_action
+                  event_data:
+                    action: MUELL_RAUS
+              timeout:
+                minutes: "{{ abstand | float(60) }}"
+              continue_on_timeout: true
+            - if:
+                - condition: template
+                  value_template: "{{ wait.trigger is not none }}"
+              then:
+                - if:
+                    - condition: template
+                      value_template: "{{ merker != '' }}"
+                  then:
+                    - action: input_datetime.set_datetime
+                      target:
+                        entity_id: "{{ merker }}"
+                      data:
+                        date: "{{ morgen }}"
+                - repeat:
+                    for_each: "{{ handys }}"
+                    sequence:
+                      - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+                        continue_on_error: true
+                        data:
+                          message: clear_notification
+                          data:
+                            tag: muell
+            # Wer jetzt unterwegs ist, bekommt die nächste Erinnerung nicht mehr
+            - variables:
+                empfaenger: >
+                  {% set ns = namespace(l=[]) %}
+                  {% for d in handys %}
+                    {% set tr = device_entities(d) | select('match', 'device_tracker\.') | list %}
+                    {% if not nur_zuhause or (tr | count > 0 and is_state(tr[0], 'home')) %}{% set ns.l = ns.l + [d] %}{% endif %}
+                  {% endfor %}{{ ns.l if ns.l else handys }}
+      until:
+        - condition: template
+          value_template: >
+            {{ not wiederholen
+               or (wait is defined and wait.trigger is not none)
+               or (pause != '' and is_state(pause, 'on'))
+               or now().strftime('%H:%M') > bis[:5] }}
