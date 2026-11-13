@@ -115,7 +115,7 @@ Most cities or waste companies offer the collection calendar as an **ICS file** 
 2. In Home Assistant: *Settings → Devices & services → Add integration* → **Remote Calendar**.
 3. Give it a name (e.g. “Waste”) and paste the link. Done – the calendar is then called `calendar.waste`.
 
-Alternatively, the HACS integration [Waste Collection Schedule](https://github.com/mampfes/hacs_waste_collection_schedule) provides a calendar directly for a great many cities.
+Alternatively, the [Waste Collection Schedule](https://github.com/mampfes/hacs_waste_collection_schedule) integration from the Marketplace (formerly HACS) provides a calendar directly for a great many cities.
 
 ## Load icons onto the clock
 

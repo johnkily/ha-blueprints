@@ -2,7 +2,7 @@
 
 *[English version](en/muell.md)*
 
-Alles aus einem Abfallkalender – ohne HACS, ohne `configuration.yaml`:
+Alles aus einem Abfallkalender – ohne Erweiterungen aus dem Marketplace (früher HACS), ohne `configuration.yaml`:
 
 - **Kachel-Karte** fürs Dashboard: vier Tonnen mit „in 6 Tagen“, darunter zwei Wochen als Mini-Kalender mit farbigen Punkten und „Als Nächstes“ – wahlweise als [Profi-Variante](#profi-variante-unsere-karte-mit-button-card) mit farbigen Kacheln (button-card).
 - **Erinnerung am Vorabend** (Blueprint): „🟦 Papier, 🟨 Gelber Sack – bitte heute Abend rausstellen.“
@@ -18,7 +18,7 @@ Fast jede Stadt oder jeder Entsorger bietet den Abfuhrkalender als **ICS-Datei**
 2. In Home Assistant: *Einstellungen → Geräte & Dienste → Integration hinzufügen* → **Remote Calendar**.
 3. Name „Abfall“ eintragen und den Link einfügen. Der Kalender heißt dann `calendar.abfall`.
 
-Alternativ liefert die HACS-Integration [Waste Collection Schedule](https://github.com/mampfes/hacs_waste_collection_schedule) für sehr viele Städte direkt einen Kalender.
+Alternativ liefert die Integration [Waste Collection Schedule](https://github.com/mampfes/hacs_waste_collection_schedule) aus dem Marketplace (früher HACS) für sehr viele Städte direkt einen Kalender.
 
 **Neues Jahr, neuer Link?** Manche Entsorger stellen jedes Jahr einen neuen Kalender-Link bereit. Dann zeigt die Karte ab Januar keine Termine mehr. Neuen Link holen, die Remote-Calendar-Integration löschen und mit demselben Namen neu anlegen – der Kalender heißt dann wieder `calendar.abfall`, Karte und Blueprints laufen ohne Änderung weiter. Waste Collection Schedule holt die Termine fürs neue Jahr dagegen von selbst.
 
@@ -147,10 +147,10 @@ So sieht die Karte bei uns zu Hause aus – farbige Kacheln, die nächste Tonne 
 
 ![Müll-Karte, Profi-Variante](bilder/muell_profi.png)
 
-Sie nutzt **dieselben Daten** wie die Kachel-Karte oben (Helfer *Müll-Plan* + Blueprint *Müll – Plan*), braucht aber die Frontend-Erweiterung **button-card** aus HACS. Einen Template-Sensor oder YAML-Dateien braucht sie nicht.
+Sie nutzt **dieselben Daten** wie die Kachel-Karte oben (Helfer *Müll-Plan* + Blueprint *Müll – Plan*), braucht aber die Frontend-Erweiterung **button-card** aus dem Marketplace (früher HACS). Einen Template-Sensor oder YAML-Dateien braucht sie nicht.
 
-1. **HACS** installieren, falls noch nicht vorhanden: [Anleitung auf hacs.xyz](https://hacs.xyz/docs/use/download/download/).
-2. **button-card** installieren: [![In HACS öffnen](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=custom-cards&repository=button-card&category=plugin) → **Herunterladen** → danach die Seite im Browser neu laden (bzw. die App neu starten).
+1. Den **Marketplace** öffnen: ab Home Assistant 2026.11 eingebaut unter *Einstellungen → Marketplace* (beim ersten Mal den Hinweis bestätigen). Ältere Versionen: [HACS installieren](https://hacs.xyz/docs/use/download/download/).
+2. **button-card** installieren: [![Im Marketplace öffnen](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=custom-cards&repository=button-card&category=plugin) → **Herunterladen** → danach die Seite im Browser neu laden (bzw. die App neu starten).
 3. Helfer **Müll-Plan** und Blueprint **Müll – Plan** wie in Schritt 2a und 2b einrichten (falls noch nicht geschehen).
 4. Karte einfügen: Dashboard → **Bearbeiten** → **Karte hinzufügen** → **Manuell** → den Code unten hineinkopieren → **Speichern**.
 
@@ -158,7 +158,7 @@ Sie nutzt **dieselben Daten** wie die Kachel-Karte oben (Helfer *Müll-Plan* + B
 
 ```yaml
 # Müll-Kachel-Karte – Profi-Variante (so sieht sie bei uns aus)
-# Braucht: HACS-Frontend-Erweiterung „button-card“ und den Text-Helfer
+# Braucht: Frontend-Erweiterung „button-card“ (Marketplace, früher HACS) und den Text-Helfer
 # „Müll-Plan“ (input_text.mull_plan), gefüllt vom Blueprint
 # „Müll – Plan für die Kachel-Karte“. Keine YAML-Dateien, kein Template-Sensor.
 # Einfügen: Dashboard bearbeiten → Karte hinzufügen → „Manuell“ → hineinkopieren.

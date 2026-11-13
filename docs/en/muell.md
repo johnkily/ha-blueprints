@@ -2,7 +2,7 @@
 
 *[Deutsche Fassung](../muell.md)*
 
-Everything from one waste collection calendar – no HACS, no `configuration.yaml`:
+Everything from one waste collection calendar – no Marketplace add-ons (formerly HACS), no `configuration.yaml`:
 
 - **Tile card** for your dashboard: four bins with “in 6 days”, below them two weeks as a mini calendar with coloured dots, and “Next up”.
 - **Reminder the evening before** (blueprint): “🟦 Paper, 🟨 Recycling – please put out tonight.”
@@ -20,7 +20,7 @@ Most cities or waste companies offer the collection calendar as an **ICS file** 
 2. In Home Assistant: *Settings → Devices & services → Add integration* → **Remote Calendar**.
 3. Enter the name “Waste” and paste the link. The calendar is then called `calendar.waste`.
 
-Alternatively, the HACS integration [Waste Collection Schedule](https://github.com/mampfes/hacs_waste_collection_schedule) provides a calendar directly for a great many cities.
+Alternatively, the [Waste Collection Schedule](https://github.com/mampfes/hacs_waste_collection_schedule) integration from the Marketplace (formerly HACS) provides a calendar directly for a great many cities.
 
 **New year, new link?** Some collectors publish a new calendar link every year. The card then shows no pickups from January. Get the new link, delete the Remote Calendar integration and add it again with the same name – the calendar is `calendar.waste` again, and the card and blueprints keep working. Waste Collection Schedule fetches the new year by itself.
 
@@ -110,7 +110,7 @@ The bins are sorted by their next pickup. In the afternoon before a pickup, “P
 
 ![Advanced variant with button-card: tomorrow's bin wobbles](../bilder/muell_karte.gif)
 
-**More cards:** a simpler card without a helper (reads only the next event from the calendar) and our advanced variant with coloured tiles (needs *button-card* from HACS, uses the same helper) are in the [German guide](../muell.md#ohne-helfer-die-schlichte-variante) – their labels are German, but the code works the same way; for the advanced card, change `input_text.mull_plan` to `input_text.waste_plan`.
+**More cards:** a simpler card without a helper (reads only the next event from the calendar) and our advanced variant with coloured tiles (needs *button-card* from the Marketplace, formerly HACS, uses the same helper) are in the [German guide](../muell.md#ohne-helfer-die-schlichte-variante) – their labels are German, but the code works the same way; for the advanced card, change `input_text.mull_plan` to `input_text.waste_plan`.
 
 ## 4. Reminder the evening before
 

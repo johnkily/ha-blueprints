@@ -115,7 +115,7 @@ Fast jede Stadt oder jeder Entsorger bietet den Abfuhrkalender als **ICS-Datei**
 2. In Home Assistant: *Einstellungen → Geräte & Dienste → Integration hinzufügen* → **Remote Calendar**.
 3. Einen Namen vergeben (z. B. „Abfall“) und den Link einfügen. Fertig – der Kalender heißt dann `calendar.abfall`.
 
-Alternativ liefert die HACS-Integration [Waste Collection Schedule](https://github.com/mampfes/hacs_waste_collection_schedule) für sehr viele Städte direkt einen Kalender.
+Alternativ liefert die Integration [Waste Collection Schedule](https://github.com/mampfes/hacs_waste_collection_schedule) aus dem Marketplace (früher HACS) für sehr viele Städte direkt einen Kalender.
 
 ## Icons auf die Uhr laden
 

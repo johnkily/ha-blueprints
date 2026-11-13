@@ -1,5 +1,5 @@
 # Müll-Kachel-Karte – Profi-Variante (so sieht sie bei uns aus)
-# Braucht: HACS-Frontend-Erweiterung „button-card“ und den Text-Helfer
+# Braucht: Frontend-Erweiterung „button-card“ (Marketplace, früher HACS) und den Text-Helfer
 # „Müll-Plan“ (input_text.mull_plan), gefüllt vom Blueprint
 # „Müll – Plan für die Kachel-Karte“. Keine YAML-Dateien, kein Template-Sensor.
 # Einfügen: Dashboard bearbeiten → Karte hinzufügen → „Manuell“ → hineinkopieren.

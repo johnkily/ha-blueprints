@@ -50,7 +50,7 @@ Das Bild holt die App direkt bei Home Assistant, im Moment, in dem die Nachricht
 Im Feld *Zusätzliche Aktionen* auf **„Aktion hinzufügen“** tippen:
 
 - **Tablet aufwecken:** *Schalter einschalten* → der Bildschirm-Schalter deines Tablets (z. B. aus der Fully-Kiosk-Integration). Bei uns hängt ein [Lenovo Tab M11](https://www.amazon.de/dp/B0CQT8CKNZ?tag=elcamdob-21)\* an der Wand.
-- **Livebild als Pop-up auf dem Tablet:** *Browser Mod: Popup* (Integration [Browser Mod](https://github.com/thomasloven/hass-browser_mod) aus HACS) mit einer Picture-Entity-Karte deiner Kamera.
+- **Livebild als Pop-up auf dem Tablet:** *Browser Mod: Popup* (Integration [Browser Mod](https://github.com/thomasloven/hass-browser_mod) aus dem Marketplace, früher HACS) mit einer Picture-Entity-Karte deiner Kamera.
 - **Ansage:** *Text-to-Speech* auf einem Lautsprecher: „Es hat geklingelt.“
 - **Licht im Flur an**, wenn es dunkel ist.
 

@@ -52,7 +52,7 @@ The app fetches the picture directly from Home Assistant at the moment the notif
 In the *Zusätzliche Aktionen* field, tap **“Add action”**:
 
 - **Wake up a tablet:** *Switch: Turn on* → the screen switch of your tablet (e.g. from the Fully Kiosk integration). We have a [Lenovo Tab M11](https://www.amazon.de/dp/B0CQT8CKNZ?tag=elcamdob-21)\* on the wall.
-- **Live view as a pop-up on the tablet:** *Browser Mod: Popup* (the [Browser Mod](https://github.com/thomasloven/hass-browser_mod) integration from HACS) with a picture entity card of your camera.
+- **Live view as a pop-up on the tablet:** *Browser Mod: Popup* (the [Browser Mod](https://github.com/thomasloven/hass-browser_mod) integration from the Marketplace, formerly HACS) with a picture entity card of your camera.
 - **Announcement:** *Text-to-speech* on a speaker: “Someone is at the door.”
 - **Hallway light on** when it's dark.
 
