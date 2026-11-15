@@ -6,7 +6,7 @@ Fertige Automationen für [Home Assistant](https://www.home-assistant.io/) – m
 
 🇬🇧 *English: guides and overview [below](#english).*
 
-Sortiert nach den Seiten unseres Dashboards. Wie es bei uns aussieht und was noch kommt, steht im Blog: **[Kily's World – Unser Dashboard](https://kilysworld.wordpress.com/dashboard/)**.
+Sortiert nach den Seiten unseres Dashboards. Wie es bei uns aussieht und was noch kommt, steht im Blog: **[Kily's World – Unser Dashboard](https://kilysworld.com/dashboard/)**.
 
 ## Übersicht
 
@@ -33,7 +33,7 @@ Die Startseite: Strompreis, Müll, Hausgeräte – und alles, was auf den AWTRIX
 
 ## Autos
 
-Noch kein Blueprint – als Nächstes geplant: Smartladen bis zur Abfahrtszeit. [Was noch kommt](https://kilysworld.wordpress.com/dashboard/#cars)
+Noch kein Blueprint – als Nächstes geplant: Smartladen bis zur Abfahrtszeit. [Was noch kommt](https://kilysworld.com/dashboard/#cars)
 
 ## Automatisierung
 
@@ -102,4 +102,4 @@ Ready-made Home Assistant automations: click **Import**, pick your devices, done
 
 Blueprints marked *(German labels)* show German field names in Home Assistant – the English guides explain every field. More English versions will follow; tell us in an [issue](https://github.com/johnkily/ha-blueprints/issues) which one you need first. Questions in English are welcome there or under [Ideas](https://github.com/johnkily/ha-blueprints/discussions/categories/ideas).
 
-Lizenz / License: [MIT](LICENSE) · [Impressum](https://kilysworld.wordpress.com/impressum/) · [Datenschutz](https://kilysworld.wordpress.com/datenschutz/)
+Lizenz / License: [MIT](LICENSE) · [Impressum](https://kilysworld.com/impressum/) · [Datenschutz](https://kilysworld.com/datenschutz/)
