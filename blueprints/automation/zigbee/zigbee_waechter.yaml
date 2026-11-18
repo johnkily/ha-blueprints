@@ -30,7 +30,7 @@ blueprint:
         Namen der Geräte, wie sie in Zigbee2MQTT heißen (friendly name),
         durch Kommas getrennt – z. B. „Steckdose Waschmaschine, Steckdose Flur“.
         Am besten Steckdosen oder andere Geräte am Strom: Sie antworten auch,
-        wenn sie ausgeschaltet sind. Batteriegeräte schlafen und eignen sich nicht.
+        wenn sie ausgeschaltet sind. Batteriegeräte schlafen und eignen sich nicht, reine Repeater (Range Extender) haben keinen Zustand und antworten ebenfalls nicht.
         Mehrere angeben, damit ein einzelnes ausgestecktes Gerät keinen
         Fehlalarm auslöst.
       selector:
@@ -44,6 +44,32 @@ blueprint:
           multiple: true
           filter:
             - integration: mobile_app
+    weitere:
+      name: Weitere Benachrichtigungen (optional)
+      collapsed: true
+      input:
+        notify_ziele:
+          name: Zusätzlich an notify-Entitäten
+          description: >
+            Benachrichtigungs-Entitäten aus Home Assistant (notify.…), z. B. von
+            Telegram, Pushover oder einer Benachrichtigungsgruppe. Leer = keine.
+          default: []
+          selector:
+            entity:
+              multiple: true
+              filter:
+                - domain: notify
+        skript:
+          name: Zusätzlich ein Skript ausführen
+          description: >
+            Für alles andere – Signal, E-Mail (SMTP), Threema …: ein Skript, das die
+            Variablen „titel“ und „nachricht“ weiterschickt. Vorlage in der Anleitung.
+            Leer = kein Skript.
+          default: ""
+          selector:
+            entity:
+              filter:
+                - domain: script
     neustart:
       name: Neustart
       collapsed: true
@@ -128,6 +154,8 @@ variables:
   geraete_text: !input geraete
   geraete: "{{ geraete_text.split(',') | map('trim') | reject('eq', '') | list }}"
   handys: !input handys
+  notify_ziele: !input notify_ziele
+  skript: !input skript
   chip_knopf: !input chip_knopf
   z2m_app: !input z2m_app
   bruecke: !input bruecke
@@ -192,6 +220,29 @@ actions:
           notification_id: "{{ tag }}"
           title: "{{ meldungen[0].titel }}"
           message: "{{ meldungen[0].text }}"
+  - if:
+      - condition: template
+        value_template: "{{ notify_ziele | count > 0 }}"
+    then:
+      - action: notify.send_message
+        continue_on_error: true
+        target:
+          entity_id: "{{ notify_ziele }}"
+        data:
+          title: "{{ meldungen[0].titel }}"
+          message: "{{ meldungen[0].text }}"
+  - if:
+      - condition: template
+        value_template: "{{ skript not in ['', none] }}"
+    then:
+      - action: script.turn_on
+        continue_on_error: true
+        target:
+          entity_id: "{{ skript }}"
+        data:
+          variables:
+            titel: "{{ meldungen[0].titel }}"
+            nachricht: "{{ meldungen[0].text }}"
   - if:
       - condition: template
         value_template: "{{ chip_knopf != '' }}"
@@ -260,6 +311,29 @@ actions:
                     notification_id: "{{ tag }}"
                     title: ✅ Zigbee läuft wieder
                     message: Nach dem Neustart antwortet Zigbee wieder.
+            - if:
+                - condition: template
+                  value_template: "{{ notify_ziele | count > 0 }}"
+              then:
+                - action: notify.send_message
+                  continue_on_error: true
+                  target:
+                    entity_id: "{{ notify_ziele }}"
+                  data:
+                    title: ✅ Zigbee läuft wieder
+                    message: Nach dem Neustart antwortet Zigbee wieder.
+            - if:
+                - condition: template
+                  value_template: "{{ skript not in ['', none] }}"
+              then:
+                - action: script.turn_on
+                  continue_on_error: true
+                  target:
+                    entity_id: "{{ skript }}"
+                  data:
+                    variables:
+                      titel: ✅ Zigbee läuft wieder
+                      nachricht: Nach dem Neustart antwortet Zigbee wieder.
             - delay:
                 minutes: "{{ sperre | int }}"
             - stop: Zigbee läuft wieder
@@ -289,5 +363,28 @@ actions:
           notification_id: "{{ tag }}"
           title: ❌ Zigbee antwortet weiter nicht
           message: "{{ fehltext }}"
+  - if:
+      - condition: template
+        value_template: "{{ notify_ziele | count > 0 }}"
+    then:
+      - action: notify.send_message
+        continue_on_error: true
+        target:
+          entity_id: "{{ notify_ziele }}"
+        data:
+          title: ❌ Zigbee antwortet weiter nicht
+          message: "{{ fehltext }}"
+  - if:
+      - condition: template
+        value_template: "{{ skript not in ['', none] }}"
+    then:
+      - action: script.turn_on
+        continue_on_error: true
+        target:
+          entity_id: "{{ skript }}"
+        data:
+          variables:
+            titel: ❌ Zigbee antwortet weiter nicht
+            nachricht: "{{ fehltext }}"
   - delay:
       minutes: "{{ sperre | int }}"

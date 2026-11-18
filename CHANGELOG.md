@@ -2,6 +2,8 @@
 
 ## Seit v1.2
 
+**Zigbee-Wächter: weitere Benachrichtigungen** – neuer, optionaler Abschnitt: Zusätzlich zu den Handys gehen die Meldungen an notify-Entitäten (Telegram, Pushover, Benachrichtigungsgruppe …) und/oder an ein Skript, das `titel` und `nachricht` bekommt – damit gehen auch Signal, E-Mail (SMTP) und Threema, Vorlage in der Anleitung. Fehlt eine Entität oder das Skript, läuft der Wächter trotzdem weiter. Bestehende Automationen laufen unverändert (Felder leer). Wunsch von Stefan auf Facebook.
+
 **Müll-Erinnerung: erinnern, bis die Tonne draußen ist** – neue Option „Wiederholen, bis bestätigt“: Die Nachricht hat einen Knopf „Rausgestellt ✅“ und kommt stündlich wieder, bis jemand tippt (längstens bis 21 Uhr); Tippen löscht sie auf allen Handys. Optional ein Datums-Helfer – die Profi-Karte zeigt dann „✓ Draußen“ statt zu wackeln – und ein Pause-Schalter (z. B. Urlaubsmodus). „Nur Handys, die zu Hause sind“: Ist niemand zu Hause, bekommen jetzt alle Bescheid. Bestehende Automationen laufen unverändert weiter (Vorgabe aus). Idee von Stefan auf Facebook.
 
 **Neu: Stumme Geräte melden** – prüft stündlich die „Last seen“-Entitäten von Zigbee2MQTT und meldet Geräte, die sich länger als 48 Stunden nicht gemeldet haben (meist leere Batterie), nach dem Tausch „Wieder da“, auf Wunsch eine Wochenübersicht mit fast leeren Batterien. Fällt Zigbee2MQTT ganz aus, gibt es eine einzige Meldung statt vieler. Deutsch und Englisch. Wunsch aus den Blog-Kommentaren zum Batterie-Beitrag.

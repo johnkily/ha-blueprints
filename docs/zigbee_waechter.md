@@ -29,6 +29,7 @@ Der Wächter fragt alle 5 Minuten ein Zigbee-Gerät nach seinem Zustand und wart
 |---|---|
 | Zigbee-Geräte zum Nachfragen | die Namen der Geräte **wie in Zigbee2MQTT** (friendly name), durch Kommas getrennt, z. B. `Steckdose Waschmaschine, Steckdose Flur` |
 | Nachricht an | wessen Handy Bescheid bekommt; leer = keine Nachricht |
+| Weitere Benachrichtigungen *(optional, aufklappen)* | zusätzlich zu den Handys: **notify-Entitäten** (z. B. Telegram, Pushover, Benachrichtigungsgruppe) und/oder **ein Skript** für alles andere – Signal, E-Mail (SMTP), Threema; Vorlage siehe unten |
 | Neustart-Knopf des Zigbee-Chips *(aufklappen)* | bei SMLIGHT z. B. `button.slzb_06_zigbee_neustart`; leer lassen, wenn es keinen gibt |
 | Zigbee2MQTT-App (Slug) | Vorgabe `45df7312_zigbee2mqtt` passt für die offizielle Zigbee2MQTT-App; sonst steht die Kennung unter *Einstellungen → Apps → Zigbee2MQTT* in der Adresszeile |
 | Verbindungsstatus von Zigbee2MQTT | der Binärsensor „Connection state“ am Gerät „Zigbee2MQTT Bridge“ – dann prüft der Wächter erst, wenn Zigbee2MQTT seit 5 Minuten verbunden ist |
@@ -47,6 +48,22 @@ Der Wächter fragt alle 5 Minuten ein Zigbee-Gerät nach seinem Zustand und wart
 
 Solange alles läuft, bleibt es still.
 
+## Nachricht über Signal, E-Mail oder Threema
+
+Diese Dienste haben in Home Assistant oft keine notify-Entität, sondern einen klassischen Dienst wie `notify.signal` oder `notify.email`. Dafür ein kleines Skript anlegen (*Einstellungen → Automationen & Szenen → Skripte → Skript erstellen → ⋮ → In YAML bearbeiten*) und im Blueprint unter „Zusätzlich ein Skript ausführen“ auswählen:
+
+```yaml
+alias: Zigbee-Meldung weiterleiten
+mode: queued
+sequence:
+  - action: notify.signal        # ← deinen Dienst eintragen, z. B. notify.email
+    data:
+      title: "{{ titel }}"
+      message: "{{ nachricht }}"
+```
+
+Der Blueprint gibt dem Skript `titel` und `nachricht` mit. Warum ein Skript statt eines Textfelds: Ein vertippter Dienstname würde sonst den ganzen Wächter-Lauf abbrechen – ein fehlendes Skript dagegen nicht.
+
 ## Gut zu wissen
 
 - **Ein Neustart pro Sperrzeit:** Nach einem Neustart wartet der Wächter die Sperrzeit ab, bevor er wieder prüft. So schaukelt sich nichts auf, wenn Zigbee wirklich kaputt ist.
@@ -57,7 +74,7 @@ Solange alles läuft, bleibt es still.
 
 | Problem | Lösung |
 |---|---|
-| Startet ständig neu | Stimmen die Namen genau so wie in Zigbee2MQTT (Groß-/Kleinschreibung, Leerzeichen)? Unter *Automation → Traces* sieht man, welches Topic gefragt wurde. Sind es Batteriegeräte? Die antworten nicht. |
+| Startet ständig neu | Stimmen die Namen genau so wie in Zigbee2MQTT (Groß-/Kleinschreibung, Leerzeichen)? Unter *Automation → Traces* sieht man, welches Topic gefragt wurde. Sind es Batteriegeräte oder reine Repeater/Range Extender? Die antworten nicht – sie haben keinen Schaltzustand, den man abfragen kann. Steckdosen, Lampen oder Schalter am Strom nehmen. |
 | Neustart passiert, aber Zigbee2MQTT startet nicht neu | Slug prüfen (*Einstellungen → Apps → Zigbee2MQTT*, Adresszeile). Läuft Zigbee2MQTT nicht als App, das Feld leer lassen. |
 | Anderes Basis-Topic | steht in Zigbee2MQTT unter *Einstellungen → MQTT* – unter *Feinheiten* eintragen |
 

@@ -31,6 +31,7 @@ The watchdog asks a Zigbee device for its state every 5 minutes and waits for th
 |---|---|
 | Zigbee-Geräte zum Nachfragen – *Zigbee devices to ask* | the device names **as in Zigbee2MQTT** (friendly name), separated by commas, e.g. `Plug washing machine, Plug hallway` |
 | Nachricht an – *notify* | whose phone gets notified; empty = no notification |
+| Weitere Benachrichtigungen – *further notifications* (optional, expand) | in addition to the phones: **notify entities** (e.g. Telegram, Pushover, a notify group) and/or **a script** for everything else – Signal, e-mail (SMTP), Threema; template below |
 | Neustart-Knopf des Zigbee-Chips – *restart button of the Zigbee chip* (expand) | for SMLIGHT the “Zigbee restart” button of your coordinator; leave empty if there is none |
 | Zigbee2MQTT-App (Slug) – *Zigbee2MQTT app slug* | the default `45df7312_zigbee2mqtt` fits the official Zigbee2MQTT app; otherwise it's in the address bar under *Settings → Apps → Zigbee2MQTT* |
 | Verbindungsstatus von Zigbee2MQTT – *Zigbee2MQTT connection state* | the binary sensor “Connection state” of the “Zigbee2MQTT Bridge” device – then the watchdog only checks once Zigbee2MQTT has been connected for 5 minutes |
@@ -49,6 +50,22 @@ The watchdog asks a Zigbee device for its state every 5 minutes and waits for th
 
 As long as everything works, it stays quiet.
 
+## Notifications via Signal, e-mail or Threema
+
+These services often have no notify entity in Home Assistant but a classic service such as `notify.signal` or `notify.email`. Create a small script (*Settings → Automations & scenes → Scripts → Create script → ⋮ → Edit in YAML*) and select it in the blueprint under „Zusätzlich ein Skript ausführen“ (*also run a script*):
+
+```yaml
+alias: Forward Zigbee message
+mode: queued
+sequence:
+  - action: notify.signal        # ← your service, e.g. notify.email
+    data:
+      title: "{{ titel }}"
+      message: "{{ nachricht }}"
+```
+
+The blueprint passes `titel` (title) and `nachricht` (message) to the script. Why a script instead of a text field: a mistyped service name would abort the whole watchdog run – a missing script does not.
+
 ## Good to know
 
 - **One restart per lock time:** after a restart the watchdog waits for the lock time before checking again. Nothing escalates if Zigbee is really broken.
@@ -59,7 +76,7 @@ As long as everything works, it stays quiet.
 
 | Problem | Solution |
 |---|---|
-| Restarts all the time | Are the names exactly as in Zigbee2MQTT (case, spaces)? *Automation → Traces* shows which topic was asked. Battery devices? They don't answer. |
+| Restarts all the time | Are the names exactly as in Zigbee2MQTT (case, spaces)? *Automation → Traces* shows which topic was asked. Battery devices or plain repeaters/range extenders? They don't answer – they have no on/off state that can be queried. Use plugs, lights or mains-powered switches. |
 | Restart happens, but Zigbee2MQTT doesn't restart | Check the slug (*Settings → Apps → Zigbee2MQTT*, address bar). If Zigbee2MQTT doesn't run as an app, leave the field empty. |
 | Different base topic | It's in Zigbee2MQTT under *Settings → MQTT* – enter it under the expandable fine-tuning section |
 
