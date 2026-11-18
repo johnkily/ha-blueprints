@@ -33,6 +33,7 @@ The watchdog asks a Zigbee device for its state every 5 minutes and waits for th
 | Nachricht an – *notify* | whose phone gets notified; empty = no notification |
 | Weitere Benachrichtigungen – *further notifications* (optional, expand) | in addition to the phones: **notify entities** (e.g. Telegram, Pushover, a notify group) and/or **a script** for everything else – Signal, e-mail (SMTP), Threema; template below |
 | Neustart-Knopf des Zigbee-Chips – *restart button of the Zigbee chip* (expand) | for SMLIGHT the “Zigbee restart” button of your coordinator; leave empty if there is none |
+| Steckdose des Koordinators – *coordinator's power plug* (optional) | if the restart doesn't help, the watchdog switches this plug off for 10 seconds and on again, then checks once more – **only a Wi-Fi or other non-Zigbee plug**, a Zigbee plug can't be reached while the coordinator is stuck; for PoE coordinators only with a switchable PoE port |
 | Zigbee2MQTT-App (Slug) – *Zigbee2MQTT app slug* | the default `45df7312_zigbee2mqtt` fits the official Zigbee2MQTT app; otherwise it's in the address bar under *Settings → Apps → Zigbee2MQTT* |
 | Verbindungsstatus von Zigbee2MQTT – *Zigbee2MQTT connection state* | the binary sensor “Connection state” of the “Zigbee2MQTT Bridge” device – then the watchdog only checks once Zigbee2MQTT has been connected for 5 minutes |
 | Höchstens ein Neustart pro – *at most one restart per* | default 30 minutes |
@@ -46,7 +47,8 @@ The watchdog asks a Zigbee device for its state every 5 minutes and waits for th
 |---|---|
 | No device answers | ⚠️ **Zigbee hängt – Neustart** (Zigbee stuck – restarting) |
 | Back after the restart | ✅ **Zigbee läuft wieder** (Zigbee running again) |
-| Restart didn't help | ❌ **Zigbee antwortet weiter nicht** (Zigbee still not answering) – unplug the coordinator briefly. |
+| Back only after the power cycle *(with plug)* | ✅ **Zigbee läuft wieder** – after power-cycling the coordinator |
+| Restart didn't help | ❌ **Zigbee antwortet weiter nicht** (Zigbee still not answering) – unplug the coordinator briefly. (With plug: restart and power cycle both didn't help.) |
 
 As long as everything works, it stays quiet.
 

@@ -86,6 +86,19 @@ blueprint:
             entity:
               filter:
                 - domain: button
+        strom_schalter:
+          name: Steckdose des Koordinators (optional)
+          description: >
+            Hilft der Neustart nicht, schaltet der Wächter diese Steckdose
+            10 Sekunden aus und wieder an und prüft dann noch einmal. Nur eine
+            WLAN- oder andere Nicht-Zigbee-Steckdose nehmen – eine Zigbee-Steckdose
+            ist bei hängendem Koordinator selbst nicht erreichbar. Leer = kein
+            Stromlos-Schalten.
+          default: ""
+          selector:
+            entity:
+              filter:
+                - domain: switch
         z2m_app:
           name: Zigbee2MQTT-App (Slug)
           description: >
@@ -157,6 +170,7 @@ variables:
   notify_ziele: !input notify_ziele
   skript: !input skript
   chip_knopf: !input chip_knopf
+  strom_schalter: !input strom_schalter
   z2m_app: !input z2m_app
   bruecke: !input bruecke
   sperre: !input sperre
@@ -338,12 +352,113 @@ actions:
                 minutes: "{{ sperre | int }}"
             - stop: Zigbee läuft wieder
 
+
+  # 3b) Optional: Koordinator über seine (Nicht-Zigbee-)Steckdose stromlos schalten,
+  #     Zigbee2MQTT neu starten und noch einmal nachprüfen. Wunsch von Walter auf Facebook.
+  - if:
+      - condition: template
+        value_template: "{{ strom_schalter not in ['', none] }}"
+    then:
+      - action: switch.turn_off
+        continue_on_error: true
+        target:
+          entity_id: "{{ strom_schalter }}"
+      - delay:
+          seconds: 10
+      - action: switch.turn_on
+        continue_on_error: true
+        target:
+          entity_id: "{{ strom_schalter }}"
+      - delay:
+          seconds: 30
+      - if:
+          - condition: template
+            value_template: "{{ z2m_app != '' }}"
+        then:
+          - action: hassio.addon_restart
+            data:
+              addon: "{{ z2m_app }}"
+            continue_on_error: true
+      - if:
+          - condition: template
+            value_template: "{{ bruecke != '' }}"
+        then:
+          - wait_template: "{{ is_state(bruecke, 'on') }}"
+            timeout:
+              minutes: 3
+            continue_on_timeout: true
+      - delay:
+          seconds: 30
+      - repeat:
+          for_each: "{{ geraete }}"
+          sequence:
+            - action: mqtt.publish
+              data:
+                topic: "{{ basis }}/{{ repeat.item }}/get"
+                payload: '{"state": ""}'
+            - wait_for_trigger:
+                - trigger: mqtt
+                  topic: "{{ basis }}/{{ repeat.item }}"
+              timeout:
+                seconds: 60
+              continue_on_timeout: true
+            - if:
+                - condition: template
+                  value_template: "{{ wait.trigger is not none }}"
+              then:
+                - repeat:
+                    for_each: "{{ handys }}"
+                    sequence:
+                      - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+                        continue_on_error: true
+                        data:
+                          title: ✅ Zigbee läuft wieder
+                          message: Nach dem Stromlos-Schalten des Koordinators antwortet Zigbee wieder.
+                          data:
+                            tag: "{{ tag }}"
+                - if:
+                    - condition: template
+                      value_template: "{{ in_ha }}"
+                  then:
+                    - action: persistent_notification.create
+                      data:
+                        notification_id: "{{ tag }}"
+                        title: ✅ Zigbee läuft wieder
+                        message: Nach dem Stromlos-Schalten des Koordinators antwortet Zigbee wieder.
+                - if:
+                    - condition: template
+                      value_template: "{{ notify_ziele | count > 0 }}"
+                  then:
+                    - action: notify.send_message
+                      continue_on_error: true
+                      target:
+                        entity_id: "{{ notify_ziele }}"
+                      data:
+                        title: ✅ Zigbee läuft wieder
+                        message: Nach dem Stromlos-Schalten des Koordinators antwortet Zigbee wieder.
+                - if:
+                    - condition: template
+                      value_template: "{{ skript not in ['', none] }}"
+                  then:
+                    - action: script.turn_on
+                      continue_on_error: true
+                      target:
+                        entity_id: "{{ skript }}"
+                      data:
+                        variables:
+                          titel: ✅ Zigbee läuft wieder
+                          nachricht: Nach dem Stromlos-Schalten des Koordinators antwortet Zigbee wieder.
+                - delay:
+                    minutes: "{{ sperre | int }}"
+                - stop: Zigbee läuft wieder
   # 4) Niemand antwortet: melden. Danach Sperrzeit – der Lauf bleibt aktiv,
   #    neue Prüfungen werden still verworfen (mode: single).
   - variables:
       fehltext: >-
-        Der Neustart hat nicht geholfen. Bitte den Zigbee-Koordinator kurz vom Strom
-        nehmen (Kabel bzw. PoE ziehen und wieder stecken).
+        {% if strom_schalter not in ['', none] %}Auch Neustart und Stromlos-Schalten haben nicht
+        geholfen. Bitte den Zigbee-Koordinator und seine Steckdose prüfen.{% else %}Der Neustart
+        hat nicht geholfen. Bitte den Zigbee-Koordinator kurz vom Strom nehmen (Kabel bzw. PoE
+        ziehen und wieder stecken).{% endif %}
   - repeat:
       for_each: "{{ handys }}"
       sequence:

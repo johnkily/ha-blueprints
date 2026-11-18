@@ -10,7 +10,7 @@ A plug with power metering detects when the appliance is running and when it's d
 
 | | |
 |---|---|
-| **Plug with power metering** | e.g. the [NOUS A1Z (Zigbee, 16 A)](https://www.amazon.de/dp/B0CCQH61RD?tag=elcamdob-21)\* – that's the one behind our washing machine. Important: **16 A**, washing machines and dryers draw more than 2 kW while heating. Any other plug that provides a power sensor in watts in Home Assistant works just as well (Shelly Plug, Tasmota …). |
+| **Plug with power metering** | e.g. the [NOUS A7Z (Zigbee, 16 A)](https://link.amazon/B0j0i5JzZ)\* – behind our washing machine sits its predecessor, the A1Z. Important: **16 A**, washing machines and dryers draw more than 2 kW while heating. Any other plug that provides a power sensor in watts in Home Assistant works just as well (Shelly Plug, Tasmota …). |
 | **Phone** | The Home Assistant app, logged in to your Home Assistant |
 
 ## 1. Add the plug

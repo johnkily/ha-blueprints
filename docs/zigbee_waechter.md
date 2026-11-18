@@ -31,6 +31,7 @@ Der Wächter fragt alle 5 Minuten ein Zigbee-Gerät nach seinem Zustand und wart
 | Nachricht an | wessen Handy Bescheid bekommt; leer = keine Nachricht |
 | Weitere Benachrichtigungen *(optional, aufklappen)* | zusätzlich zu den Handys: **notify-Entitäten** (z. B. Telegram, Pushover, Benachrichtigungsgruppe) und/oder **ein Skript** für alles andere – Signal, E-Mail (SMTP), Threema; Vorlage siehe unten |
 | Neustart-Knopf des Zigbee-Chips *(aufklappen)* | bei SMLIGHT z. B. `button.slzb_06_zigbee_neustart`; leer lassen, wenn es keinen gibt |
+| Steckdose des Koordinators *(optional)* | hilft der Neustart nicht, schaltet der Wächter diese Steckdose 10 Sekunden aus und wieder an und prüft noch einmal – **nur eine WLAN- oder andere Nicht-Zigbee-Steckdose**, eine Zigbee-Steckdose ist bei hängendem Koordinator selbst nicht erreichbar; bei PoE-Koordinatoren nur mit schaltbarem PoE-Port |
 | Zigbee2MQTT-App (Slug) | Vorgabe `45df7312_zigbee2mqtt` passt für die offizielle Zigbee2MQTT-App; sonst steht die Kennung unter *Einstellungen → Apps → Zigbee2MQTT* in der Adresszeile |
 | Verbindungsstatus von Zigbee2MQTT | der Binärsensor „Connection state“ am Gerät „Zigbee2MQTT Bridge“ – dann prüft der Wächter erst, wenn Zigbee2MQTT seit 5 Minuten verbunden ist |
 | Höchstens ein Neustart pro | Vorgabe 30 Minuten |
@@ -44,7 +45,8 @@ Der Wächter fragt alle 5 Minuten ein Zigbee-Gerät nach seinem Zustand und wart
 |---|---|
 | Kein Gerät antwortet | ⚠️ **Zigbee hängt – Neustart** – Keines der Geräte (…) hat geantwortet. Zigbee-Chip und Zigbee2MQTT werden neu gestartet. |
 | Nach dem Neustart wieder da | ✅ **Zigbee läuft wieder** |
-| Neustart hat nicht geholfen | ❌ **Zigbee antwortet weiter nicht** – Bitte den Zigbee-Koordinator kurz vom Strom nehmen. |
+| Erst nach dem Stromlos-Schalten wieder da *(mit Steckdose)* | ✅ **Zigbee läuft wieder** – Nach dem Stromlos-Schalten des Koordinators antwortet Zigbee wieder. |
+| Neustart hat nicht geholfen | ❌ **Zigbee antwortet weiter nicht** – Bitte den Zigbee-Koordinator kurz vom Strom nehmen. (Mit Steckdose: „Auch Neustart und Stromlos-Schalten haben nicht geholfen.“) |
 
 Solange alles läuft, bleibt es still.
 

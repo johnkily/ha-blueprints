@@ -8,7 +8,7 @@ Eine Steckdose mit Strommessung erkennt, wann das Gerät läuft und wann es fert
 
 | | |
 |---|---|
-| **Steckdose mit Strommessung** | z. B. die [NOUS A1Z (Zigbee, 16 A)](https://www.amazon.de/dp/B0CCQH61RD?tag=elcamdob-21)\* – die steckt bei uns hinter der Waschmaschine. Wichtig: **16 A**, Waschmaschinen und Trockner ziehen beim Heizen über 2 kW. Jede andere Steckdose, die in Home Assistant einen Leistungs-Sensor in Watt liefert, geht genauso (Shelly Plug, Tasmota …). |
+| **Steckdose mit Strommessung** | z. B. die [NOUS A7Z (Zigbee, 16 A)](https://link.amazon/B0j0i5JzZ)\* – bei uns steckt das Vorgängermodell A1Z hinter der Waschmaschine. Wichtig: **16 A**, Waschmaschinen und Trockner ziehen beim Heizen über 2 kW. Jede andere Steckdose, die in Home Assistant einen Leistungs-Sensor in Watt liefert, geht genauso (Shelly Plug, Tasmota …). |
 | **Handy** | Die Home-Assistant-App, angemeldet an deinem Home Assistant |
 
 ## 1. Steckdose einbinden

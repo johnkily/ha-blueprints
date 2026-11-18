@@ -2,6 +2,8 @@
 
 ## Seit v1.2
 
+**Zigbee-Wächter: Koordinator stromlos schalten** – neues optionales Feld „Steckdose des Koordinators“: Hilft der Neustart nicht, schaltet der Wächter die Steckdose 10 Sekunden aus und wieder an, startet Zigbee2MQTT neu und prüft noch einmal; erst danach kommt „antwortet weiter nicht“. Nur WLAN- oder andere Nicht-Zigbee-Steckdosen. Bestehende Automationen unverändert (Feld leer). Wunsch von Walter auf Facebook.
+
 **Zigbee-Wächter: weitere Benachrichtigungen** – neuer, optionaler Abschnitt: Zusätzlich zu den Handys gehen die Meldungen an notify-Entitäten (Telegram, Pushover, Benachrichtigungsgruppe …) und/oder an ein Skript, das `titel` und `nachricht` bekommt – damit gehen auch Signal, E-Mail (SMTP) und Threema, Vorlage in der Anleitung. Fehlt eine Entität oder das Skript, läuft der Wächter trotzdem weiter. Bestehende Automationen laufen unverändert (Felder leer). Wunsch von Stefan auf Facebook.
 
 **Müll-Erinnerung: erinnern, bis die Tonne draußen ist** – neue Option „Wiederholen, bis bestätigt“: Die Nachricht hat einen Knopf „Rausgestellt ✅“ und kommt stündlich wieder, bis jemand tippt (längstens bis 21 Uhr); Tippen löscht sie auf allen Handys. Optional ein Datums-Helfer – die Profi-Karte zeigt dann „✓ Draußen“ statt zu wackeln – und ein Pause-Schalter (z. B. Urlaubsmodus). „Nur Handys, die zu Hause sind“: Ist niemand zu Hause, bekommen jetzt alle Bescheid. Bestehende Automationen laufen unverändert weiter (Vorgabe aus). Idee von Stefan auf Facebook.
