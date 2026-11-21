@@ -10,7 +10,7 @@ When someone rings, your phone gets a notification right away – with a picture
 
 | | |
 |---|---|
-| **Sensor** | Anything that reports “on” when the bell rings. The easiest option: a **Zigbee vibration sensor**, e.g. a [Tuya vibration sensor TS0210](https://www.amazon.de/dp/B0G4R5VWXW?tag=elcamdob-21)\* like ours, stuck to the inside of the chime with double-sided tape. A smart doorbell button or a contact on the bell transformer works just as well. |
+| **Sensor** | Anything that reports “on” when the bell rings. The easiest option: a **Zigbee vibration sensor**, e.g. a [Tuya vibration sensor TS0210](https://www.amazon.de/dp/B0G4R5VWXW?tag=elcamdob-21)\* like ours or the [Aqara vibration sensor](https://www.amazon.de/dp/B07PJT939B?tag=elcamdob-21)\*, stuck to the inside of the chime with double-sided tape. A smart doorbell button or a contact on the bell transformer works just as well. |
 | **Phone** | The **Home Assistant app** on every phone that should be notified, logged in to your Home Assistant. |
 | **Camera** *(optional)* | Any camera that is set up in Home Assistant. The blueprint can turn pan/tilt cameras towards the door first – we have a [Reolink TrackMix WiFi](https://www.amazon.de/dp/B0B4KB6CTB?tag=elcamdob-21)\* above the entrance. |
 
