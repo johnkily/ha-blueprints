@@ -7,12 +7,13 @@
  * type: custom:ticket-board-card
  * entity: todo.hausmeisterei          # Pflicht
  * personen: [person.anna, person.ben] # optional: Zuständige/Filter
- * titel: Hausmeisterei                # optional
- * archiv: 6                           # optional: so viele Erledigte sichtbar
+ * titel: Hausmeisterei                # optional (oder title)
+ * archiv: 6                           # optional: so viele Erledigte sichtbar (oder archive)
+ *                                      # personen geht auch als people
  *
- * MIT-Lizenz · https://github.com/johnkily/ha-blueprints
+ * MIT-Lizenz · https://github.com/johnkily/ticket-board-card
  */
-const TB_VERSION = "1.0.0";
+const TB_VERSION = "1.1.0";
 const TB_MARKE = "\n\n⚙ ";
 
 const TB_TEXTE = {
@@ -62,7 +63,11 @@ class TicketBoardCard extends HTMLElement {
 
   setConfig(config) {
     if (!config || !config.entity || !String(config.entity).startsWith("todo.")) throw new Error(TB_TEXTE.de.kein);
-    this._config = Object.assign({ archiv: 6, personen: [] }, config);
+    const c = Object.assign({}, config);   // englische Namen gehen auch: title, people, archive
+    if (c.title != null && c.titel == null) c.titel = c.title;
+    if (c.people != null && c.personen == null) c.personen = c.people;
+    if (c.archive != null && c.archiv == null) c.archiv = c.archive;
+    this._config = Object.assign({ archiv: 6, personen: [] }, c);
     this._items = this._items || [];
     this._filter = this._filter || "alle";
     this._suche = this._suche || "";
