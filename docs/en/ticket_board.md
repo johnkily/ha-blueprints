@@ -6,9 +6,36 @@ A Kanban board for Home Assistant: wishes and tasks become tickets in columns, a
 
 The tickets live in a normal **Home Assistant to-do list**. No scripts, no `configuration.yaml`, and everything is part of every backup automatically. You can even see the list in the HA app.
 
+**Two versions:**
+
+- **[Simple](#simple-no-installation)** – two or three to-do lists side by side, built-in cards only. Ticking an item moves it to the next column. Done in five minutes, nothing to install.
+- **[Pro](#pro-the-ticket-board)** – a real board with priorities, assignees with pictures, filters, history and comments. Needs one file installed.
+
+The pro card doesn't take over the items of the simple version automatically. If you switch later, add the open tickets once more.
+
+## Simple (no installation)
+
+![Simple board made of three to-do lists](../bilder/ticketboard_einfach.png)
+
+> The blueprint has German field names – this guide translates them.
+
+**1. Create the lists:** *Settings → Devices & services → Add integration* → **Local To-do**, two or three times, e.g. “Ideas”, “In progress” and “Review”.
+
+**2. Import the blueprint:**
+
+[![Import](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Ftickets%2Fticket_board_einfach.yaml)
+
+*Settings → Automations & scenes → Blueprints* → **Ticket-Board einfach – Abhaken schiebt weiter**: enter the lists in order – Erste Spalte (*first column*), Zweite Spalte (*second column*), Dritte Spalte (*third column, optional*). Under “Nachricht, wenn etwas in der letzten Spalte landet” (*notify when something lands in the last column*) pick phones if you like.
+
+**3. Add the cards:** one **To-do list** card per list (*Add card → To-do list*), ideally side by side in a sections view.
+
+**How you use it:** new things go into “Ideas” (also by voice: “Add new bulb bathroom to Ideas”). Ticking moves an item to “In progress”, ticking there moves it to “Review”. Ticked in the last list means done – it stays under “Completed” until you delete it. Description and due date move along. Urgent things get a 🔥 in front of the title.
+
+## Pro: the ticket board
+
 ![Ticket board on a desktop](../bilder/ticketboard_desktop.png)
 
-## What it does
+### What it does
 
 - **Five columns:** Inbox, Discussing, In progress, Review, Done (German labels in the screenshots). On a PC, drag cards between columns; on a phone, tap and pick the status.
 - **How urgent:** Someday, This week, Urgent. Urgent tickets glow red.
@@ -22,11 +49,11 @@ The tickets live in a normal **Home Assistant to-do list**. No scripts, no `conf
 
 ![Opening a ticket](../bilder/ticketboard_dialog.png)
 
-## 1. Create a to-do list
+### 1. Create a to-do list
 
 *Settings → Devices & services → Add integration* → **Local To-do** → name e.g. “Household”. You then have the entity `todo.household`.
 
-## 2. Install the card
+### 2. Install the card
 
 1. Download [`ticket-board-card.js`](../../karten/ticket-board/ticket-board-card.js) (“Download raw file” at the top right).
 2. Copy it to `/config/www/` in Home Assistant, e.g. with the *File editor* or *Samba* app. Create the `www` folder if it doesn't exist yet.
@@ -35,7 +62,7 @@ The tickets live in a normal **Home Assistant to-do list**. No scripts, no `conf
 
 For a new version, replace the file and increase the number after `?v=` in the resource, otherwise the browser keeps the old one.
 
-## 3. Add the card
+### 3. Add the card
 
 Edit dashboard → *Add card* → at the very bottom **Manual** → paste:
 

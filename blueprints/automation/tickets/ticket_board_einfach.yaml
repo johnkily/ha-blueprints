@@ -1,0 +1,147 @@
+blueprint:
+  name: Ticket-Board einfach – Abhaken schiebt weiter
+  description: >
+    Ein Board aus zwei oder drei To-do-Listen, ganz ohne Zusatzkarten: Wer in der
+    ersten Liste einen Eintrag abhakt, schiebt ihn in die zweite, von dort in die
+    dritte. Beschreibung und Fälligkeit wandern mit. Abgehakt in der letzten Liste
+    heißt erledigt – der Eintrag bleibt dort unter „Erledigt“ stehen. Auf Wunsch
+    kommt eine Nachricht, wenn etwas in der letzten Liste landet.
+
+
+    Anleitung: https://github.com/johnkily/ha-blueprints/blob/main/docs/ticket_board.md
+    – gefällt er dir? Ein ⭐ auf GitHub hilft anderen, ihn zu finden.
+  domain: automation
+  author: johnkily
+  homeassistant:
+    min_version: 2024.10.0
+  source_url: https://github.com/johnkily/ha-blueprints/blob/main/blueprints/automation/tickets/ticket_board_einfach.yaml
+  input:
+    liste_1:
+      name: Erste Spalte
+      description: Z. B. „Ideen“ – hier kommt alles Neue rein.
+      selector:
+        entity:
+          filter:
+            - domain: todo
+    liste_2:
+      name: Zweite Spalte
+      description: Z. B. „In Arbeit“.
+      selector:
+        entity:
+          filter:
+            - domain: todo
+    liste_3:
+      name: Dritte Spalte (optional)
+      description: >
+        Z. B. „Abnahme“. Leer lassen für ein Board mit zwei Spalten – dann ist
+        abgehakt in der zweiten Liste erledigt.
+      default: ""
+      selector:
+        entity:
+          filter:
+            - domain: todo
+    meldung:
+      name: Nachricht, wenn etwas in der letzten Spalte landet
+      collapsed: true
+      input:
+        handys:
+          name: Handys
+          description: Leer lassen = keine Handy-Nachricht.
+          default: []
+          selector:
+            device:
+              multiple: true
+              filter:
+                - integration: mobile_app
+        in_ha:
+          name: Auch in Home Assistant anzeigen
+          default: false
+          selector:
+            boolean: {}
+
+mode: queued
+max: 10
+
+triggers:
+  # Der Zustand einer To-do-Liste ist die Zahl der offenen Einträge – Abhaken ändert ihn.
+  - trigger: state
+    entity_id: !input liste_1
+    id: eins
+  - trigger: state
+    entity_id: !input liste_2
+    id: zwei
+
+variables:
+  l1: !input liste_1
+  l2: !input liste_2
+  l3: !input liste_3
+  handys: !input handys
+  in_ha: !input in_ha
+  quelle: "{{ trigger.entity_id }}"
+  ziel: "{{ l2 if trigger.id == 'eins' else (l3 if l3 not in ['', none] else '') }}"
+  letzte: "{{ l3 if l3 not in ['', none] else l2 }}"
+
+conditions:
+  - condition: template
+    value_template: >-
+      {{ ziel != '' and trigger.to_state is not none
+         and trigger.to_state.state not in ['unknown', 'unavailable'] }}
+
+actions:
+  - action: todo.get_items
+    target:
+      entity_id: "{{ quelle }}"
+    data:
+      status: completed
+    response_variable: antwort
+  - repeat:
+      for_each: "{{ antwort[quelle]['items'] if quelle in antwort else [] }}"
+      sequence:
+        - variables:
+            eintrag: "{{ repeat.item }}"
+            daten: >-
+              {% set d = {'item': eintrag.summary} %}
+              {% if eintrag.description is defined and eintrag.description %}
+                {% set d = dict(d, description=eintrag.description) %}
+              {% endif %}
+              {% if eintrag.due is defined and eintrag.due %}
+                {% if eintrag.due | string | length > 10 %}
+                  {% set d = dict(d, due_datetime=eintrag.due) %}
+                {% else %}
+                  {% set d = dict(d, due_date=eintrag.due) %}
+                {% endif %}
+              {% endif %}
+              {{ d }}
+        - action: todo.add_item
+          target:
+            entity_id: "{{ ziel }}"
+          data: "{{ daten }}"
+        - action: todo.remove_item
+          target:
+            entity_id: "{{ quelle }}"
+          data:
+            item: "{{ eintrag.uid }}"
+        # Nachricht, wenn der Eintrag in der letzten Spalte angekommen ist
+        - if:
+            - condition: template
+              value_template: "{{ ziel == letzte }}"
+          then:
+            - variables:
+                titel: "📋 {{ state_attr(ziel, 'friendly_name') or ziel }}"
+                text: "{{ eintrag.summary }}"
+            - repeat:
+                for_each: "{{ handys }}"
+                sequence:
+                  - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+                    continue_on_error: true
+                    data:
+                      title: "{{ titel }}"
+                      message: "{{ text }}"
+            - if:
+                - condition: template
+                  value_template: "{{ in_ha }}"
+              then:
+                - action: persistent_notification.create
+                  data:
+                    title: "{{ titel }}"
+                    message: "{{ text }}"

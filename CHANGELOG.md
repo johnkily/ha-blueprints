@@ -2,6 +2,8 @@
 
 ## Seit v1.2
 
+**Neu: Ticket-Board einfach** – Blueprint für ein Board aus zwei oder drei To-do-Listen mit den eingebauten Karten: Abhaken schiebt einen Eintrag in die nächste Liste, Beschreibung und Fälligkeit wandern mit, auf Wunsch Nachricht bei der letzten Spalte. Anleitung zusammen mit der Profi-Karte.
+
 **Neu: Ticket-Board** – eine eigene Karte (`karten/ticket-board/ticket-board-card.js`): Kanban-Board für alles, was im Haus zu tun ist, mit fünf Spalten, Priorität, Zuständigen mit Foto, Fälligkeit, Herzchen, Verlauf/Kommentaren und Abnahme. Die Daten liegen in einer Lokalen To-do-Liste – keine Skripte, keine configuration.yaml. Deutsch und Englisch. Wunsch aus dem Blog und den Facebook-Gruppen.
 
 **Neu: Willkommenslicht** – kommt jemand heim, leuchtet das Licht im Eingang in seiner Farbe; bis zu drei Personen, bei zweien wechseln die Farben. Ende 20 s nach dem Schließen der Haustür (oder sofort, wenn eine weitere Tür aufgeht), danach wieder wie vorher. Nachts gedimmt, bei Dunkelheit auf Wunsch weitere Lampen. Anleitung Deutsch und Englisch.

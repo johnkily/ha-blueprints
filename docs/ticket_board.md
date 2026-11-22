@@ -6,9 +6,34 @@ Ein Kanban-Board für Home Assistant: Wünsche und Aufgaben landen als Ticket in
 
 Die Tickets liegen in einer ganz normalen **To-do-Liste von Home Assistant**. Keine Skripte, keine `configuration.yaml`, und alles steckt automatisch in jeder Sicherung. Die Liste siehst du sogar in der HA-App.
 
+**Zwei Varianten:**
+
+- **[Einfach](#einfach-ohne-installation)** – zwei oder drei To-do-Listen nebeneinander, nur eingebaute Karten. Abhaken schiebt einen Eintrag in die nächste Spalte. In fünf Minuten fertig, nichts zu installieren.
+- **[Profi](#profi-das-ticket-board)** – ein richtiges Board mit Prioritäten, Zuständigen mit Foto, Filtern, Verlauf und Kommentaren. Dafür einmal eine Datei installieren.
+
+Die Profi-Karte übernimmt die Einträge der einfachen Variante nicht automatisch. Wer später wechselt, legt die offenen Tickets einmal neu an.
+
+## Einfach (ohne Installation)
+
+![Einfaches Board aus drei To-do-Listen](bilder/ticketboard_einfach.png)
+
+**1. Listen anlegen:** *Einstellungen → Geräte & Dienste → Integration hinzufügen* → **Lokale To-do-Liste**, das Ganze zwei- oder dreimal, z. B. „Ideen“, „In Arbeit“ und „Abnahme“.
+
+**2. Blueprint importieren:**
+
+[![Importieren](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Ftickets%2Fticket_board_einfach.yaml)
+
+*Einstellungen → Automationen & Szenen → Blueprints* → **Ticket-Board einfach – Abhaken schiebt weiter**: die Listen in der Reihenfolge eintragen. Unter „Nachricht, wenn etwas in der letzten Spalte landet“ auf Wunsch die Handys, dann weiß der Wünschende, dass er nachschauen kann.
+
+**3. Karten einfügen:** für jede Liste eine **To-do-Liste**-Karte (*Karte hinzufügen → To-do-Liste*), am besten nebeneinander in einer Abschnitts-Ansicht.
+
+**So arbeitet man damit:** Neues kommt in „Ideen“ (auch per Sprachassistent: „Füge Glühbirne Bad zu Ideen hinzu“). Abhaken schiebt in „In Arbeit“, dort abhaken schiebt in „Abnahme“. Abgehakt in der letzten Liste ist erledigt – der Eintrag bleibt unter „Erledigt“ stehen, bis man ihn löscht. Beschreibung und Fälligkeit wandern mit. Was brennt, bekommt ein 🔥 vor den Titel.
+
+## Profi: das Ticket-Board
+
 ![Ticket-Board am PC](bilder/ticketboard_desktop.png)
 
-## Was es kann
+### Was es kann
 
 - **Fünf Spalten:** Reingerotzt, Wird beredet, In Arbeit, Abnahme, Erledigt. Am PC einfach Karten zwischen den Spalten ziehen, am Handy tippen und den Status wählen.
 - **Wie eilig:** Irgendwann, Diese Woche, Brennt. Brennende Tickets leuchten rot.
@@ -22,11 +47,11 @@ Die Tickets liegen in einer ganz normalen **To-do-Liste von Home Assistant**. Ke
 
 ![Ticket öffnen](bilder/ticketboard_dialog.png)
 
-## 1. To-do-Liste anlegen
+### 1. To-do-Liste anlegen
 
 *Einstellungen → Geräte & Dienste → Integration hinzufügen* → **Lokale To-do-Liste** → Name z. B. „Hausmeisterei“. Danach gibt es die Entität `todo.hausmeisterei`.
 
-## 2. Karte installieren
+### 2. Karte installieren
 
 1. Die Datei [`ticket-board-card.js`](../karten/ticket-board/ticket-board-card.js) herunterladen (rechts oben „Download raw file“).
 2. In Home Assistant nach `/config/www/` kopieren, z. B. mit der App *File editor* oder *Samba*. Gibt es den Ordner `www` noch nicht, anlegen.
@@ -35,7 +60,7 @@ Die Tickets liegen in einer ganz normalen **To-do-Liste von Home Assistant**. Ke
 
 Bei einer neuen Version die Datei ersetzen und in der Ressource die Zahl hinter `?v=` hochzählen, sonst zeigt der Browser noch die alte.
 
-## 3. Karte einfügen
+### 3. Karte einfügen
 
 Dashboard bearbeiten → *Karte hinzufügen* → ganz unten **Manuell** → einfügen:
 
