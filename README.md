@@ -33,7 +33,11 @@ Die Startseite: Strompreis, Müll, Hausgeräte – und alles, was auf den AWTRIX
 
 ## Autos
 
-Noch kein Blueprint – als Nächstes geplant: Smartladen bis zur Abfahrtszeit. [Was noch kommt](https://kilysworld.com/dashboard/#cars)
+| Blueprint | Was er macht | Importieren |
+|---|---|---|
+| **Willkommenslicht – in der Farbe der Person** | Kommt jemand heim, leuchtet das Licht im Eingang in seiner Farbe (bei uns die Farbe des Autos), kommen zwei, wechseln die Farben; danach wieder wie vorher | [![Importieren](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Flicht%2Fwillkommenslicht.yaml) |
+
+Als Nächstes geplant: Smartladen bis zur Abfahrtszeit. [Was noch kommt](https://kilysworld.com/dashboard/#cars)
 
 ## Automatisierung
 
@@ -83,7 +87,7 @@ Bitte ein [Issue](https://github.com/johnkily/ha-blueprints/issues) anlegen – 
 
 Ready-made Home Assistant automations: click **Import**, pick your devices, done. Like them? [Buy me a coffee on Ko-fi](https://ko-fi.com/johnkily).
 
-**Step-by-step guides in English:** [AWTRIX blueprints](docs/en/awtrix.md) · [Doorbell](docs/en/klingel.md) · [Sun protection](docs/en/sonnenschutz.md) · [Washing machine & co.](docs/en/geraet_fertig.md) · [Waste bins](docs/en/muell.md) (with an English tile card) · [Lock the doors](docs/en/tueren_abschliessen.md) · [Zigbee watchdog](docs/en/zigbee_waechter.md) · [Silent devices](docs/en/stumme_geraete.md)
+**Step-by-step guides in English:** [AWTRIX blueprints](docs/en/awtrix.md) · [Doorbell](docs/en/klingel.md) · [Sun protection](docs/en/sonnenschutz.md) · [Washing machine & co.](docs/en/geraet_fertig.md) · [Waste bins](docs/en/muell.md) (with an English tile card) · [Lock the doors](docs/en/tueren_abschliessen.md) · [Zigbee watchdog](docs/en/zigbee_waechter.md) · [Silent devices](docs/en/stumme_geraete.md) · [Welcome light](docs/en/willkommenslicht.md)
 
 | Blueprint | What it does | Import |
 |---|---|---|
@@ -99,6 +103,7 @@ Ready-made Home Assistant automations: click **Import**, pick your devices, done
 | Lock doors when nobody is home | Locks the smart locks once everybody has left – doors that are open are reported, not bolted | [![Import](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fen%2Fsecurity%2Flock_doors_when_away.yaml) |
 | Zigbee watchdog – restart a stuck coordinator *(German labels)* | If the Zigbee coordinator gets stuck, restarts the chip and Zigbee2MQTT and notifies you – asks a device every 5 minutes instead of waiting for silence | [![Import](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fzigbee%2Fzigbee_waechter.yaml) |
 | Report silent devices (empty battery) | Notifies when Zigbee devices stop reporting – usually an empty battery, while Home Assistant keeps showing the last value. “Back again” after the swap, optional weekly overview | [![Import](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fen%2Fzigbee%2Fsilent_devices.yaml) |
+| Welcome light in each person's colour *(German labels)* | Someone comes home → the entrance light glows in their colour (ours: the car colour), two people → alternating colours, then back to before | [![Import](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Flicht%2Fwillkommenslicht.yaml) |
 
 Blueprints marked *(German labels)* show German field names in Home Assistant – the English guides explain every field. More English versions will follow; tell us in an [issue](https://github.com/johnkily/ha-blueprints/issues) which one you need first. Questions in English are welcome there or under [Ideas](https://github.com/johnkily/ha-blueprints/discussions/categories/ideas).
 

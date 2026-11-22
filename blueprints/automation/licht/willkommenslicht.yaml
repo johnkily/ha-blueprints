@@ -1,0 +1,267 @@
+blueprint:
+  name: Willkommenslicht – Begrüßung in der Farbe der Person
+  description: >
+    Kommt jemand heim, leuchtet ein Licht im Eingang in „seiner“ Farbe – bei uns
+    die Farbe des Autos. Kommt die zweite Person, während es noch leuchtet, wechseln
+    die Farben. Ende 20 Sekunden nachdem die Haustür zu ist (spätestens nach
+    5 Minuten), danach ist das Licht wieder wie vorher. Nachts gedimmt; ist es dunkel,
+    gehen auf Wunsch weitere Lampen für ein paar Minuten mit an.
+
+
+    Anleitung: https://github.com/johnkily/ha-blueprints/blob/main/docs/willkommenslicht.md
+    – gefällt er dir? Ein ⭐ auf GitHub hilft anderen, ihn zu finden.
+  domain: automation
+  author: johnkily
+  homeassistant:
+    min_version: 2024.10.0
+  source_url: https://github.com/johnkily/ha-blueprints/blob/main/blueprints/automation/licht/willkommenslicht.yaml
+  input:
+    personen:
+      name: Personen
+      description: >
+        Wer begrüßt wird – bis zu drei. Die Reihenfolge bestimmt die Farbe:
+        die erste Person bekommt Farbe 1, die zweite Farbe 2, die dritte Farbe 3.
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - domain: person
+    farbe_1:
+      name: Farbe 1
+      default: [0, 210, 190]
+      selector:
+        color_rgb: {}
+    farbe_2:
+      name: Farbe 2
+      default: [255, 40, 150]
+      selector:
+        color_rgb: {}
+    farbe_3:
+      name: Farbe 3
+      default: [255, 170, 0]
+      selector:
+        color_rgb: {}
+    licht:
+      name: Licht im Eingang
+      description: Ein Licht, das Farben kann – z. B. ein LED-Streifen mit WLED oder eine farbige Lampe.
+      selector:
+        entity:
+          filter:
+            - domain: light
+    haustuer:
+      name: Türkontakt der Haustür (empfohlen)
+      description: >
+        20 Sekunden nachdem die Tür zu ist, endet die Begrüßung. Ohne Türkontakt
+        leuchtet es bis zur Höchstdauer.
+      default: ""
+      selector:
+        entity:
+          filter:
+            - domain: binary_sensor
+    feinheiten:
+      name: Feinheiten
+      collapsed: true
+      input:
+        weg_minuten:
+          name: Begrüßen, wenn vorher mindestens so lange weg
+          description: Sonst würde schon jeder Gang zum Briefkasten begrüßt.
+          default: 15
+          selector:
+            number:
+              min: 1
+              max: 240
+              unit_of_measurement: min
+        hoechstdauer:
+          name: Höchstdauer
+          default: 5
+          selector:
+            number:
+              min: 1
+              max: 30
+              unit_of_measurement: min
+        andere_tuer:
+          name: Weitere Tür (optional)
+          description: Geht diese Tür auf (z. B. die Hintertür), endet die Begrüßung sofort.
+          default: ""
+          selector:
+            entity:
+              filter:
+                - domain: binary_sensor
+        helligkeit:
+          name: Helligkeit
+          default: 100
+          selector:
+            number:
+              min: 5
+              max: 100
+              unit_of_measurement: "%"
+        helligkeit_nachts:
+          name: Helligkeit nachts (0–6 Uhr)
+          default: 40
+          selector:
+            number:
+              min: 5
+              max: 100
+              unit_of_measurement: "%"
+        effekt:
+          name: Effekt (optional)
+          description: >
+            Name eines Licht-Effekts, z. B. „Breathe“ bei WLED für sanftes Pulsieren.
+            Leer = einfach leuchten.
+          default: ""
+          selector:
+            text: {}
+        nachtlichter:
+          name: Bei Dunkelheit zusätzlich einschalten (optional)
+          description: >
+            Z. B. Einfahrt und Flur. Gehen nur an, wenn die Sonne unter dem Horizont
+            ist, und wieder aus nach der Nachlaufzeit – ausgeschaltet wird nur, was
+            vorher aus war.
+          default: []
+          selector:
+            entity:
+              multiple: true
+              filter:
+                - domain: light
+        nachlauf:
+          name: Nachlaufzeit der zusätzlichen Lampen
+          default: 10
+          selector:
+            number:
+              min: 1
+              max: 60
+              unit_of_measurement: min
+
+# single: Kommt die zweite Person während der Begrüßung, übernimmt der laufende
+# Durchgang sie (Farbwechsel) – ein zweiter Lauf würde den „Vorher“-Zustand verfälschen.
+mode: single
+max_exceeded: silent
+
+triggers:
+  - trigger: state
+    entity_id: !input personen
+    to: home
+
+variables:
+  personen: !input personen
+  f1: !input farbe_1
+  f2: !input farbe_2
+  f3: !input farbe_3
+  licht: !input licht
+  haustuer: !input haustuer
+  andere_tuer: !input andere_tuer
+  weg_minuten: !input weg_minuten
+  hoechstdauer: !input hoechstdauer
+  helligkeit_tag: !input helligkeit
+  helligkeit_nachts: !input helligkeit_nachts
+  effekt: !input effekt
+  nachtlichter: !input nachtlichter
+  nachlauf: !input nachlauf
+
+conditions:
+  # vorher lange genug weg (nicht bei Neustart oder kurzem Springen der Anwesenheit)
+  - condition: template
+    value_template: >-
+      {{ trigger.from_state is not none
+         and trigger.from_state.state not in ['home', 'unknown', 'unavailable']
+         and (trigger.to_state.last_changed - trigger.from_state.last_changed).total_seconds()
+             >= (weg_minuten | int) * 60 }}
+
+actions:
+  - variables:
+      start: "{{ now().timestamp() }}"
+      nachts: "{{ now().hour < 6 }}"
+      hell: "{{ (helligkeit_nachts if now().hour < 6 else helligkeit_tag) | int }}"
+      # Hat das Handy die Ankunft erst nach dem Öffnen gemeldet, ist die Tür schon wieder zu –
+      # dann nur kurz grüßen.
+      schon_drin: >-
+        {{ haustuer not in ['', none] and is_state(haustuer, 'off')
+           and states[haustuer] is not none
+           and (now() - states[haustuer].last_changed).total_seconds() < 180 }}
+      neu_an: >-
+        {{ nachtlichter | select('is_state', 'off') | list
+           if is_state('sun.sun', 'below_horizon') else [] }}
+  - action: scene.create
+    data:
+      scene_id: willkommenslicht_vorher
+      snapshot_entities:
+        - "{{ licht }}"
+  - if:
+      - condition: template
+        value_template: "{{ neu_an | count > 0 }}"
+    then:
+      - action: light.turn_on
+        continue_on_error: true
+        target:
+          entity_id: "{{ neu_an }}"
+  # Begrüßen, bis die Haustür 20 s zu ist, eine andere Tür aufgeht oder die Höchstdauer um ist.
+  # Alle 3 s neu: so kommt eine zweite Person, die währenddessen heimkommt, mit hinein.
+  - repeat:
+      sequence:
+        - variables:
+            jetzt: "{{ now().timestamp() }}"
+            alle_farben: "{{ [f1, f2, f3] }}"
+            # wer in den letzten 10 Minuten heimgekommen ist – in der Farbe seines Platzes
+            farben: >-
+              {% set ns = namespace(f=[]) %}
+              {% for p in personen[:3] %}
+                {% if states[p] is not none and is_state(p, 'home')
+                      and (jetzt - as_timestamp(states[p].last_changed)) < 600 %}
+                  {% set ns.f = ns.f + [alle_farben[loop.index0]] %}
+                {% endif %}
+              {% endfor %}
+              {{ ns.f if ns.f else [f1] }}
+            farbe: "{{ farben[repeat.index % (farben | count)] }}"
+        - if:
+            - condition: template
+              value_template: "{{ effekt | trim != '' }}"
+          then:
+            - action: light.turn_on
+              continue_on_error: true
+              target:
+                entity_id: "{{ licht }}"
+              data:
+                rgb_color: "{{ farbe }}"
+                brightness_pct: "{{ hell }}"
+                effect: "{{ effekt | trim }}"
+          else:
+            - action: light.turn_on
+              continue_on_error: true
+              target:
+                entity_id: "{{ licht }}"
+              data:
+                rgb_color: "{{ farbe }}"
+                brightness_pct: "{{ hell }}"
+                transition: 1
+        - delay:
+            seconds: 3
+      until:
+        - condition: template
+          value_template: >-
+            {% set t = now().timestamp() %}
+            {% set dauer = t - start %}
+            {% set h_zu = haustuer not in ['', none] and states[haustuer] is not none
+                 and is_state(haustuer, 'off')
+                 and as_timestamp(states[haustuer].last_changed) > start
+                 and (t - as_timestamp(states[haustuer].last_changed)) >= 20 %}
+            {% set andere = andere_tuer not in ['', none] and states[andere_tuer] is not none
+                 and is_state(andere_tuer, 'on')
+                 and as_timestamp(states[andere_tuer].last_changed) > start %}
+            {{ dauer >= (hoechstdauer | int) * 60 or h_zu or andere
+               or (schon_drin and dauer >= 20) }}
+  - action: scene.turn_on
+    target:
+      entity_id: scene.willkommenslicht_vorher
+    data:
+      transition: 2
+  # Zusätzliche Lampen: nach der Nachlaufzeit wieder aus – nur die, die wir eingeschaltet haben.
+  - if:
+      - condition: template
+        value_template: "{{ neu_an | count > 0 }}"
+    then:
+      - delay:
+          seconds: "{{ [0, (nachlauf | int) * 60 - (now().timestamp() - start)] | max | int }}"
+      - action: light.turn_off
+        continue_on_error: true
+        target:
+          entity_id: "{{ neu_an | select('is_state', 'on') | list }}"
