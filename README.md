@@ -55,7 +55,7 @@ Als Nächstes geplant: Smartladen bis zur Abfahrtszeit. [Was noch kommt](https:/
 
 ## Hausmeisterei
 
-Unser Ticketsystem für alles, was im Haus zu tun ist – als eigene Karte zum Nachbauen, ganz ohne Skripte.
+Unser Ticketsystem für alles, was im Haus zu tun ist – zum Nachbauen in drei Stufen, ganz ohne Skripte: einfach mit To-do-Listen, als Profi-Board und mit Erinnerungen. [Anleitung](docs/ticket_board.md)
 
 <p><img src="docs/bilder/ticketboard_desktop.png" width="100%" alt="Ticket-Board mit fünf Spalten"></p>
 
@@ -63,6 +63,7 @@ Unser Ticketsystem für alles, was im Haus zu tun ist – als eigene Karte zum N
 |---|---|---|
 | **Ticket-Board einfach – Abhaken schiebt weiter** | Board aus zwei oder drei To-do-Listen mit eingebauten Karten: Abhaken schiebt einen Eintrag in die nächste Spalte, auf Wunsch mit Nachricht. Nichts zu installieren | [![Importieren](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Ftickets%2Fticket_board_einfach.yaml) |
 | **Ticket-Board** | Kanban-Board für Wünsche und Aufgaben: Spalten, Priorität, Zuständige mit Foto, Fälligkeit, Herzchen, Verlauf und Abnahme. Daten in einer normalen To-do-Liste von Home Assistant | [So geht's](docs/ticket_board.md) |
+| **Ticket-Board – Erinnerungen** | Ergänzung zur Karte: jeden Morgen eine Nachricht mit Fälligem, Überfälligem, wartenden Abnahmen und liegengebliebenen „Brennt“-Tickets, jeder Zuständige bekommt seine eigenen. Neue „Brennt“-Tickets sofort | [![Importieren](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Ftickets%2Fticket_board_erinnerungen.yaml) |
 
 ## So funktioniert der Import
 
@@ -116,6 +117,7 @@ Ready-made Home Assistant automations: click **Import**, pick your devices, done
 | Report silent devices (empty battery) | Notifies when Zigbee devices stop reporting – usually an empty battery, while Home Assistant keeps showing the last value. “Back again” after the swap, optional weekly overview | [![Import](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fen%2Fzigbee%2Fsilent_devices.yaml) |
 | Welcome light in each person's colour *(German labels)* | Someone comes home → the entrance light glows in their colour (ours: the car colour), two people → alternating colours, then back to before | [![Import](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Flicht%2Fwillkommenslicht.yaml) |
 | Simple ticket board – ticking moves items on *(German labels)* | Two or three to-do lists as columns with built-in cards: ticking an item moves it to the next list, optional notification. Nothing to install | [![Import](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Ftickets%2Fticket_board_einfach.yaml) |
+| Ticket board reminders *(German labels, English messages)* | Add-on for the ticket board card: a morning message with due, overdue, waiting reviews and urgent tickets nobody touches, every assignee gets their own. New urgent tickets right away | [![Import](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Ftickets%2Fticket_board_erinnerungen.yaml) |
 
 Blueprints marked *(German labels)* show German field names in Home Assistant – the English guides explain every field. More English versions will follow; tell us in an [issue](https://github.com/johnkily/ha-blueprints/issues) which one you need first. Questions in English are welcome there or under [Ideas](https://github.com/johnkily/ha-blueprints/discussions/categories/ideas).
 

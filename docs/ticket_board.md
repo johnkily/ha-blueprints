@@ -6,12 +6,17 @@ Ein Kanban-Board für Home Assistant: Wünsche und Aufgaben landen als Ticket in
 
 Die Tickets liegen in einer ganz normalen **To-do-Liste von Home Assistant**. Keine Skripte, keine `configuration.yaml`, und alles steckt automatisch in jeder Sicherung. Die Liste siehst du sogar in der HA-App.
 
-**Zwei Varianten:**
+**Drei Stufen – steig ein, wo es passt:**
 
-- **[Einfach](#einfach-ohne-installation)** – zwei oder drei To-do-Listen nebeneinander, nur eingebaute Karten. Abhaken schiebt einen Eintrag in die nächste Spalte. In fünf Minuten fertig, nichts zu installieren.
-- **[Profi](#profi-das-ticket-board)** – ein richtiges Board mit Prioritäten, Zuständigen mit Foto, Filtern, Verlauf und Kommentaren. Dafür einmal eine Datei installieren.
+| Stufe | Was du bekommst | Was du brauchst | Zeit |
+|---|---|---|---|
+| **1 · [Einfach](#einfach-ohne-installation)** | Zwei oder drei Listen nebeneinander. Abhaken schiebt in die nächste Spalte, auf Wunsch mit Nachricht | Lokale To-do-Listen + ein Blueprint | 5 Minuten |
+| **2 · [Profi](#profi-das-ticket-board)** | Ein richtiges Board mit Priorität, Zuständigen mit Foto, Fälligkeit, Filtern, Verlauf, Kommentaren und Abnahme | dazu eine Datei (die Karte) | 15 Minuten |
+| **3 · [Profi + Erinnerungen](#erinnerungen-stufe-3)** | Das Haus erinnert von selbst: fällig, überfällig, Abnahme wartet, „Brennt“ bleibt liegen. Jeder bekommt seine eigenen Tickets aufs Handy | dazu ein Blueprint | 10 Minuten |
 
-Die Profi-Karte übernimmt die Einträge der einfachen Variante nicht automatisch. Wer später wechselt, legt die offenen Tickets einmal neu an.
+Alle Stufen arbeiten mit **To-do-Listen von Home Assistant**. Von Stufe 2 auf 3 geht nichts verloren, der Blueprint liest einfach mit. Nur beim Wechsel von 1 auf 2 legt man die offenen Tickets einmal neu an, die Profi-Karte übernimmt die Einträge der einfachen Variante nicht automatisch.
+
+**Und darüber?** Bei uns arbeitet zusätzlich eine KI freigegebene Tickets nachts ab und legt sie zur Abnahme hin. Das ist (noch) kein Baustein zum Nachbauen, sondern unser eigenes, über Monate gewachsenes System. Wie es läuft, steht im Blog: [Unser Hausmeister ist eine KI](https://kilysworld.com/2026/11/22/unser-hausmeister-ist-eine-ki-wie-claude-nachts-unsere-smart-home-tickets-abarbeitet/).
 
 ## Einfach (ohne Installation)
 
@@ -79,6 +84,39 @@ personen:
 - `archiv` – wie viele erledigte Tickets sichtbar sind (Vorgabe 6)
 
 Am besten passt die Karte in eine Ansicht vom Typ **Panel** oder in einen Abschnitt über die volle Breite.
+
+## Erinnerungen (Stufe 3)
+
+Ein Board hilft nur, wenn jemand draufschaut. Der Blueprint **Ticket-Board – Erinnerungen** schaut einmal am Tag für dich nach und schickt eine Nachricht, wenn etwas liegen bleibt:
+
+| Zeichen | Wann | Vorgabe |
+|---|---|---|
+| 🔥 | „Brennt“, in den ersten beiden Spalten und seit … Tagen nicht angefasst | 1 Tag |
+| 📅 | Fällig heute oder überfällig (nicht in Abnahme oder Erledigt) | an |
+| 👀 | Wartet seit … Tagen auf Abnahme | 2 Tage |
+| 💤 | Liegt seit … Tagen in der ersten Spalte | aus |
+
+Neue „Brennt“-Tickets meldet er **sofort**, nicht erst am nächsten Morgen.
+
+**Wer bekommt was?** Die Handys unter „Handys“ bekommen die ganze Liste. Ist „Zuständige bekommen ihre eigenen Tickets“ an, geht zusätzlich an jeden Zuständigen eine Nachricht nur mit seinen Tickets, über das Handy, das in Home Assistant zu seiner Person gehört (Companion-App). Wer schon unter „Handys“ steht, bekommt nichts doppelt. Für Telegram, Signal oder E-Mail trägst du ein eigenes Skript ein, es bekommt `titel` und `nachricht` (Vorlagen in der [Anleitung zum Zigbee-Wächter](zigbee_waechter.md)).
+
+**Einrichten:**
+
+[![Importieren](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Ftickets%2Fticket_board_erinnerungen.yaml)
+
+*Einstellungen → Automationen & Szenen → Blueprints* → **Ticket-Board – Erinnerungen**: unter „Board“ dieselbe To-do-Liste wie in der Karte, Uhrzeit wählen, Empfänger eintragen. Mit „Dashboard-Pfad zum Board“ (z. B. `/lovelace/tickets`) öffnet ein Tipp auf die Nachricht gleich das Board.
+
+So sieht die Morgenmeldung aus:
+
+```
+📋 Ticket-Board (4)
+🔥 Licht im Flur flackert – brennt, seit 2 Tg. unberührt
+📅 Waschmaschinen-Meldung – seit 1 Tg. überfällig · Ben
+📅 Rollo Wohnzimmer hakt – heute fällig
+👀 Türklingel aufs Handy – wartet seit 3 Tg. auf Abnahme · Anna
+```
+
+Ist nichts fällig, kommt auch nichts. Der Blueprint gehört zur Profi-Karte: Einträge ohne die ⚙-Zeile (z. B. aus der einfachen Variante) überspringt er.
 
 ## Gut zu wissen
 

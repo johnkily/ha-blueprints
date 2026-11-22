@@ -6,12 +6,17 @@ A Kanban board for Home Assistant: wishes and tasks become tickets in columns, a
 
 The tickets live in a normal **Home Assistant to-do list**. No scripts, no `configuration.yaml`, and everything is part of every backup automatically. You can even see the list in the HA app.
 
-**Two versions:**
+**Three levels – start wherever it suits you:**
 
-- **[Simple](#simple-no-installation)** – two or three to-do lists side by side, built-in cards only. Ticking an item moves it to the next column. Done in five minutes, nothing to install.
-- **[Pro](#pro-the-ticket-board)** – a real board with priorities, assignees with pictures, filters, history and comments. Needs one file installed.
+| Level | What you get | What you need | Time |
+|---|---|---|---|
+| **1 · [Simple](#simple-no-installation)** | Two or three lists side by side. Ticking moves an item to the next column, optional notification | Local To-do lists + one blueprint | 5 minutes |
+| **2 · [Pro](#pro-the-ticket-board)** | A real board with priority, assignees with pictures, due dates, filters, history, comments and review | plus one file (the card) | 15 minutes |
+| **3 · [Pro + reminders](#reminders-level-3)** | The house reminds you by itself: due, overdue, review waiting, urgent tickets nobody touches. Everyone gets their own tickets on their phone | plus one blueprint | 10 minutes |
 
-The pro card doesn't take over the items of the simple version automatically. If you switch later, add the open tickets once more.
+All levels use **Home Assistant to-do lists**. Going from level 2 to 3 loses nothing, the blueprint simply reads along. Only when switching from 1 to 2 you add the open tickets once more – the pro card doesn't take over the items of the simple version.
+
+**And beyond that?** In our house an AI also works through approved tickets at night and leaves them for review. That isn't a building block to copy (yet), it's our own system that grew over months. Our blog describes it (in German) – start at [Kily's World in English](https://kilysworld.com/in-english/).
 
 ## Simple (no installation)
 
@@ -81,6 +86,41 @@ personen:
 - `archiv` – how many done tickets are visible (*archive*, default 6)
 
 The card fits best in a **Panel** view or a full-width section.
+
+## Reminders (level 3)
+
+A board only helps if somebody looks at it. The blueprint **Ticket-Board – Erinnerungen** (*reminders*) looks once a day for you and sends a message when something is left lying around:
+
+| Sign | When | Default |
+|---|---|---|
+| 🔥 | Urgent (“Brennt”), in the first two columns and untouched for … days | 1 day |
+| 📅 | Due today or overdue (not in review or done) | on |
+| 👀 | Waiting for review for … days | 2 days |
+| 💤 | Sitting in the first column for … days | off |
+
+New urgent tickets are reported **right away**, not the next morning.
+
+**Who gets what?** The phones under “Handys” get the whole list. With “Zuständige bekommen ihre eigenen Tickets” (*assignees get their own tickets*) on, each assignee also gets a message with only their tickets, on the phone that belongs to their person in Home Assistant (companion app). Phones already listed under “Handys” don't get it twice. For Telegram, Signal or e-mail add your own script, it receives `titel` (*title*) and `nachricht` (*message*) – templates in the [Zigbee watchdog guide](zigbee_waechter.md).
+
+**Setup:**
+
+[![Import](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Ftickets%2Fticket_board_erinnerungen.yaml)
+
+> The blueprint has German field names, but set “Sprache der Meldung” (*language of the message*) to **English** and the messages are in English.
+
+*Settings → Automations & scenes → Blueprints* → **Ticket-Board – Erinnerungen**: under “Board” pick the same to-do list as in the card, choose a time (“Uhrzeit der Tagesmeldung”) and the recipients. With “Dashboard-Pfad zum Board” (*dashboard path*, e.g. `/lovelace/tickets`) tapping the message opens the board.
+
+The morning message looks like this:
+
+```
+📋 Ticket board (4)
+🔥 Flickering hall light – burning, untouched for 2 d
+📅 Washing machine alert – overdue for 1 d · Ben
+📅 Living room blind sticks – due today
+👀 Doorbell on the phone – waiting for review for 3 d · Anna
+```
+
+If nothing is due, nothing is sent. The blueprint belongs to the pro card: items without the ⚙ line (e.g. from the simple version) are skipped.
 
 ## Good to know
 

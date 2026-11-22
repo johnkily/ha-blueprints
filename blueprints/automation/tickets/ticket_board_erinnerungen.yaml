@@ -1,0 +1,293 @@
+blueprint:
+  name: Ticket-Board – Erinnerungen
+  description: >
+    Ergänzung zur Ticket-Board-Karte: Einmal am Tag schaut das Haus auf das Board
+    und meldet, was liegen bleibt. Fällige und überfällige Tickets, Abnahmen, die
+    seit Tagen warten, „Brennt“-Tickets, die niemand anfasst, und auf Wunsch
+    Ideen, die seit Wochen in der ersten Spalte liegen. Neue „Brennt“-Tickets
+    meldet er sofort. Wer zuständig ist, bekommt seine Tickets aufs eigene Handy.
+
+
+    Anleitung: https://github.com/johnkily/ha-blueprints/blob/main/docs/ticket_board.md
+    – gefällt er dir? Ein ⭐ auf GitHub hilft anderen, ihn zu finden.
+  domain: automation
+  author: johnkily
+  homeassistant:
+    min_version: 2024.10.0
+  source_url: https://github.com/johnkily/ha-blueprints/blob/main/blueprints/automation/tickets/ticket_board_erinnerungen.yaml
+  input:
+    liste:
+      name: Board (To-do-Liste der Karte)
+      description: Dieselbe To-do-Liste, die in der Ticket-Board-Karte als `entity` steht.
+      selector:
+        entity:
+          filter:
+            - domain: todo
+    uhrzeit:
+      name: Uhrzeit der Tagesmeldung
+      default: "08:00:00"
+      selector:
+        time: {}
+    regeln:
+      name: Woran erinnert wird
+      input:
+        faellig:
+          name: Fällige und überfällige Tickets
+          default: true
+          selector:
+            boolean: {}
+        abnahme_tage:
+          name: Abnahme wartet seit … Tagen
+          description: 0 = aus.
+          default: 2
+          selector:
+            number:
+              min: 0
+              max: 14
+              unit_of_measurement: Tage
+        brennt_tage:
+          name: „Brennt“ und seit … Tagen nicht angefasst
+          description: Gilt für Tickets in den ersten beiden Spalten. 0 = aus.
+          default: 1
+          selector:
+            number:
+              min: 0
+              max: 7
+              unit_of_measurement: Tage
+        liegt_tage:
+          name: Neue Tickets, die seit … Tagen liegen
+          description: Erinnert an vergessene Ideen in der ersten Spalte. 0 = aus.
+          default: 0
+          selector:
+            number:
+              min: 0
+              max: 90
+              unit_of_measurement: Tage
+        sofort_brennt:
+          name: Neue „Brennt“-Tickets sofort melden
+          default: true
+          selector:
+            boolean: {}
+    empfaenger:
+      name: Wer die Meldung bekommt
+      input:
+        handys:
+          name: Handys (bekommen alles)
+          description: Leer lassen = keine Handy-Nachricht an feste Geräte.
+          default: []
+          selector:
+            device:
+              multiple: true
+              filter:
+                - integration: mobile_app
+        zustaendige:
+          name: Zuständige bekommen ihre eigenen Tickets
+          description: >
+            Über die Person und ihr Handy aus der Companion-App. Wer schon unter
+            „Handys“ steht, bekommt keine zweite Nachricht.
+          default: true
+          selector:
+            boolean: {}
+        in_ha:
+          name: Auch in Home Assistant anzeigen
+          default: false
+          selector:
+            boolean: {}
+        skript:
+          name: Eigenes Skript (optional)
+          description: >
+            Für Telegram, Signal, E-Mail & Co. Das Skript bekommt die Variablen
+            `titel` und `nachricht`.
+          default: []
+          selector:
+            entity:
+              multiple: true
+              filter:
+                - domain: script
+        pfad:
+          name: Dashboard-Pfad zum Board (optional)
+          description: Z. B. `/lovelace/tickets` – Antippen der Nachricht öffnet dann das Board.
+          default: ""
+          selector:
+            text: {}
+        sprache:
+          name: Sprache der Meldung
+          default: de
+          selector:
+            select:
+              options:
+                - label: Deutsch
+                  value: de
+                - label: English
+                  value: en
+
+mode: queued
+max: 5
+
+triggers:
+  - trigger: time
+    at: !input uhrzeit
+    id: tag
+  # Neue Tickets erhöhen die Zahl offener Einträge = Zustand der Liste
+  - trigger: state
+    entity_id: !input liste
+    id: sofort
+
+variables:
+  liste: !input liste
+  faellig: !input faellig
+  abnahme_tage: !input abnahme_tage
+  brennt_tage: !input brennt_tage
+  liegt_tage: !input liegt_tage
+  sofort_brennt: !input sofort_brennt
+  handys: !input handys
+  zustaendige: !input zustaendige
+  in_ha: !input in_ha
+  skript: !input skript
+  pfad: !input pfad
+  sprache: !input sprache
+  sofort: "{{ (trigger.id | default('tag')) == 'sofort' }}"
+  t: >-
+    {{ {'titel': 'Ticket board', 'brennt_neu': 'New burning ticket', 'heute': 'due today',
+        'ueber': 'overdue for {} d', 'abnahme': 'waiting for review for {} d',
+        'brennt': 'burning, untouched for {} d', 'liegt': 'sitting in the inbox for {} d',
+        'mehr': '… and {} more'}
+       if sprache == 'en' else
+       {'titel': 'Ticket-Board', 'brennt_neu': 'Neues Brennt-Ticket', 'heute': 'heute fällig',
+        'ueber': 'seit {} Tg. überfällig', 'abnahme': 'wartet seit {} Tg. auf Abnahme',
+        'brennt': 'brennt, seit {} Tg. unberührt', 'liegt': 'liegt seit {} Tg. in der Inbox',
+        'mehr': '… und {} weitere'} }}
+
+conditions:
+  - condition: template
+    value_template: >-
+      {{ not sofort or (sofort_brennt and trigger.to_state is not none and trigger.from_state is not none
+         and trigger.to_state.state | is_number and trigger.from_state.state | is_number
+         and trigger.to_state.state | int > trigger.from_state.state | int) }}
+
+actions:
+  - action: todo.get_items
+    target:
+      entity_id: "{{ liste }}"
+    data:
+      status: needs_action
+    response_variable: antwort
+  - variables:
+      # Jedes Ticket der Karte trägt seine Daten als JSON hinter „⚙“ am Ende der Beschreibung.
+      treffer: >-
+        {% set marke = '\n\n⚙ ' %}
+        {% set jetzt = now() %}
+        {% set heute = jetzt.date() %}
+        {% set ns = namespace(l=[]) %}
+        {% set items = antwort[liste]['items'] if liste in antwort else [] %}
+        {% for i in items if i.description is defined and i.description and marke in i.description %}
+          {% set roh = (i.description.split(marke) | last) | trim %}
+          {% if roh.startswith('{') and roh.endswith('}') %}
+            {% set m = roh | from_json %}
+            {% set s = m.s | default('neu') %}
+            {% set p = m.p | default(1) | int(1) %}
+            {% set wechsel = (m.v | default([]) | selectattr('x', 'defined') | selectattr('x', 'eq', '→ ' ~ s) | map(attribute='t') | list | last)
+                             | default(m.c | default(none), true) %}
+            {% set t_wechsel = as_datetime(wechsel) if wechsel else none %}
+            {% set t_anders = as_datetime(m.g) if m.g is defined and m.g else t_wechsel %}
+            {% set t_neu = as_datetime(m.c) if m.c is defined and m.c else none %}
+            {% set tage = namespace(w=0, g=0, c=0, d=none) %}
+            {% if t_wechsel %}{% set tage.w = ((jetzt - t_wechsel).total_seconds() / 86400) | round(1, 'floor') %}{% endif %}
+            {% if t_anders %}{% set tage.g = ((jetzt - t_anders).total_seconds() / 86400) | round(1, 'floor') %}{% endif %}
+            {% if t_neu %}{% set tage.c = ((jetzt - t_neu).total_seconds() / 60) %}{% endif %}
+            {% if i.due is defined and i.due %}
+              {% set tage.d = (heute - strptime(i.due[:10], '%Y-%m-%d').date()).days %}
+            {% endif %}
+            {% set g = namespace(art='', text='') %}
+            {% if sofort %}
+              {% if p == 3 and t_neu and tage.c <= 3 %}
+                {% set g.art = '🔥' %}{% set g.text = t.brennt_neu %}
+              {% endif %}
+            {% else %}
+              {% if brennt_tage > 0 and p == 3 and s in ['neu', 'beredet'] and tage.g >= brennt_tage %}
+                {% set g.art = '🔥' %}{% set g.text = t.brennt.replace('{}', tage.g | int | string) %}
+              {% elif faellig and tage.d is not none and tage.d >= 0 and s in ['neu', 'beredet', 'arbeit'] %}
+                {% set g.art = '📅' %}
+                {% set g.text = t.heute if tage.d == 0 else t.ueber.replace('{}', tage.d | string) %}
+              {% elif abnahme_tage > 0 and s == 'abnahme' and tage.w >= abnahme_tage %}
+                {% set g.art = '👀' %}{% set g.text = t.abnahme.replace('{}', tage.w | int | string) %}
+              {% elif liegt_tage > 0 and s == 'neu' and tage.w >= liegt_tage %}
+                {% set g.art = '💤' %}{% set g.text = t.liegt.replace('{}', tage.w | int | string) %}
+              {% endif %}
+            {% endif %}
+            {% if g.art %}
+              {% set wer = m.a | default('') %}
+              {% set name = (state_attr(wer, 'friendly_name') or '') if wer else '' %}
+              {% set ns.l = ns.l + [{'zeile': g.art ~ ' ' ~ i.summary ~ ' – ' ~ g.text ~ ((' · ' ~ name) if name else ''),
+                                     'a': wer, 'rang': ['🔥', '📅', '👀', '💤'].index(g.art)}] %}
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+        {{ ns.l | sort(attribute='rang') }}
+  - condition: template
+    value_template: "{{ treffer | count > 0 }}"
+  - variables:
+      titel: >-
+        {{ ('🔥 ' ~ t.brennt_neu) if sofort else ('📋 ' ~ t.titel ~ ' (' ~ (treffer | count) ~ ')') }}
+      # Höchstens acht Zeilen, damit die Nachricht auf dem Handy lesbar bleibt
+      nachricht: >-
+        {% set z = treffer | map(attribute='zeile') | list %}
+        {{ (z[:8] + ([t.mehr.replace('{}', (z | count - 8) | string)] if z | count > 8 else [])) | join('\n') }}
+      feste: "{{ handys | map('device_attr', 'name') | map('slugify') | list }}"
+      # Handy je zuständiger Person: Tracker aus der Companion-App → Gerätename → notify.mobile_app_…
+      persoenlich: >-
+        {% set ns = namespace(l=[]) %}
+        {% if zustaendige %}
+          {% set app = integration_entities('mobile_app') %}
+          {% for wer in treffer | map(attribute='a') | reject('eq', '') | unique %}
+            {% set zeilen = treffer | selectattr('a', 'eq', wer) | map(attribute='zeile') | list %}
+            {% for tr in state_attr(wer, 'device_trackers') or [] if tr in app %}
+              {% set ziel = device_attr(device_id(tr), 'name') | slugify %}
+              {% if ziel and ziel not in feste %}
+                {% set ns.l = ns.l + [{'ziel': ziel, 'text': zeilen[:8] | join('\n')}] %}
+              {% endif %}
+            {% endfor %}
+          {% endfor %}
+        {% endif %}
+        {{ ns.l }}
+      daten: >-
+        {{ {'tag': 'ticket-board-' ~ ('sofort' if sofort else 'tag'), 'group': 'ticket-board'}
+           | combine({'url': pfad, 'clickAction': pfad} if pfad else {}) }}
+  - repeat:
+      for_each: "{{ feste }}"
+      sequence:
+        - action: "notify.mobile_app_{{ repeat.item }}"
+          continue_on_error: true
+          data:
+            title: "{{ titel }}"
+            message: "{{ nachricht }}"
+            data: "{{ daten }}"
+  - repeat:
+      for_each: "{{ persoenlich }}"
+      sequence:
+        - action: "notify.mobile_app_{{ repeat.item.ziel }}"
+          continue_on_error: true
+          data:
+            title: "{{ titel }}"
+            message: "{{ repeat.item.text }}"
+            data: "{{ daten }}"
+  - if:
+      - condition: template
+        value_template: "{{ in_ha }}"
+    then:
+      - action: persistent_notification.create
+        data:
+          notification_id: "{{ 'ticket_board_' ~ (liste | replace('.', '_')) }}"
+          title: "{{ titel }}"
+          message: "{{ nachricht }}"
+  - repeat:
+      for_each: "{{ skript }}"
+      sequence:
+        - action: script.turn_on
+          continue_on_error: true
+          target:
+            entity_id: "{{ repeat.item }}"
+          data:
+            variables:
+              titel: "{{ titel }}"
+              nachricht: "{{ nachricht }}"

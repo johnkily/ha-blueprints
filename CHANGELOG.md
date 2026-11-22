@@ -2,6 +2,8 @@
 
 ## Seit v1.2
 
+**Neu: Ticket-Board – Erinnerungen** – Stufe 3 zum Ticket-Board: einmal am Tag eine Nachricht mit fälligen und überfälligen Tickets, Abnahmen, die seit Tagen warten, und „Brennt“-Tickets, die niemand anfasst (auf Wunsch auch alte Ideen). Neue „Brennt“-Tickets kommen sofort. Zuständige bekommen ihre eigenen Tickets auf ihr Handy, dazu feste Handys, Meldung in HA oder ein eigenes Skript (Telegram, Signal, E-Mail). Meldungen auf Deutsch oder Englisch. Die Anleitung zeigt jetzt alle drei Stufen auf einen Blick.
+
 **Neu: Ticket-Board einfach** – Blueprint für ein Board aus zwei oder drei To-do-Listen mit den eingebauten Karten: Abhaken schiebt einen Eintrag in die nächste Liste, Beschreibung und Fälligkeit wandern mit, auf Wunsch Nachricht bei der letzten Spalte. Anleitung zusammen mit der Profi-Karte.
 
 **Neu: Ticket-Board** – eine eigene Karte (`karten/ticket-board/ticket-board-card.js`): Kanban-Board für alles, was im Haus zu tun ist, mit fünf Spalten, Priorität, Zuständigen mit Foto, Fälligkeit, Herzchen, Verlauf/Kommentaren und Abnahme. Die Daten liegen in einer Lokalen To-do-Liste – keine Skripte, keine configuration.yaml. Deutsch und Englisch. Wunsch aus dem Blog und den Facebook-Gruppen.
