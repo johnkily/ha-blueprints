@@ -1,0 +1,339 @@
+blueprint:
+  name: Gute Nacht per Sprachbefehl
+  description: >
+    „Hey Google, gute Nacht“ (oder Alexa, ein Taster, ein Knopf im Dashboard)
+    schaltet einen Helfer ein, und Home Assistant macht den Rest: Szenen an,
+    Lichter und Geräte aus, Rollos zu, abschließen. Das Licht im Flur bleibt
+    noch ein paar Minuten an. Steht ein Fenster oder die Haustür offen, sagt
+    das Haus Bescheid, und das Schloss bleibt offen, statt gegen die Tür zu
+    fahren. Danach geht der Helfer wieder aus, damit der nächste Abend wieder
+    auslöst.
+
+
+    Anleitung: https://github.com/johnkily/ha-blueprints/blob/main/docs/gute_nacht.md
+    – gefällt er dir? Ein ⭐ auf GitHub hilft anderen, ihn zu finden.
+  domain: automation
+  author: johnkily
+  homeassistant:
+    min_version: 2024.10.0
+  source_url: https://github.com/johnkily/ha-blueprints/blob/main/blueprints/automation/haus/gute_nacht.yaml
+  input:
+    ausloeser:
+      name: Helfer „Gute Nacht“
+      description: >
+        Ein Schalter-Helfer (input_boolean), den Google Home, Alexa oder ein
+        Taster einschaltet. Anlegen unter Einstellungen → Geräte & Dienste →
+        Helfer → Schalter.
+      selector:
+        entity:
+          filter:
+            - domain: input_boolean
+    abschalten:
+      name: Was abends passiert
+      input:
+        szenen:
+          name: Szenen einschalten
+          description: Z. B. eine Szene „Nachtruhe“. Leer lassen, wenn du keine hast.
+          default: []
+          selector:
+            entity:
+              multiple: true
+              filter:
+                - domain: scene
+        lichter:
+          name: Lichter ausschalten
+          default: []
+          selector:
+            entity:
+              multiple: true
+              filter:
+                - domain: light
+        geraete:
+          name: Geräte ausschalten
+          description: Steckdosen, Fernseher, Lüfter …
+          default: []
+          selector:
+            entity:
+              multiple: true
+              filter:
+                - domain: [switch, media_player, fan]
+        rollos:
+          name: Rollos schließen
+          default: []
+          selector:
+            entity:
+              multiple: true
+              filter:
+                - domain: cover
+    weg:
+      name: Licht für den Weg ins Bett
+      collapsed: true
+      input:
+        weg_licht:
+          name: Licht, das noch an bleibt
+          description: Z. B. Flur oder Treppe. Geht nach der eingestellten Zeit aus. Leer = keins.
+          default: ""
+          selector:
+            entity:
+              filter:
+                - domain: light
+        weg_minuten:
+          name: Geht aus nach
+          default: 5
+          selector:
+            number:
+              min: 1
+              max: 30
+              unit_of_measurement: min
+    abschliessen:
+      name: Abschließen
+      input:
+        schloesser:
+          name: Schlösser abschließen
+          description: Werden nacheinander abgeschlossen (manche Bridges nehmen nur einen Befehl gleichzeitig).
+          default: []
+          selector:
+            entity:
+              multiple: true
+              filter:
+                - domain: lock
+        tueren:
+          name: Nur abschließen, wenn diese Türen zu sind
+          description: >
+            Türkontakte der Türen mit Schloss. Steht eine offen, bleibt abgeschlossen
+            aus, und du bekommst Bescheid.
+          default: []
+          selector:
+            entity:
+              multiple: true
+              filter:
+                - domain: binary_sensor
+    kontrolle:
+      name: Kontrolle und Rückmeldung
+      input:
+        fenster:
+          name: Fenster und Türen, die zu sein sollten
+          default: []
+          selector:
+            entity:
+              multiple: true
+              filter:
+                - domain: binary_sensor
+        lautsprecher:
+          name: Ansage auf diesen Lautsprechern
+          description: Z. B. der Google-Lautsprecher, dem du „gute Nacht“ sagst. Leer = keine Ansage.
+          default: []
+          selector:
+            entity:
+              multiple: true
+              filter:
+                - domain: media_player
+        tts:
+          name: Sprachausgabe (TTS)
+          description: Z. B. tts.google_translate_de_de oder tts.home_assistant_cloud. Nötig für die Ansage.
+          default: ""
+          selector:
+            entity:
+              filter:
+                - domain: tts
+        handys:
+          name: Handy-Nachricht, wenn etwas offen ist
+          default: []
+          selector:
+            device:
+              multiple: true
+              filter:
+                - integration: mobile_app
+        immer_melden:
+          name: Handy-Nachricht auch, wenn alles zu ist
+          default: false
+          selector:
+            boolean: {}
+        skript:
+          name: Eigenes Skript (optional)
+          description: >
+            Für Telegram, Signal & Co. Bekommt die Variablen `titel` und `nachricht`
+            (nur, wenn auch das Handy eine Nachricht bekäme).
+          default: []
+          selector:
+            entity:
+              multiple: true
+              filter:
+                - domain: script
+        sprache:
+          name: Sprache von Ansage und Nachricht
+          default: de
+          selector:
+            select:
+              options:
+                - label: Deutsch
+                  value: de
+                - label: English
+                  value: en
+    zuruecksetzen:
+      name: Helfer wieder ausschalten nach
+      description: >
+        Damit „gute Nacht“ am nächsten Abend wieder auslöst. 0 = Helfer bleibt an
+        (dann schaltest du ihn morgens selbst aus).
+      default: 10
+      selector:
+        number:
+          min: 0
+          max: 300
+          unit_of_measurement: s
+
+mode: single
+max_exceeded: silent
+
+triggers:
+  - trigger: state
+    entity_id: !input ausloeser
+    from: "off"
+    to: "on"
+
+variables:
+  ausloeser: !input ausloeser
+  szenen: !input szenen
+  lichter: !input lichter
+  geraete: !input geraete
+  rollos: !input rollos
+  weg_licht: !input weg_licht
+  weg_minuten: !input weg_minuten
+  schloesser: !input schloesser
+  tueren: !input tueren
+  fenster: !input fenster
+  lautsprecher: !input lautsprecher
+  tts: !input tts
+  handys: !input handys
+  immer_melden: !input immer_melden
+  skript: !input skript
+  sprache: !input sprache
+  zuruecksetzen: !input zuruecksetzen
+  en: "{{ sprache == 'en' }}"
+  tuer_offen: >-
+    {{ tueren | select('is_state', 'on') | map('state_attr', 'friendly_name') | list }}
+  aus_lichter: "{{ lichter | reject('eq', weg_licht) | list }}"
+
+actions:
+  - if:
+      - condition: template
+        value_template: "{{ szenen | count > 0 }}"
+    then:
+      - action: scene.turn_on
+        target:
+          entity_id: "{{ szenen }}"
+  - if:
+      - condition: template
+        value_template: "{{ aus_lichter | count > 0 }}"
+    then:
+      - action: light.turn_off
+        target:
+          entity_id: "{{ aus_lichter }}"
+  - if:
+      - condition: template
+        value_template: "{{ geraete | count > 0 }}"
+    then:
+      - action: homeassistant.turn_off
+        target:
+          entity_id: "{{ geraete }}"
+  - if:
+      - condition: template
+        value_template: "{{ rollos | count > 0 }}"
+    then:
+      - action: cover.close_cover
+        continue_on_error: true
+        target:
+          entity_id: "{{ rollos }}"
+  # Abschließen nur bei geschlossenen Türen, eins nach dem anderen
+  - if:
+      - condition: template
+        value_template: "{{ schloesser | count > 0 and tuer_offen | count == 0 }}"
+    then:
+      - repeat:
+          for_each: "{{ schloesser }}"
+          sequence:
+            - action: lock.lock
+              continue_on_error: true
+              target:
+                entity_id: "{{ repeat.item }}"
+            - delay: 2
+      - wait_template: "{{ schloesser | reject('is_state', 'locked') | list | count == 0 }}"
+        timeout: 20
+  - variables:
+      offen: >-
+        {{ (fenster + tueren) | select('is_state', 'on') | map('state_attr', 'friendly_name') | unique | list }}
+      nicht_zu: >-
+        {{ schloesser | reject('is_state', 'locked') | map('state_attr', 'friendly_name') | list }}
+      problem: "{{ offen | count > 0 or nicht_zu | count > 0 }}"
+      titel: "{{ '🌙 Good night' if en else '🌙 Gute Nacht' }}"
+      nachricht: >-
+        {% set z = [] %}
+        {% if offen | count > 0 %}
+          {% set z = z + [('Still open: ' if en else 'Noch offen: ') ~ offen | join(', ')] %}
+        {% endif %}
+        {% if nicht_zu | count > 0 %}
+          {% set grund = ((' (door open)' if en else ' (Tür offen)') if tuer_offen | count > 0 else '') %}
+          {% set z = z + [('Not locked: ' if en else 'Nicht abgeschlossen: ') ~ nicht_zu | join(', ') ~ grund] %}
+        {% endif %}
+        {{ z | join('\n') if z else ('Everything is closed. Sleep well!' if en else 'Alles zu. Schlaf gut!') }}
+      ansage: >-
+        {% if en %}
+          Good night. {{ ('Still open: ' ~ offen | join(' and ') ~ '. ') if offen else '' }}{{ ('Not locked: ' ~ nicht_zu | join(' and ') ~ '.') if nicht_zu else '' }}
+        {% else %}
+          Gute Nacht. {{ ('Noch offen: ' ~ offen | join(' und ') ~ '. ') if offen else '' }}{{ ('Nicht abgeschlossen: ' ~ nicht_zu | join(' und ') ~ '.') if nicht_zu else '' }}
+        {% endif %}
+  - if:
+      - condition: template
+        value_template: "{{ tts not in ['', none] and lautsprecher | count > 0 }}"
+    then:
+      - action: tts.speak
+        continue_on_error: true
+        target:
+          entity_id: "{{ tts }}"
+        data:
+          media_player_entity_id: "{{ lautsprecher }}"
+          message: "{{ ansage | trim }}"
+  - if:
+      - condition: template
+        value_template: "{{ problem or immer_melden }}"
+    then:
+      - repeat:
+          for_each: "{{ handys }}"
+          sequence:
+            - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+              continue_on_error: true
+              data:
+                title: "{{ titel }}"
+                message: "{{ nachricht }}"
+                data:
+                  tag: gute-nacht
+      - repeat:
+          for_each: "{{ skript }}"
+          sequence:
+            - action: script.turn_on
+              continue_on_error: true
+              target:
+                entity_id: "{{ repeat.item }}"
+              data:
+                variables:
+                  titel: "{{ titel }}"
+                  nachricht: "{{ nachricht }}"
+  # Helfer zurücksetzen, damit es morgen wieder auslöst
+  - if:
+      - condition: template
+        value_template: "{{ zuruecksetzen > 0 }}"
+    then:
+      - delay: "{{ zuruecksetzen }}"
+      - action: input_boolean.turn_off
+        target:
+          entity_id: "{{ ausloeser }}"
+  # Weglicht zuletzt: bleibt noch ein paar Minuten an
+  - if:
+      - condition: template
+        value_template: "{{ weg_licht not in ['', none] }}"
+    then:
+      - delay:
+          minutes: "{{ weg_minuten }}"
+      - action: light.turn_off
+        target:
+          entity_id: "{{ weg_licht }}"

@@ -2,6 +2,8 @@
 
 ## Seit v1.2
 
+**Neu: Gute Nacht per Sprachbefehl** – „Hey Google, gute Nacht“ (oder Alexa, Taster, Dashboard) schaltet einen Helfer, Home Assistant macht den Rest: Szenen, Lichter und Geräte aus, Rollos zu, Schlösser nacheinander abschließen – aber nur, wenn die Türkontakte zu sind. Ein Weglicht bleibt noch ein paar Minuten an. Offene Fenster und nicht abgeschlossene Schlösser kommen als Ansage auf den Lautsprecher und aufs Handy. Der Helfer geht danach wieder aus. Anleitung Deutsch und Englisch.
+
 **Ticket-Board 1.1.0** – die Optionen gehen jetzt auch auf Englisch (`title`, `people`, `archive`). Die Karte bekommt ein eigenes Repo (johnkily/ticket-board-card), damit sie über den Marketplace installiert und aktualisiert werden kann.
 
 **Neu: Ticket-Board – Erinnerungen** – Stufe 3 zum Ticket-Board: einmal am Tag eine Nachricht mit fälligen und überfälligen Tickets, Abnahmen, die seit Tagen warten, und „Brennt“-Tickets, die niemand anfasst (auf Wunsch auch alte Ideen). Neue „Brennt“-Tickets kommen sofort. Zuständige bekommen ihre eigenen Tickets auf ihr Handy, dazu feste Handys, Meldung in HA oder ein eigenes Skript (Telegram, Signal, E-Mail). Meldungen auf Deutsch oder Englisch. Die Anleitung zeigt jetzt alle drei Stufen auf einen Blick.
