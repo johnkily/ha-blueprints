@@ -8,6 +8,8 @@ The tickets live in a normal **Home Assistant to-do list**. No scripts, no `conf
 
 **Three levels – start wherever it suits you:**
 
+![How a ticket goes round and the levels](../bilder/ticketboard_stufen_en.png)
+
 | Level | What you get | What you need | Time |
 |---|---|---|---|
 | **1 · [Simple](#simple-no-installation)** | Two or three lists side by side. Ticking moves an item to the next column, optional notification | Local To-do lists + one blueprint | 5 minutes |

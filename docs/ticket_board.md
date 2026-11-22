@@ -8,6 +8,8 @@ Die Tickets liegen in einer ganz normalen **To-do-Liste von Home Assistant**. Ke
 
 **Drei Stufen – steig ein, wo es passt:**
 
+![Kreislauf eines Tickets und die Stufen](bilder/ticketboard_stufen.png)
+
 | Stufe | Was du bekommst | Was du brauchst | Zeit |
 |---|---|---|---|
 | **1 · [Einfach](#einfach-ohne-installation)** | Zwei oder drei Listen nebeneinander. Abhaken schiebt in die nächste Spalte, auf Wunsch mit Nachricht | Lokale To-do-Listen + ein Blueprint | 5 Minuten |
