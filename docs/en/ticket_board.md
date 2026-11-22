@@ -62,7 +62,15 @@ All levels use **Home Assistant to-do lists**. Going from level 2 to 3 loses not
 
 ### 2. Install the card
 
-1. Download [`ticket-board-card.js`](../../karten/ticket-board/ticket-board-card.js) (“Download raw file” at the top right).
+**Via the Marketplace (formerly HACS), recommended** – updates come with one click:
+
+[![Open in the Marketplace](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=johnkily&repository=ticket-board-card&category=plugin)
+
+The button opens the card in the Marketplace → **Download**, then reload the browser or app. Without the button: *Settings → Marketplace → ⋮ → Custom repositories* → `https://github.com/johnkily/ticket-board-card`, type **Dashboard**.
+
+**Or by hand:**
+
+1. Download [`ticket-board-card.js`](https://github.com/johnkily/ticket-board-card/blob/main/ticket-board-card.js) (“Download raw file” at the top right).
 2. Copy it to `/config/www/` in Home Assistant, e.g. with the *File editor* or *Samba* app. Create the `www` folder if it doesn't exist yet.
 3. *Settings → Dashboards → ⋮ → Resources → Add resource*: URL `/local/ticket-board-card.js?v=1`, type **JavaScript module**.
 4. Reload the browser or app once.
@@ -135,10 +143,10 @@ If nothing is due, nothing is sent. The blueprint belongs to the pro card: items
 
 | Problem | Solution |
 |---|---|
-| “Custom element doesn't exist” | Resource added (step 2.3)? Then reload the browser or app. |
+| “Custom element doesn't exist” | Card downloaded in the Marketplace or resource added (step 2)? Then reload the browser or app. |
 | Board stays empty with an error | Is the to-do list name under `entity` correct? |
 | “Mine” shows nothing | Is your HA user linked to your person? |
-| The old version is shown | Increase the number after `?v=` in the resource, then reload. |
+| The old version is shown | Installed by hand: increase the number after `?v=`. Marketplace: reload the app or browser. |
 
 ---
 

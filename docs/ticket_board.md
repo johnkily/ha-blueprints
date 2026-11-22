@@ -60,7 +60,15 @@ Alle Stufen arbeiten mit **To-do-Listen von Home Assistant**. Von Stufe 2 auf 3 
 
 ### 2. Karte installieren
 
-1. Die Datei [`ticket-board-card.js`](../karten/ticket-board/ticket-board-card.js) herunterladen (rechts oben „Download raw file“).
+**Über den Marketplace (früher HACS), empfohlen** – dann kommen Updates per Klick:
+
+[![Im Marketplace öffnen](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=johnkily&repository=ticket-board-card&category=plugin)
+
+Der Knopf öffnet die Karte im Marketplace → **Herunterladen**, danach Browser bzw. App neu laden. Ohne Knopf: *Einstellungen → Marketplace → ⋮ → Benutzerdefinierte Repositories* → `https://github.com/johnkily/ticket-board-card`, Typ **Dashboard**.
+
+**Oder von Hand:**
+
+1. Die Datei [`ticket-board-card.js`](https://github.com/johnkily/ticket-board-card/blob/main/ticket-board-card.js) herunterladen (rechts oben „Download raw file“).
 2. In Home Assistant nach `/config/www/` kopieren, z. B. mit der App *File editor* oder *Samba*. Gibt es den Ordner `www` noch nicht, anlegen.
 3. *Einstellungen → Dashboards → ⋮ → Ressourcen → Ressource hinzufügen*: URL `/local/ticket-board-card.js?v=1`, Typ **JavaScript-Modul**.
 4. Browser bzw. App einmal neu laden.
@@ -131,10 +139,10 @@ Ist nichts fällig, kommt auch nichts. Der Blueprint gehört zur Profi-Karte: Ei
 
 | Problem | Lösung |
 |---|---|
-| „Custom element doesn't exist“ | Ressource eingetragen (Schritt 2.3)? Danach Browser bzw. App neu laden. |
+| „Custom element doesn't exist“ | Karte im Marketplace heruntergeladen bzw. Ressource eingetragen (Schritt 2)? Danach Browser bzw. App neu laden. |
 | Board bleibt leer mit Fehlermeldung | Stimmt der Name der To-do-Liste unter `entity`? |
 | „Meine“ zeigt nichts | Ist dein HA-Benutzer mit deiner Person verknüpft? |
-| Alte Version wird angezeigt | Zahl hinter `?v=` in der Ressource hochzählen, dann neu laden. |
+| Alte Version wird angezeigt | Von Hand installiert: Zahl hinter `?v=` in der Ressource hochzählen. Marketplace: App bzw. Browser neu laden. |
 
 ---
 
