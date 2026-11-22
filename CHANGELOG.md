@@ -2,6 +2,8 @@
 
 ## Seit v1.2
 
+**Neu: Ticket-Board** – eine eigene Karte (`karten/ticket-board/ticket-board-card.js`): Kanban-Board für alles, was im Haus zu tun ist, mit fünf Spalten, Priorität, Zuständigen mit Foto, Fälligkeit, Herzchen, Verlauf/Kommentaren und Abnahme. Die Daten liegen in einer Lokalen To-do-Liste – keine Skripte, keine configuration.yaml. Deutsch und Englisch. Wunsch aus dem Blog und den Facebook-Gruppen.
+
 **Neu: Willkommenslicht** – kommt jemand heim, leuchtet das Licht im Eingang in seiner Farbe; bis zu drei Personen, bei zweien wechseln die Farben. Ende 20 s nach dem Schließen der Haustür (oder sofort, wenn eine weitere Tür aufgeht), danach wieder wie vorher. Nachts gedimmt, bei Dunkelheit auf Wunsch weitere Lampen. Anleitung Deutsch und Englisch.
 
 **Zigbee-Wächter: Koordinator stromlos schalten** – neues optionales Feld „Steckdose des Koordinators“: Hilft der Neustart nicht, schaltet der Wächter die Steckdose 10 Sekunden aus und wieder an, startet Zigbee2MQTT neu und prüft noch einmal; erst danach kommt „antwortet weiter nicht“. Nur WLAN- oder andere Nicht-Zigbee-Steckdosen. Bestehende Automationen unverändert (Feld leer). Wunsch von Walter auf Facebook.
