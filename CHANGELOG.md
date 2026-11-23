@@ -2,6 +2,8 @@
 
 ## Seit v1.2
 
+**Neu: Monatsrückblick – dein Haus-Wrapped** – am 1. jedes Monats eine Nachricht mit den Zahlen des letzten Monats aus der Langzeitstatistik (`recorder.get_statistics`, ab HA 2026.10): Zähler als Monatssumme, Messwerte als Durchschnitt und Höchstwert, Vergleich zum Vormonat, Highlight des Monats, auf Wunsch Umrechnung in E-Auto-Kilometer. Ohne Hilfszähler. Anleitung Deutsch und Englisch.
+
 **Neu: Gute Nacht per Sprachbefehl** – „Hey Google, gute Nacht“ (oder Alexa, Taster, Dashboard) schaltet einen Helfer, Home Assistant macht den Rest: Szenen, Lichter und Geräte aus, Rollos zu, Schlösser nacheinander abschließen – aber nur, wenn die Türkontakte zu sind. Ein Weglicht bleibt noch ein paar Minuten an. Offene Fenster und nicht abgeschlossene Schlösser kommen als Ansage auf den Lautsprecher und aufs Handy. Der Helfer geht danach wieder aus. Optional Frostwarnung (Rollos bleiben oben), Hitzemodus (Rollos nur auf einen Spalt, ausgewählte ganz offen) und Gästemodus (Gästezimmer bleibt unberührt). Anleitung Deutsch und Englisch.
 
 **Ticket-Board 1.1.0** – die Optionen gehen jetzt auch auf Englisch (`title`, `people`, `archive`). Die Karte bekommt ein eigenes Repo (johnkily/ticket-board-card), damit sie über den Marketplace installiert und aktualisiert werden kann.

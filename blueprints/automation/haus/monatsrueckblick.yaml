@@ -1,0 +1,260 @@
+blueprint:
+  name: Monatsrückblick – dein Haus-Wrapped
+  description: >
+    Am 1. jedes Monats eine Nachricht mit den Zahlen des letzten Monats, wie
+    ein kleiner Jahresrückblick bei Spotify, nur fürs Haus: PV-Ertrag,
+    Netzbezug, Verbrauch, Temperaturen … mit Vergleich zum Vormonat und dem
+    Highlight des Monats. Zähler (kWh, m³, €) werden als Monatssumme gezeigt,
+    Messwerte (°C, %) als Durchschnitt und Höchstwert. Die Zahlen kommen aus
+    der Langzeitstatistik von Home Assistant – keine Hilfszähler nötig.
+
+
+    Anleitung: https://github.com/johnkily/ha-blueprints/blob/main/docs/monatsrueckblick.md
+    – gefällt er dir? Ein ⭐ auf GitHub hilft anderen, ihn zu finden.
+  domain: automation
+  author: johnkily
+  homeassistant:
+    min_version: 2026.10.0
+  source_url: https://github.com/johnkily/ha-blueprints/blob/main/blueprints/automation/haus/monatsrueckblick.yaml
+  input:
+    sensoren:
+      name: Sensoren für den Rückblick
+      description: >
+        Alle Sensoren mit Langzeitstatistik gehen, z. B. die aus dem
+        Energie-Dashboard. Reihenfolge = Reihenfolge in der Nachricht. Gut sind
+        fünf bis acht.
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - domain: sensor
+    uhrzeit:
+      name: Uhrzeit am 1. des Monats
+      default: "10:00:00"
+      selector:
+        time: {}
+    extras:
+      name: Extras
+      collapsed: true
+      input:
+        vergleich:
+          name: Vergleich zum Vormonat
+          default: true
+          selector:
+            boolean: {}
+        eauto_sensor:
+          name: Umrechnen in E-Auto-Kilometer
+          description: >
+            Z. B. der PV-Ertrag. Die Nachricht sagt dann, wie weit ein E-Auto
+            damit käme. Leer = keine Umrechnung.
+          default: ""
+          selector:
+            entity:
+              filter:
+                - domain: sensor
+        verbrauch:
+          name: Verbrauch des E-Autos
+          default: 18
+          selector:
+            number:
+              min: 10
+              max: 35
+              step: 0.5
+              unit_of_measurement: kWh/100 km
+    empfaenger:
+      name: Wer die Nachricht bekommt
+      input:
+        handys:
+          name: Handys
+          default: []
+          selector:
+            device:
+              multiple: true
+              filter:
+                - integration: mobile_app
+        in_ha:
+          name: Auch in Home Assistant anzeigen
+          default: false
+          selector:
+            boolean: {}
+        skript:
+          name: Eigenes Skript (optional)
+          description: Für Telegram, Signal & Co. Bekommt die Variablen `titel` und `nachricht`.
+          default: []
+          selector:
+            entity:
+              multiple: true
+              filter:
+                - domain: script
+        pfad:
+          name: Dashboard-Pfad (optional)
+          description: Z. B. `/lovelace/energie` – Antippen der Nachricht öffnet diese Seite.
+          default: ""
+          selector:
+            text: {}
+        sprache:
+          name: Sprache der Nachricht
+          default: de
+          selector:
+            select:
+              options:
+                - label: Deutsch
+                  value: de
+                - label: English
+                  value: en
+
+mode: single
+
+triggers:
+  - trigger: time
+    at: !input uhrzeit
+
+conditions:
+  - condition: template
+    value_template: "{{ now().day == 1 }}"
+
+variables:
+  sensoren: !input sensoren
+  vergleich: !input vergleich
+  eauto_sensor: !input eauto_sensor
+  verbrauch: !input verbrauch
+  handys: !input handys
+  in_ha: !input in_ha
+  skript: !input skript
+  pfad: !input pfad
+  sprache: !input sprache
+  en: "{{ sprache == 'en' }}"
+  # Letzter Monat und der davor, in lokaler Zeit
+  ende_letzter: "{{ now().replace(day=1, hour=0, minute=0, second=0, microsecond=0) - timedelta(days=1) }}"
+  ende_davor: "{{ as_datetime(ende_letzter).replace(day=1) - timedelta(days=1) }}"
+  start_abfrage: "{{ as_datetime(ende_davor).replace(day=1, hour=0, minute=0, second=0, microsecond=0).isoformat() }}"
+  ende_abfrage: "{{ now().replace(day=1, hour=0, minute=0, second=0, microsecond=0).isoformat() }}"
+
+actions:
+  - action: recorder.get_statistics
+    data:
+      statistic_ids: "{{ sensoren }}"
+      start_time: "{{ start_abfrage }}"
+      end_time: "{{ ende_abfrage }}"
+      period: month
+      types: [change, mean, max]
+    response_variable: stat
+  - variables:
+      werte: >-
+        {% set lm = as_datetime(ende_letzter) %}
+        {% set vm = as_datetime(ende_davor) %}
+        {% set ns = namespace(l=[]) %}
+        {% for s in sensoren %}
+          {% set rows = stat.statistics[s] if s in stat.statistics else [] %}
+          {% set m = namespace(a=none, v=none) %}
+          {% for r in rows %}
+            {% set d = as_local(as_datetime(r.start)) %}
+            {% if d.year == lm.year and d.month == lm.month %}{% set m.a = r %}{% endif %}
+            {% if d.year == vm.year and d.month == vm.month %}{% set m.v = r %}{% endif %}
+          {% endfor %}
+          {% if m.a is not none %}
+            {% set zaehler = m.a.change is defined and m.a.change is not none %}
+            {% set wert = (m.a.change if zaehler else m.a.mean) | float(0) %}
+            {% set vor = none %}
+            {% if m.v is not none %}
+              {% set vor = (m.v.change if zaehler else m.v.mean) %}
+            {% endif %}
+            {% set ns.l = ns.l + [{'id': s, 'zaehler': zaehler, 'wert': wert,
+                                   'max': (m.a.max | float(0)) if not zaehler and m.a.max is defined else none,
+                                   'vor': vor | float(none) if vor is not none else none}] %}
+          {% endif %}
+        {% endfor %}
+        {{ ns.l }}
+  - condition: template
+    value_template: "{{ werte | count > 0 }}"
+  - variables:
+      monat: >-
+        {% set n = as_datetime(ende_letzter).month %}
+        {{ (['January','February','March','April','May','June','July','August','September','October','November','December'] if en
+            else ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'])[n - 1] }}
+      titel: "{{ ('📊 Your home in ' if en else '📊 Dein Haus im ') ~ monat }}"
+      nachricht: >-
+        {%- macro zahl(x, stellen) -%}
+          {%- set t = ('{:,.' ~ stellen ~ 'f}').format(x) -%}
+          {{- t if en else t.replace(',', '#').replace('.', ',').replace('#', '.') -}}
+        {%- endmacro -%}
+        {%- macro symbol(s) -%}
+          {%- set n = (state_attr(s, 'friendly_name') or s) | lower -%}
+          {%- set dc = state_attr(s, 'device_class') -%}
+          {%- if n is search('pv|solar|erzeug|ertrag|sonne') -%}☀️
+          {%- elif n is search('akku|batter') -%}🔋
+          {%- elif dc == 'energy' -%}⚡
+          {%- elif dc == 'temperature' -%}🌡️
+          {%- elif dc == 'humidity' -%}💧
+          {%- elif dc == 'gas' -%}🔥
+          {%- elif dc == 'water' -%}🚿
+          {%- elif dc == 'monetary' -%}💶
+          {%- elif dc == 'distance' -%}🚗
+          {%- else -%}📈{%- endif -%}
+        {%- endmacro -%}
+        {%- set ns = namespace(z=[], top=none, topw=0) -%}
+        {%- for w in werte -%}
+          {%- set name = state_attr(w.id, 'friendly_name') or w.id -%}
+          {%- set einheit = state_attr(w.id, 'unit_of_measurement') or '' -%}
+          {%- set stellen = 0 if w.wert | abs >= 100 else 1 -%}
+          {%- if w.zaehler -%}
+            {%- set text = name ~ ': ' ~ zahl(w.wert, stellen) ~ ' ' ~ einheit -%}
+          {%- else -%}
+            {%- set text = name ~ ': Ø ' ~ zahl(w.wert, 1) ~ ' ' ~ einheit
+                           ~ ((', max ' if en else ', höchstens ') ~ zahl(w.max, 1) ~ ' ' ~ einheit if w.max is not none else '') -%}
+          {%- endif -%}
+          {%- if vergleich and w.vor is not none and w.vor != 0 and w.zaehler -%}
+            {%- set proz = (w.wert - w.vor) / (w.vor | abs) * 100 -%}
+            {%- set text = text ~ ' (' ~ ('↑ ' if proz >= 0 else '↓ ') ~ zahl(proz | abs, 0) ~ ' %)' -%}
+            {%- if proz | abs > ns.topw -%}
+              {%- set ns.topw = proz | abs -%}
+              {%- set ns.top = name ~ (' ↑ ' if proz >= 0 else ' ↓ ') ~ zahl(proz | abs, 0) ~ ' %' -%}
+            {%- endif -%}
+          {%- elif vergleich and w.vor is not none and not w.zaehler -%}
+            {%- set diff = w.wert - w.vor -%}
+            {%- set text = text ~ ' (' ~ ('+' if diff >= 0 else '−') ~ zahl(diff | abs, 1) ~ ' ' ~ einheit ~ ')' -%}
+          {%- endif -%}
+          {%- set ns.z = ns.z + [symbol(w.id) ~ ' ' ~ text] -%}
+        {%- endfor -%}
+        {%- set ea = werte | selectattr('id', 'eq', eauto_sensor) | list -%}
+        {%- if eauto_sensor not in ['', none] and ea | count > 0 and ea[0].zaehler and ea[0].wert > 0 -%}
+          {%- set km = ea[0].wert / (verbrauch | float(18)) * 100 -%}
+          {%- set ns.z = ns.z + ['🚗 ' ~ ('Enough for ' ~ zahl(km, 0) ~ ' km in an EV' if en
+                                         else 'Das reicht für ' ~ zahl(km, 0) ~ ' km im E-Auto')] -%}
+        {%- endif -%}
+        {%- if ns.top -%}
+          {%- set ns.z = ns.z + ['🏆 ' ~ ('Biggest change: ' if en else 'Größte Veränderung: ') ~ ns.top] -%}
+        {%- endif -%}
+        {{ ns.z | join('\n') }}
+      daten: >-
+        {{ {'tag': 'monatsrueckblick', 'group': 'monatsrueckblick'}
+           | combine({'url': pfad, 'clickAction': pfad} if pfad else {}) }}
+  - repeat:
+      for_each: "{{ handys }}"
+      sequence:
+        - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+          continue_on_error: true
+          data:
+            title: "{{ titel }}"
+            message: "{{ nachricht }}"
+            data: "{{ daten }}"
+  - if:
+      - condition: template
+        value_template: "{{ in_ha }}"
+    then:
+      - action: persistent_notification.create
+        data:
+          notification_id: monatsrueckblick
+          title: "{{ titel }}"
+          message: "{{ nachricht }}"
+  - repeat:
+      for_each: "{{ skript }}"
+      sequence:
+        - action: script.turn_on
+          continue_on_error: true
+          target:
+            entity_id: "{{ repeat.item }}"
+          data:
+            variables:
+              titel: "{{ titel }}"
+              nachricht: "{{ nachricht }}"
