@@ -13,6 +13,8 @@ Spotify zeigt einem am Jahresende, was man gehört hat. Dieser Blueprint macht d
 🏆 Größte Veränderung: PV-Ertrag ↓ 68 %
 ```
 
+Dazu gibt es eine [Profi-Variante](#profi-die-haus-wrapped-karte): eine eigene Karte, die den ganzen Monat als bunte Seite zeigt.
+
 Die Zahlen kommen aus der **Langzeitstatistik** von Home Assistant. Du brauchst keine Hilfszähler und kein Skript. Jeder Sensor, der im Energie-Dashboard oder in einem Verlaufs-Diagramm über Monate auftaucht, geht.
 
 ## Was du brauchst
@@ -49,6 +51,68 @@ Die Zahlen kommen aus der **Langzeitstatistik** von Home Assistant. Du brauchst 
 - **Highlight** ist der Zähler mit der größten Veränderung zum Vormonat.
 - Sensoren ohne Werte im letzten Monat (z. B. gerade erst angelegt) lässt er einfach weg.
 - Das Symbol sucht er selbst aus: ☀️ bei PV/Solar im Namen, 🔋 bei Akku, ⚡ Energie, 🌡️ Temperatur, 💧 Feuchte, 🔥 Gas, 🚿 Wasser, 💶 Geld.
+
+## Profi: die Haus-Wrapped-Karte
+
+Die Nachricht ist schön, aber unser eigenes Haus-Wrapped ist eine ganze Seite im Dashboard. Die gibt es als eigene Karte zum Nachbauen:
+
+![Haus-Wrapped-Karte am PC](bilder/wrapped_karte_desktop.png)
+
+- großer Monatsname mit Farbverlauf und darunter das **Highlight des Monats**
+- je Sensor eine Kachel mit Vergleich zum Vormonat, **bestem und schwächstem Tag** bzw. Höchst- und Tiefstwert
+- auf Wunsch **Tagesbalken** („Jeder Tag im Oktober“) und ein **Herkunfts-Balken** (Sonne, Akku, Netz)
+- mit ◀ ▶ durch die Monate blättern
+- die Karte rechnet selbst aus der Langzeitstatistik – kein Skript, kein Hilfssensor, auch nicht der Blueprint oben
+- Deutsch und Englisch, je nach Sprache von Home Assistant
+
+### Installieren
+
+1. Die Datei [`haus-wrapped-card.js`](../karten/haus-wrapped/haus-wrapped-card.js) herunterladen und nach `/config/www/` kopieren.
+2. *Einstellungen → Dashboards → ⋮ → Ressourcen → Ressource hinzufügen*: `/local/haus-wrapped-card.js?v=1`, Typ **JavaScript-Modul**.
+3. Browser bzw. App neu laden.
+
+### Einfügen
+
+Am besten auf eine eigene Seite im Dashboard, Ansichtstyp **Panel**. *Karte hinzufügen → Manuell*:
+
+```yaml
+type: custom:haus-wrapped-card
+motto: Die Sonne hat geliefert
+kacheln:
+  - entity: sensor.pv_ertrag
+    titel: Vom Dach geerntet
+    icon: mdi:solar-power
+    farbe: "#ffca28"
+    satz: Genug Sonne für {km} km im E-Auto
+    verlauf: true
+  - entity: sensor.netzbezug
+    titel: Aus dem Netz
+    icon: mdi:transmission-tower
+  - entity: sensor.wohnzimmer_temperatur
+    titel: Wohnzimmer
+    icon: mdi:sofa
+  - titel: Selbst versorgt
+    icon: mdi:home-lightning-bolt
+    satz: Zwei von drei Kilowattstunden aus eigener Ernte.
+    anteile:
+      - { entity: sensor.pv_eigenverbrauch, name: Sonne, farbe: "#ffca28", eigen: true }
+      - { entity: sensor.akku_entladen, name: Akku, farbe: "#b388ff", eigen: true }
+      - { entity: sensor.netzbezug, name: Netz, farbe: "#64b5f6" }
+```
+
+| Option | Bedeutung |
+|---|---|
+| `kacheln` | die Kacheln, in dieser Reihenfolge |
+| `entity` | Sensor mit Langzeitstatistik |
+| `titel`, `icon`, `farbe` | Überschrift, Symbol, Farbe der Kachel (Farbe sonst automatisch) |
+| `satz` | ein Satz unter der Zahl, mit Platzhaltern `{wert}`, `{einheit}`, `{km}` (Wert ÷ `eauto_verbrauch` × 100, Vorgabe 18 kWh/100 km) und `{vormonat}` |
+| `verlauf: true` | Tagesbalken für den Monat |
+| `anteile` | statt `entity`: mehrere Zähler als Herkunfts-Balken; die große Zahl ist die Summe der Teile mit `eigen: true` |
+| `highlight: true` | diese Kachel als Highlight; sonst nimmt die Karte die mit der größten Veränderung |
+| `art: summe` / `art: mittel` | nur nötig, wenn die Karte Zähler und Messwert falsch erkennt |
+| `motto`, `titel` | Text unter dem Monat bzw. statt „HAUS-WRAPPED“ |
+
+**Zusammen mit dem Blueprint:** Stell im Blueprint unter „Dashboard-Pfad“ die Seite mit der Karte ein. Dann kommt am 1. die Nachricht, und ein Tipp darauf öffnet den ganzen Rückblick.
 
 ## Klappt nicht?
 

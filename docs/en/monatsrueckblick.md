@@ -13,6 +13,8 @@ Spotify shows you what you listened to at the end of the year. This blueprint do
 🏆 Biggest change: PV yield ↓ 68 %
 ```
 
+There's also a [pro version](#pro-the-home-wrapped-card): a card that shows the whole month as a colourful page.
+
 The numbers come from Home Assistant's **long-term statistics** – no helper counters, no scripts. Any sensor that shows months of history in the energy dashboard or a history graph works.
 
 > The blueprint has German field names – this guide translates them. Set “Sprache der Nachricht” to **English** for English messages.
@@ -50,6 +52,61 @@ The numbers come from Home Assistant's **long-term statistics** – no helper co
 - **Measurements** (°C, %, W) → average and maximum, compared as a difference.
 - **Highlight** is the meter with the biggest change compared to the month before.
 - Sensors without values last month (e.g. brand new) are simply left out.
+
+## Pro: the Home Wrapped card
+
+The message is nice, but our own “Wrapped” is a whole dashboard page. You can get it as a card:
+
+![Home Wrapped card on a desktop](../bilder/wrapped_karte_desktop.png)
+
+- big month name with a colour gradient and the **highlight of the month**
+- one tile per sensor with comparison to last month, **best and weakest day** or max and min
+- optional **daily bars** and a **source bar** (sun, battery, grid)
+- browse the months with ◀ ▶
+- the card calculates everything from long-term statistics itself – no script, no helper sensor, not even the blueprint above
+- German and English, following your Home Assistant language
+
+### Install
+
+1. Download [`haus-wrapped-card.js`](../../karten/haus-wrapped/haus-wrapped-card.js) and copy it to `/config/www/`.
+2. *Settings → Dashboards → ⋮ → Resources → Add resource*: `/local/haus-wrapped-card.js?v=1`, type **JavaScript module**.
+3. Reload the browser or app.
+
+### Add it
+
+Best on its own dashboard page with view type **Panel**. *Add card → Manual*:
+
+```yaml
+type: custom:haus-wrapped-card
+motto: The sun delivered
+tiles:
+  - entity: sensor.pv_yield
+    title: Harvested on the roof
+    icon: mdi:solar-power
+    color: "#ffca28"
+    text: Enough sun for {km} km in an EV
+    chart: true
+  - entity: sensor.grid_import
+    title: From the grid
+  - title: Self-sufficient
+    parts:
+      - { entity: sensor.pv_self_consumption, name: Sun, farbe: "#ffca28", eigen: true }
+      - { entity: sensor.battery_discharge, name: Battery, farbe: "#b388ff", eigen: true }
+      - { entity: sensor.grid_import, name: Grid, farbe: "#64b5f6" }
+```
+
+| Option | Meaning |
+|---|---|
+| `tiles` (or `kacheln`) | the tiles, in this order |
+| `entity` | a sensor with long-term statistics |
+| `title`, `icon`, `color` | heading, icon, colour of the tile |
+| `text` | a sentence below the number, placeholders `{value}`, `{unit}`, `{km}` (value ÷ `ev_consumption` × 100, default 18 kWh/100 km) and `{last_month}` |
+| `chart: true` | daily bars for the month |
+| `parts` | instead of `entity`: several meters as a source bar; the big number is the sum of the parts with `eigen: true` (*own*) |
+| `highlight: true` | use this tile as the highlight; otherwise the one with the biggest change |
+| `art: summe` / `art: mittel` | only if the card mixes up meter and measurement |
+
+**With the blueprint:** set the page with the card as “Dashboard-Pfad” in the blueprint. On the 1st the message arrives, and tapping it opens the whole review.
 
 ## Not working?
 
