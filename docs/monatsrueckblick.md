@@ -67,7 +67,15 @@ Die Nachricht ist schön, aber unser eigenes Haus-Wrapped ist eine ganze Seite i
 
 ### Installieren
 
-1. Die Datei [`haus-wrapped-card.js`](../karten/haus-wrapped/haus-wrapped-card.js) herunterladen und nach `/config/www/` kopieren.
+**Über den Marketplace (früher HACS), empfohlen** – Updates kommen dann per Klick:
+
+[![Im Marketplace öffnen](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=johnkily&repository=haus-wrapped-card&category=plugin)
+
+Der Knopf öffnet die Karte im Marketplace → **Herunterladen**, danach Browser bzw. App neu laden.
+
+**Oder von Hand:**
+
+1. Die Datei [`haus-wrapped-card.js`](https://github.com/johnkily/haus-wrapped-card/blob/main/haus-wrapped-card.js) herunterladen und nach `/config/www/` kopieren.
 2. *Einstellungen → Dashboards → ⋮ → Ressourcen → Ressource hinzufügen*: `/local/haus-wrapped-card.js?v=1`, Typ **JavaScript-Modul**.
 3. Browser bzw. App neu laden.
 

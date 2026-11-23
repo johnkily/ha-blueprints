@@ -2,7 +2,7 @@
 
 ## Seit v1.2
 
-**Neu: Haus-Wrapped-Karte** (`karten/haus-wrapped/haus-wrapped-card.js`) – die Profi-Variante zum Monatsrückblick: eigene Karte im Stil unseres Haus-Wrapped mit Monatsname, Highlight, Kacheln mit Vergleich, bestem/schwächstem Tag, Tagesbalken und Herkunfts-Balken, Blättern durch die Monate. Rechnet selbst aus der Langzeitstatistik. Deutsch und Englisch.
+**Neu: Haus-Wrapped-Karte** (eigenes Repo johnkily/haus-wrapped-card, über den Marketplace installierbar) – die Profi-Variante zum Monatsrückblick: eigene Karte im Stil unseres Haus-Wrapped mit Monatsname, Highlight, Kacheln mit Vergleich, bestem/schwächstem Tag, Tagesbalken und Herkunfts-Balken, Blättern durch die Monate. Rechnet selbst aus der Langzeitstatistik. Deutsch und Englisch.
 
 **Neu: Monatsrückblick – dein Haus-Wrapped** – am 1. jedes Monats eine Nachricht mit den Zahlen des letzten Monats aus der Langzeitstatistik (`recorder.get_statistics`, ab HA 2026.10): Zähler als Monatssumme, Messwerte als Durchschnitt und Höchstwert, Vergleich zum Vormonat, Highlight des Monats, auf Wunsch Umrechnung in E-Auto-Kilometer. Ohne Hilfszähler. Anleitung Deutsch und Englisch.
 

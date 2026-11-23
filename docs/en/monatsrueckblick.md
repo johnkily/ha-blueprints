@@ -68,7 +68,13 @@ The message is nice, but our own “Wrapped” is a whole dashboard page. You ca
 
 ### Install
 
-1. Download [`haus-wrapped-card.js`](../../karten/haus-wrapped/haus-wrapped-card.js) and copy it to `/config/www/`.
+**Via the Marketplace (formerly HACS), recommended** – updates with one click:
+
+[![Open in the Marketplace](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=johnkily&repository=haus-wrapped-card&category=plugin)
+
+**Or by hand:**
+
+1. Download [`haus-wrapped-card.js`](https://github.com/johnkily/haus-wrapped-card/blob/main/haus-wrapped-card.js) and copy it to `/config/www/`.
 2. *Settings → Dashboards → ⋮ → Resources → Add resource*: `/local/haus-wrapped-card.js?v=1`, type **JavaScript module**.
 3. Reload the browser or app.
 
