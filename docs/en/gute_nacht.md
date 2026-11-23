@@ -37,6 +37,7 @@ Why not do it all in Google? Because Home Assistant knows more. It checks that t
 | Geräte ausschalten (*devices off*) | plugs, TV, fans |
 | Rollos schließen (*close blinds*) | blinds for the night |
 | Licht, das noch an bleibt (*path light*) | e.g. hallway or stairs – goes off after **Geht aus nach** (default 5 minutes) |
+| Frost, Hitze und Gäste (*frost, heat, guests*) | optional, see below |
 | Schlösser abschließen (*locks*) | locked one after another with a short pause |
 | Nur abschließen, wenn diese Türen zu sind (*only lock if these doors are closed*) | door sensors of the doors with a lock |
 | Fenster und Türen, die zu sein sollten (*windows and doors*) | named in the announcement and message if open |
@@ -45,6 +46,18 @@ Why not do it all in Google? Because Home Assistant knows more. It checks that t
 | Eigenes Skript (*own script*) | for Telegram, Signal etc., gets `titel` (*title*) and `nachricht` (*message*) |
 | Sprache (*language*) | English or German announcements and messages |
 | Helfer wieder ausschalten nach (*switch helper off after*) | default 10 seconds, so “good night” works again tomorrow |
+
+## Frost, heat and guests (optional)
+
+Our blinds don't do the same thing every night, so there are three modes. Each one is tied to a toggle helper or sensor that is “on” while the mode applies. How it gets switched is up to you: by hand, by a weather automation or by a sensor.
+
+| Mode | What happens |
+|---|---|
+| **Frostwarnung** (*frost warning*) | Blinds under “Rollos, die bei Frost oben bleiben” stay up or go up, so they don't freeze to the window. Empty = all blinds |
+| **Hitzemodus** (*heat mode*) | Blinds only go to **Position bei Hitze** (default 10 %) to let air in at night. Blinds under “Rollos, die bei Hitze ganz oben bleiben” stay fully open, e.g. the bedroom |
+| **Gästemodus** (*guest mode*) | Everything under **Gästezimmer** (*guest room*: blinds, lights, devices) is left alone, so nobody sits in the dark |
+
+Lights, locks and the announcement work as usual in all modes.
 
 ## 4. Connect Google Home
 

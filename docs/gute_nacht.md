@@ -35,6 +35,7 @@ Warum nicht alles in Google? Weil Home Assistant mehr weiß. Es sieht, ob die Ha
 | Geräte ausschalten | Steckdosen, Fernseher, Lüfter |
 | Rollos schließen | die Rollos für die Nacht |
 | Licht, das noch an bleibt | z. B. Flur oder Treppe – geht nach **Geht aus nach** (Vorgabe 5 Minuten) aus |
+| Frost, Hitze und Gäste | optional, siehe unten |
 | Schlösser abschließen | werden nacheinander abgeschlossen, mit kurzer Pause dazwischen |
 | Nur abschließen, wenn diese Türen zu sind | Türkontakte der Türen mit Schloss |
 | Fenster und Türen, die zu sein sollten | werden in Ansage und Nachricht genannt, wenn sie offen sind |
@@ -42,6 +43,18 @@ Warum nicht alles in Google? Weil Home Assistant mehr weiß. Es sieht, ob die Ha
 | Handy-Nachricht, wenn etwas offen ist | kommt nur, wenn etwas offen oder nicht abgeschlossen ist – oder immer, mit **auch, wenn alles zu ist** |
 | Eigenes Skript | für Telegram, Signal & Co., bekommt `titel` und `nachricht` |
 | Helfer wieder ausschalten nach | Vorgabe 10 Sekunden, damit „gute Nacht“ morgen wieder auslöst |
+
+## Frost, Hitze und Gäste (optional)
+
+Bei uns fahren die Rollos nicht jede Nacht gleich. Dafür gibt es drei Modi. Jeder hängt an einem Schalter-Helfer oder Sensor, der „an“ ist, solange der Modus gilt. Wie der Helfer an- und ausgeht, entscheidest du: von Hand, per Wetter-Automation oder über einen Sensor.
+
+| Modus | Was dann passiert |
+|---|---|
+| **Frostwarnung** | Die Rollos unter „Rollos, die bei Frost oben bleiben“ bleiben oben bzw. fahren hoch, damit sie nicht am Fenster festfrieren. Feld leer = alle Rollos |
+| **Hitzemodus** | Die Rollos fahren nur auf **Position bei Hitze** (Vorgabe 10 %), damit nachts Luft reinkommt. Was unter „Rollos, die bei Hitze ganz oben bleiben“ steht, bleibt ganz offen, z. B. das Schlafzimmer |
+| **Gästemodus** | Alles unter **Gästezimmer** (Rollos, Lichter, Geräte) bleibt unberührt, damit niemand im Dunkeln sitzt |
+
+Lichter, Schlösser und die Ansage laufen in allen Modi ganz normal.
 
 ## 4. Google Home verbinden
 

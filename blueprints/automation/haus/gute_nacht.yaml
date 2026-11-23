@@ -7,7 +7,7 @@ blueprint:
     noch ein paar Minuten an. Steht ein Fenster oder die Haustür offen, sagt
     das Haus Bescheid, und das Schloss bleibt offen, statt gegen die Tür zu
     fahren. Danach geht der Helfer wieder aus, damit der nächste Abend wieder
-    auslöst.
+    auslöst. Optional mit Frost-, Hitze- und Gästemodus für die Rollos.
 
 
     Anleitung: https://github.com/johnkily/ha-blueprints/blob/main/docs/gute_nacht.md
@@ -85,6 +85,73 @@ blueprint:
               min: 1
               max: 30
               unit_of_measurement: min
+    modi:
+      name: Frost, Hitze und Gäste (optional)
+      description: >
+        Jeder Modus hängt an einem Schalter-Helfer oder Sensor, der „an“ ist,
+        wenn der Modus gilt. Leer lassen = Modus aus.
+      collapsed: true
+      input:
+        frost:
+          name: Frostwarnung
+          description: Ist sie an, bleiben die Rollos darunter oben, damit sie nicht am Fenster festfrieren.
+          default: ""
+          selector:
+            entity:
+              filter:
+                - domain: [input_boolean, binary_sensor]
+        frost_rollos:
+          name: Rollos, die bei Frost oben bleiben
+          description: Leer = alle Rollos von oben.
+          default: []
+          selector:
+            entity:
+              multiple: true
+              filter:
+                - domain: cover
+        hitze:
+          name: Hitzemodus
+          description: Ist er an, fahren die Rollos nur auf einen Spalt, damit nachts Luft reinkommt.
+          default: ""
+          selector:
+            entity:
+              filter:
+                - domain: [input_boolean, binary_sensor]
+        hitze_position:
+          name: Position bei Hitze
+          description: 0 = ganz zu, 100 = ganz offen.
+          default: 10
+          selector:
+            number:
+              min: 0
+              max: 100
+              unit_of_measurement: "%"
+        hitze_offen:
+          name: Rollos, die bei Hitze ganz oben bleiben
+          description: Z. B. das Schlafzimmer, wenn ihr bei offenem Fenster schlaft.
+          default: []
+          selector:
+            entity:
+              multiple: true
+              filter:
+                - domain: cover
+        gaeste:
+          name: Gästemodus
+          description: Ist er an, bleibt alles unter „Gästezimmer“ unberührt.
+          default: ""
+          selector:
+            entity:
+              filter:
+                - domain: [input_boolean, binary_sensor]
+        gaeste_dinge:
+          name: Gästezimmer
+          description: Rollos, Lichter und Geräte, die bei Gästen in Ruhe gelassen werden.
+          default: []
+          selector:
+            entity:
+              multiple: true
+              filter:
+                - domain: [cover, light, switch, media_player, fan]
     abschliessen:
       name: Abschließen
       input:
@@ -209,10 +276,28 @@ variables:
   skript: !input skript
   sprache: !input sprache
   zuruecksetzen: !input zuruecksetzen
+  frost: !input frost
+  frost_rollos: !input frost_rollos
+  hitze: !input hitze
+  hitze_position: !input hitze_position
+  hitze_offen: !input hitze_offen
+  gaeste: !input gaeste
+  gaeste_dinge: !input gaeste_dinge
+  frost_an: "{{ frost not in ['', none] and is_state(frost, 'on') }}"
+  hitze_an: "{{ hitze not in ['', none] and is_state(hitze, 'on') }}"
+  gast_ruhe: "{{ gaeste_dinge if gaeste not in ['', none] and is_state(gaeste, 'on') else [] }}"
+  rollos_dran: "{{ rollos | reject('in', gast_ruhe) | list }}"
+  rollos_oben: >-
+    {% set o = [] %}
+    {% if frost_an %}{% set o = o + (frost_rollos if frost_rollos | count > 0 else rollos) %}{% endif %}
+    {% if hitze_an %}{% set o = o + hitze_offen %}{% endif %}
+    {{ rollos_dran | select('in', o) | list }}
+  rollos_zu: "{{ rollos_dran | reject('in', rollos_oben) | list }}"
+  aus_lichter: "{{ lichter | reject('eq', weg_licht) | reject('in', gast_ruhe) | list }}"
+  aus_geraete: "{{ geraete | reject('in', gast_ruhe) | list }}"
   en: "{{ sprache == 'en' }}"
   tuer_offen: >-
     {{ tueren | select('is_state', 'on') | map('state_attr', 'friendly_name') | list }}
-  aus_lichter: "{{ lichter | reject('eq', weg_licht) | list }}"
 
 actions:
   - if:
@@ -231,19 +316,39 @@ actions:
           entity_id: "{{ aus_lichter }}"
   - if:
       - condition: template
-        value_template: "{{ geraete | count > 0 }}"
+        value_template: "{{ aus_geraete | count > 0 }}"
     then:
       - action: homeassistant.turn_off
         target:
-          entity_id: "{{ geraete }}"
+          entity_id: "{{ aus_geraete }}"
+  # Rollos: bei Hitze nur auf einen Spalt, bei Frost/Hitze ausgewählte ganz oben, Gästezimmer in Ruhe
   - if:
       - condition: template
-        value_template: "{{ rollos | count > 0 }}"
+        value_template: "{{ rollos_zu | count > 0 }}"
     then:
-      - action: cover.close_cover
+      - if:
+          - condition: template
+            value_template: "{{ hitze_an }}"
+        then:
+          - action: cover.set_cover_position
+            continue_on_error: true
+            target:
+              entity_id: "{{ rollos_zu }}"
+            data:
+              position: "{{ hitze_position }}"
+        else:
+          - action: cover.close_cover
+            continue_on_error: true
+            target:
+              entity_id: "{{ rollos_zu }}"
+  - if:
+      - condition: template
+        value_template: "{{ rollos_oben | count > 0 }}"
+    then:
+      - action: cover.open_cover
         continue_on_error: true
         target:
-          entity_id: "{{ rollos }}"
+          entity_id: "{{ rollos_oben }}"
   # Abschließen nur bei geschlossenen Türen, eins nach dem anderen
   - if:
       - condition: template
