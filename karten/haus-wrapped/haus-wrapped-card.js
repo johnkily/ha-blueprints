@@ -152,7 +152,7 @@ class HausWrappedCard extends HTMLElement {
       if (k.anteile) {
         const teile = k.anteile.map((a, i) => {
           const r = (monate[a.entity] || []).find((x) => this._imMonat(x, m.start));
-          return { name: a.name || this._name(a.entity), farbe: a.farbe || HW_FARBEN[(i + 3) % HW_FARBEN.length], eigen: !!a.eigen,
+          return { name: a.name || this._name(a.entity), farbe: a.farbe || a.color || HW_FARBEN[(i + 3) % HW_FARBEN.length], eigen: !!(a.eigen || a.own),
                    wert: r && r.change != null ? Math.max(0, r.change) : 0 };
         });
         const summe = teile.reduce((s, x) => s + x.wert, 0);

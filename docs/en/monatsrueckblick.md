@@ -90,9 +90,9 @@ tiles:
     title: From the grid
   - title: Self-sufficient
     parts:
-      - { entity: sensor.pv_self_consumption, name: Sun, farbe: "#ffca28", eigen: true }
-      - { entity: sensor.battery_discharge, name: Battery, farbe: "#b388ff", eigen: true }
-      - { entity: sensor.grid_import, name: Grid, farbe: "#64b5f6" }
+      - { entity: sensor.pv_self_consumption, name: Sun, color: "#ffca28", own: true }
+      - { entity: sensor.battery_discharge, name: Battery, color: "#b388ff", own: true }
+      - { entity: sensor.grid_import, name: Grid, color: "#64b5f6" }
 ```
 
 | Option | Meaning |
@@ -102,7 +102,7 @@ tiles:
 | `title`, `icon`, `color` | heading, icon, colour of the tile |
 | `text` | a sentence below the number, placeholders `{value}`, `{unit}`, `{km}` (value ÷ `ev_consumption` × 100, default 18 kWh/100 km) and `{last_month}` |
 | `chart: true` | daily bars for the month |
-| `parts` | instead of `entity`: several meters as a source bar; the big number is the sum of the parts with `eigen: true` (*own*) |
+| `parts` | instead of `entity`: several meters as a source bar; the big number is the sum of the parts with `own: true` |
 | `highlight: true` | use this tile as the highlight; otherwise the one with the biggest change |
 | `art: summe` / `art: mittel` | only if the card mixes up meter and measurement |
 
