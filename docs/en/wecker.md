@@ -16,6 +16,16 @@ Wake up to a sunrise instead of a beep: before your alarm time a lamp slowly tur
 - **Dimmed off:** after the alarm the light goes to dim warm before switching off, so it doesn't come up bright in the evening
 - **Radio off** after a while – only if that station is still playing
 
+## What you need
+
+| | |
+|---|---|
+| **A colour lamp or LED strip** | ours is a [Philips Hue Lightstrip](https://www.amazon.de/dp/B0GHS99N3N?tag=elcamdob-21)\* by the bed – any dimmable lamp works |
+| **A wireless button** *(optional)* | e.g. the [Hue dimmer switch](https://www.amazon.de/dp/B08PKMT2DV?tag=elcamdob-21)\* (via the Hue Bridge) or IKEA's [BILRESA](https://www.ikea.com/de/de/p/bilresa-fernbedienung-weiss-smart-dualschalter-10604165/) (Matter over Thread) – we still use the older IKEA Zigbee switch |
+| **A speaker** *(optional)* | for the radio |
+
+\* Affiliate links: if you buy through them, I get a small commission; the price stays the same for you.
+
 ## Setup
 
 1. *Settings → Devices & services → Helpers → Create helper → **Date and/or time*** → “Alarm”, **time only**.

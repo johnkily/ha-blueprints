@@ -1,0 +1,290 @@
+blueprint:
+  name: Klingel aufs TV – Kamerabild als Bild-im-Bild (QuickBars)
+  description: >
+    Klingelt es, während der Fernseher läuft: Der Film pausiert, die Kamera an
+    der Tür erscheint als Bild-im-Bild in einer Ecke, daneben eine Meldung mit
+    den Knöpfen „Weiterschauen“ und „Bild schließen“. Weiter geht es erst, wenn
+    du „Weiterschauen“ drückst – so verpasst niemand etwas, während er an der
+    Tür ist.
+
+
+    Braucht auf dem Fernseher (Android TV / Google TV, z. B. Nvidia Shield,
+    Chromecast mit Google TV) die kostenlose App „QuickBars for Home
+    Assistant“ mit eingeschalteter „Background Connection“. Eine Integration
+    in Home Assistant ist nicht nötig.
+
+
+    Anleitung: https://github.com/johnkily/ha-blueprints/blob/main/docs/klingel_tv.md
+    – gefällt er dir? Ein ⭐ auf GitHub hilft anderen, ihn zu finden.
+
+
+    Doorbell on the TV: pauses playback and shows the door camera as
+    picture-in-picture with "Continue" / "Close" buttons (QuickBars app on
+    Android TV). Like it? A ⭐ on GitHub helps others find it.
+  domain: automation
+  author: johnkily
+  homeassistant:
+    min_version: 2024.10.0
+  source_url: https://github.com/johnkily/ha-blueprints/blob/main/blueprints/automation/klingel/klingel_tv.yaml
+  input:
+    klingel:
+      name: Klingel-Sensor
+      description: Springt auf „an“, wenn es klingelt – z. B. der Vibrationssensor am Gong.
+      selector:
+        entity:
+          filter:
+            - domain: binary_sensor
+    kamera:
+      name: Kamera
+      description: Diese Kamera erscheint als Bild-im-Bild.
+      selector:
+        entity:
+          filter:
+            - domain: camera
+    fernseher:
+      name: Fernseher
+      description: >
+        Der Media-Player des Fernsehers bzw. der TV-Box. Am besten der aus der
+        Integration „Android TV Remote“: Darüber pausiert der Film in jeder App.
+        Steht er auf „aus“, passiert nichts.
+      selector:
+        entity:
+          filter:
+            - domain: media_player
+    wiedergabe:
+      name: Wiedergabe erkennen über (optional)
+      description: >
+        Manche Media-Player zeigen nicht an, ob gerade etwas läuft (Android TV
+        Remote steht nur auf „an“). Dann hier einen zweiten wählen, der
+        „spielt“ meldet – z. B. den Chromecast-Eintrag derselben Box. Leer = der
+        Fernseher oben.
+      default: ""
+      selector:
+        entity:
+          filter:
+            - domain: media_player
+    pausieren:
+      name: Film pausieren
+      description: Läuft gerade etwas, wird es pausiert und erst mit „Weiterschauen“ fortgesetzt.
+      default: true
+      selector:
+        boolean:
+    bild:
+      name: Bild und Meldung
+      collapsed: true
+      input:
+        kamera_titel:
+          name: Titel über dem Kamerabild
+          default: Haustür
+          selector:
+            text:
+        position:
+          name: Ecke für das Kamerabild
+          default: top_right
+          selector:
+            select:
+              options:
+                - label: oben rechts
+                  value: top_right
+                - label: oben links
+                  value: top_left
+                - label: unten rechts
+                  value: bottom_right
+                - label: unten links
+                  value: bottom_left
+        groesse:
+          name: Größe des Kamerabilds
+          default: large
+          selector:
+            select:
+              options:
+                - label: klein
+                  value: small
+                - label: mittel
+                  value: medium
+                - label: groß
+                  value: large
+        bild_dauer:
+          name: Kamerabild anzeigen für
+          default: 90
+          selector:
+            number:
+              min: 10
+              max: 600
+              unit_of_measurement: s
+        titel:
+          name: Titel der Meldung
+          default: 🔔 Es klingelt
+          selector:
+            text:
+        nachricht:
+          name: Text der Meldung
+          description: Läuft ein Film, steht davor automatisch „Film ist pausiert – “.
+          default: die Haustür siehst du im Bild.
+          selector:
+            text:
+        meldung_dauer:
+          name: Meldung anzeigen für
+          description: So lange stehen auch die Knöpfe zur Auswahl.
+          default: 30
+          selector:
+            number:
+              min: 5
+              max: 300
+              unit_of_measurement: s
+        knopf_weiter:
+          name: Knopf „Weiterschauen“
+          default: Weiterschauen
+          selector:
+            text:
+        knopf_zu:
+          name: Knopf „Bild schließen“
+          default: Bild schließen
+          selector:
+            text:
+    technik:
+      name: Für Fortgeschrittene
+      collapsed: true
+      input:
+        bedingung:
+          name: Nur wenn (optional)
+          description: >
+            Zusätzliche Bedingung, z. B. eine bestimmte Harmony-Aktivität oder
+            „niemand im Wohnzimmer = nicht stören“.
+          default: []
+          selector:
+            condition:
+        sperrzeit:
+          name: Sperrzeit
+          description: So lange wird nach einem Klingeln nicht noch einmal gemeldet.
+          default: 60
+          selector:
+            number:
+              min: 0
+              max: 600
+              unit_of_measurement: s
+        kennung:
+          name: Kennung der Knöpfe
+          description: >
+            Nur ändern, wenn du den Blueprint für mehrere Fernseher nutzt – dann
+            je Fernseher eine eigene, z. B. „klingel_wohnzimmer“.
+          default: klingel_tv
+          selector:
+            text:
+
+mode: single
+max_exceeded: silent
+
+triggers:
+  - trigger: state
+    entity_id: !input klingel
+    from: "off"
+    to: "on"
+
+variables:
+  kamera: !input kamera
+  fernseher: !input fernseher
+  wiedergabe_eingabe: !input wiedergabe
+  wiedergabe: "{{ wiedergabe_eingabe if wiedergabe_eingabe not in ['', none] else fernseher }}"
+  pausieren: !input pausieren
+  kamera_titel: !input kamera_titel
+  position: !input position
+  groesse: !input groesse
+  bild_dauer: !input bild_dauer
+  titel: !input titel
+  nachricht: !input nachricht
+  meldung_dauer: !input meldung_dauer
+  knopf_weiter: !input knopf_weiter
+  knopf_zu: !input knopf_zu
+  sperrzeit: !input sperrzeit
+  kennung: !input kennung
+  lief: "{{ pausieren and is_state(wiedergabe, 'playing') }}"
+
+conditions:
+  - condition: template
+    value_template: "{{ states(fernseher) not in ['off', 'standby', 'unavailable', 'unknown'] }}"
+  - condition: and
+    conditions: !input bedingung
+
+actions:
+  - variables:
+      start: "{{ as_timestamp(now()) }}"
+  # Pausieren über den Fernseher selbst (bei Android TV Remote: Pause-Taste,
+  # geht in jeder App).
+  - if:
+      - condition: template
+        value_template: "{{ lief }}"
+    then:
+      - action: media_player.media_pause
+        target:
+          entity_id: "{{ fernseher }}"
+        continue_on_error: true
+  # Die QuickBars-App hört selbst auf diese Events – keine Integration nötig.
+  - event: quickbars.open
+    event_data:
+      camera_entity: "{{ kamera }}"
+      position: "{{ position }}"
+      size: "{{ groesse }}"
+      auto_hide: "{{ bild_dauer | int }}"
+      show_title: true
+      camera_title: "{{ kamera_titel }}"
+      show_toast: false
+  - event: quickbars.notify
+    event_data:
+      cid: "{{ kennung }}"
+      title: "{{ titel }}"
+      message: "{{ ('Film ist pausiert – ' if lief else '') ~ nachricht }}"
+      mdi_icon: mdi:doorbell
+      duration: "{{ meldung_dauer | int }}"
+      position: "{{ 'top_left' if position != 'top_left' else 'top_right' }}"
+      interrupt: true
+      actions:
+        - id: "{{ kennung }}_weiter"
+          label: "{{ knopf_weiter }}"
+        - id: "{{ kennung }}_zu"
+          label: "{{ knopf_zu }}"
+  # Auf einen Knopf warten. Ohne Knopfdruck bleibt der Film pausiert – mit
+  # Absicht: Wer an der Tür war, soll nichts verpassen.
+  - wait_for_trigger:
+      - trigger: event
+        event_type: quickbars.action
+        event_data:
+          action_id: "{{ kennung }}_weiter"
+      - trigger: event
+        event_type: quickbars.action
+        event_data:
+          action_id: "{{ kennung }}_zu"
+    timeout:
+      seconds: "{{ meldung_dauer | int + 5 }}"
+    continue_on_timeout: true
+  - variables:
+      knopf: "{{ wait.trigger.event.data.action_id if wait.trigger else '' }}"
+  - if:
+      - condition: template
+        value_template: "{{ knopf in [kennung ~ '_weiter', kennung ~ '_zu'] }}"
+    then:
+      # Noch einmal dieselbe Kamera öffnen = Bild schließen (QuickBars schaltet um).
+      - if:
+          - condition: template
+            value_template: "{{ as_timestamp(now()) - start < bild_dauer | int }}"
+        then:
+          - event: quickbars.open
+            event_data:
+              camera_entity: "{{ kamera }}"
+              position: "{{ position }}"
+              size: "{{ groesse }}"
+              auto_hide: "{{ bild_dauer | int }}"
+              show_title: true
+              camera_title: "{{ kamera_titel }}"
+              show_toast: false
+      - if:
+          - condition: template
+            value_template: "{{ knopf == kennung ~ '_weiter' and lief }}"
+        then:
+          - action: media_player.media_play
+            target:
+              entity_id: "{{ fernseher }}"
+            continue_on_error: true
+  # Sperrzeit gegen Mehrfach-Auslösen (ein Vibrationssensor meldet oft mehrmals).
+  - delay:
+      seconds: "{{ [0, sperrzeit | int - (as_timestamp(now()) - start) | int] | max }}"

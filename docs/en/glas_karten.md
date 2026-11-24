@@ -68,6 +68,8 @@ cards:
 
 `art`: `fenster` = windows/doors, `rollos` = blinds, `lichter` = lights, `schloesser` = locks.
 
+**One more template in the kit:** `glas_preisband` – the electricity price as a coloured band. How to use it is explained in [Forecast with price band](energie_prognose.md).
+
 ## 3. Background (optional)
 
 ```yaml

@@ -2,6 +2,8 @@
 
 ## Seit v1.2
 
+**Neu: Klingel aufs TV** – klingelt es, während der Fernseher läuft, pausiert der Film, die Kamera an der Tür erscheint als Bild-im-Bild und eine Meldung bietet „Weiterschauen“ und „Bild schließen“. Weiter geht es nur mit „Weiterschauen“. Läuft über die App QuickBars auf Android TV / Google TV, ohne zusätzliche Integration. Anleitung Deutsch und Englisch.
+
 **Neu: Smartladen mit Abfahrtszeit (evcc)** – Abfahrt und Ladeziel als Helfer in Home Assistant, der Plan geht über die evcc-Integration an evcc, das die günstigsten Viertelstunden wählt. Zur Abfahrt oder beim Ausschalten wird der Plan gelöscht (100-%-Pläne bleiben in evcc sonst stehen), wird das Auto später angesteckt, wird er neu übergeben. Nachricht „Plan steht“ / „zu nah“ / „Gute Fahrt“. Anleitung Deutsch und Englisch.
 
 **Wecker: neue Optionen** – Sonnenaufgang vor oder ab der Weckzeit, Endfarbe in Kelvin, Taster neben dem Bett springt sofort zum hellen Endlicht, Helligkeit steigt so, wie das Auge sie wahrnimmt.
