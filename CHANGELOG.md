@@ -2,6 +2,10 @@
 
 ## Seit v1.2
 
+**Neu: Smartladen mit Abfahrtszeit (evcc)** – Abfahrt und Ladeziel als Helfer in Home Assistant, der Plan geht über die evcc-Integration an evcc, das die günstigsten Viertelstunden wählt. Zur Abfahrt oder beim Ausschalten wird der Plan gelöscht (100-%-Pläne bleiben in evcc sonst stehen), wird das Auto später angesteckt, wird er neu übergeben. Nachricht „Plan steht“ / „zu nah“ / „Gute Fahrt“. Anleitung Deutsch und Englisch.
+
+**Wecker: neue Optionen** – Sonnenaufgang vor oder ab der Weckzeit, Endfarbe in Kelvin, Taster neben dem Bett springt sofort zum hellen Endlicht, Helligkeit steigt so, wie das Auge sie wahrnimmt.
+
 **Neu: Licht- und Radiowecker** – Sonnenaufgang vor der Weckzeit (rot → orange → warmweiß, oder nur Weißtöne), zur Weckzeit das Radio (direkt oder über Music Assistant). Nur an gewählten Tagen, auf Wunsch nicht an Feiertagen, pausiert im Urlaub. Licht von Hand aus beendet den Sonnenaufgang, danach geht die Lampe gedimmt aus, und das Radio nur, wenn noch derselbe Sender läuft. Anleitung Deutsch und Englisch.
 
 **Neu: Prognose mit Preisband** – Vorlage `glas_preisband` im Glas-Kit (Strompreis als farbiges Band, Jetzt-Preis, günstigste Stunden, die noch kommen, Solar-Prognose heute/morgen; liest Tibber-, Nord-Pool- und EPEX-Spot-Listen in Euro oder Cent) und die Tageskurve `karten/glas/energie_tageskurve.yaml` für die apexcharts-card. Anleitung Deutsch und Englisch.
