@@ -31,7 +31,31 @@ Die Karte sucht die Preisliste selbst im Attribut `today`, `raw_today`, `prices`
 
 **Woher die Liste kommt:**
 - **Nord Pool** (Marketplace-Version) und **EPEX Spot** haben die Liste schon im Attribut (`raw_today` bzw. `data`).
-- **Tibber**: Die offizielle Integration liefert die Preise über die Aktion `tibber.get_prices`. Mit einem Template-Sensor, der sie stündlich abholt, hast du die Liste im Attribut `today` – so machen wir es.
+- **Tibber**: Wir holen die Preise mit einem REST-Sensor direkt von der Tibber-API. Den Zugangsschlüssel bekommst du auf [developer.tibber.com](https://developer.tibber.com) und trägst ihn in `secrets.yaml` als `tibber_token: "Bearer DEIN_SCHLÜSSEL"` ein. Dann in die `configuration.yaml` (danach Neustart):
+
+```yaml
+rest:
+  - resource: https://api.tibber.com/v1-beta/gql
+    method: POST
+    scan_interval: 900
+    headers:
+      Authorization: !secret tibber_token
+      Content-Type: application/json
+    payload: >
+      {"query": "{viewer {homes {currentSubscription {priceInfo {today {total startsAt} tomorrow {total startsAt}}}}}}"}
+    sensor:
+      - name: Tibber Preise
+        unique_id: tibber_preise
+        unit_of_measurement: "EUR/kWh"
+        value_template: >
+          {% set p = value_json.data.viewer.homes[0].currentSubscription.priceInfo.today %}
+          {% set jetzt = p | selectattr('startsAt', 'le', now().isoformat()) | list | last %}
+          {{ jetzt.total if jetzt else 0 }}
+        json_attributes_path: "$.data.viewer.homes[0].currentSubscription.priceInfo"
+        json_attributes: [today, tomorrow]
+```
+
+  Für Viertelstunden-Preise schreibst du `today(resolution: FIFTEEN_MINUTES)` und `tomorrow(resolution: FIFTEEN_MINUTES)` in die Abfrage.
 
 ## 2. Tageskurve
 
