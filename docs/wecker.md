@@ -21,10 +21,10 @@ Bei uns weckt eine Hue-Lightstripe am Bett mit einem Sonnenaufgang über 20 Minu
 | | |
 |---|---|
 | **Eine Farblampe oder einen LED-Streifen** | bei uns ein [Philips Hue Lightstrip](https://www.amazon.de/dp/B0GHS99N3N?tag=elcamdob-21)\* am Bett – geht aber mit jeder dimmbaren Lampe |
-| **Einen Funktaster** *(optional)* | z. B. den [BILRESA von IKEA](https://www.ikea.com/de/de/p/bilresa-fernbedienung-weiss-smart-dualschalter-10604165/) (Matter über Thread) – bei uns noch der ältere IKEA-Schalter mit Zigbee |
+| **Einen Funktaster** *(optional)* | z. B. den [Hue Dimmschalter](https://www.amazon.de/dp/B08PKMT2DV?tag=elcamdob-21)\* (über die Hue Bridge) oder den [BILRESA von IKEA](https://www.ikea.com/de/de/p/bilresa-fernbedienung-weiss-smart-dualschalter-10604165/) (Matter über Thread) – bei uns noch der ältere IKEA-Schalter mit Zigbee |
 | **Einen Lautsprecher** *(optional)* | für das Radio |
 
-\* Affiliate-Link: Kaufst du darüber, bekomme ich eine kleine Provision – für dich ändert sich am Preis nichts.
+\* Affiliate-Links: Kaufst du darüber, bekomme ich eine kleine Provision – für dich ändert sich am Preis nichts.
 
 ## 1. Helfer anlegen
 
