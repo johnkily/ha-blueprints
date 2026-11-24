@@ -2,6 +2,10 @@
 
 ## Seit v1.2
 
+**Neu: Morgenbericht – Was war nachts los?** – schreibt nachts in eine Lokale To-do-Liste, was auffällt: Türen und Fenster, die aufgehen (und am Morgen noch offen sind), Schlösser, die aufgeschlossen werden oder nicht zu sind, Bewegung draußen, Geräte länger als 30 Minuten nicht erreichbar, auf Wunsch Stromverbrauch über einer Grenze. Wiederholungen werden hochgezählt statt doppelt eingetragen. Morgens eine Nachricht nur, wenn etwas war; sonst steht „✓ Nacht ruhig“ in der Liste. Idee von Steffen auf Facebook. Anleitung Deutsch und Englisch.
+
+**Neu: Saugroboter – Wochenplan** – ersetzt den Timer in der App: saugen an gewählten Tagen, saugen und wischen an anderen (Umschalten über zwei freie Aktionsfelder, Beispiel Roborock in der Anleitung). Pausiert mit Urlaubsmodus o. Ä., auf Wunsch an Feiertagen, wartet auf Wunsch, bis niemand mehr zu Hause ist. Nachricht bei „fertig“ und „hängt fest“. Anleitung Deutsch und Englisch.
+
 **Neu: Klingel aufs TV** – klingelt es, während der Fernseher läuft, pausiert der Film, die Kamera an der Tür erscheint als Bild-im-Bild und eine Meldung bietet „Weiterschauen“ und „Bild schließen“. Weiter geht es nur mit „Weiterschauen“. Läuft über die App QuickBars auf Android TV / Google TV, ohne zusätzliche Integration. Anleitung Deutsch und Englisch.
 
 **Neu: Smartladen mit Abfahrtszeit (evcc)** – Abfahrt und Ladeziel als Helfer in Home Assistant, der Plan geht über die evcc-Integration an evcc, das die günstigsten Viertelstunden wählt. Zur Abfahrt oder beim Ausschalten wird der Plan gelöscht (100-%-Pläne bleiben in evcc sonst stehen), wird das Auto später angesteckt, wird er neu übergeben. Nachricht „Plan steht“ / „zu nah“ / „Gute Fahrt“. Anleitung Deutsch und Englisch.

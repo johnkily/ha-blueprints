@@ -1,0 +1,264 @@
+blueprint:
+  name: Saugroboter – Wochenplan aus Home Assistant
+  description: >
+    Ersetzt den Timer in der App des Saugroboters: an gewählten Tagen saugen,
+    an anderen saugen und wischen. Pausiert im Urlaub (oder mit jedem anderen
+    Schalter), auf Wunsch an Feiertagen, und wartet auf Wunsch, bis niemand
+    mehr zu Hause ist. Ist er fertig oder bleibt er hängen, kommt eine
+    Nachricht aufs Handy.
+
+
+    Anleitung: https://github.com/johnkily/ha-blueprints/blob/main/docs/saugplan.md
+    – gefällt er dir? Ein ⭐ auf GitHub hilft anderen, ihn zu finden.
+
+
+    Robot vacuum weekly schedule from Home Assistant: vacuum or vacuum + mop
+    per weekday, pauses on holiday, optionally waits until nobody is home,
+    notifies when done or stuck. Like it? A ⭐ on GitHub helps others find it.
+  domain: automation
+  author: johnkily
+  homeassistant:
+    min_version: 2024.10.0
+  source_url: https://github.com/johnkily/ha-blueprints/blob/main/blueprints/automation/geraete/saugplan.yaml
+  input:
+    sauger:
+      name: Saugroboter
+      selector:
+        entity:
+          filter:
+            - domain: vacuum
+    uhrzeit:
+      name: Uhrzeit
+      default: "14:00:00"
+      selector:
+        time:
+    saugen_tage:
+      name: Saugen an diesen Tagen
+      default: [tue, thu]
+      selector:
+        select:
+          multiple: true
+          options:
+            - label: Montag
+              value: mon
+            - label: Dienstag
+              value: tue
+            - label: Mittwoch
+              value: wed
+            - label: Donnerstag
+              value: thu
+            - label: Freitag
+              value: fri
+            - label: Samstag
+              value: sat
+            - label: Sonntag
+              value: sun
+    wischen_tage:
+      name: Saugen und wischen an diesen Tagen
+      description: Nur für Roboter, die wischen können. Leer = nie wischen.
+      default: []
+      selector:
+        select:
+          multiple: true
+          options:
+            - label: Montag
+              value: mon
+            - label: Dienstag
+              value: tue
+            - label: Mittwoch
+              value: wed
+            - label: Donnerstag
+              value: thu
+            - label: Freitag
+              value: fri
+            - label: Samstag
+              value: sat
+            - label: Sonntag
+              value: sun
+    pause:
+      name: Pausieren, wenn eingeschaltet (optional)
+      description: z. B. der Urlaubsmodus oder ein eigener Schalter „Saugplan Pause“.
+      default: []
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - domain: input_boolean
+            - domain: switch
+            - domain: binary_sensor
+    arbeitstag:
+      name: Arbeitstag-Sensor (optional)
+      description: >
+        Aus der Integration „Workday“. Dann ruht der Roboter an Feiertagen
+        (Montag bis Freitag). Leer = auch an Feiertagen.
+      default: ""
+      selector:
+        entity:
+          filter:
+            - domain: binary_sensor
+    abwesenheit:
+      name: Erst wenn niemand zu Hause ist
+      collapsed: true
+      input:
+        nur_wenn_weg:
+          name: Warten, bis niemand zu Hause ist
+          description: >
+            Ist noch jemand da, wartet der Roboter, bis alle weg sind (zählt
+            die Personen, die auf „Zuhause“ stehen).
+          default: false
+          selector:
+            boolean:
+        spaetestens:
+          name: Längstens warten bis
+          description: Ist bis dahin noch jemand da, fällt die Runde aus.
+          default: "18:00:00"
+          selector:
+            time:
+    technik:
+      name: Saugen und Wischen einstellen
+      collapsed: true
+      input:
+        vor_saugen:
+          name: Vor dem Saugen (optional)
+          description: >
+            z. B. bei Roborock die Auswahl „Reinigungsmodus“ auf „vacuum“ und
+            die Wischintensität auf „off“. Beispiele in der Anleitung.
+          default: []
+          selector:
+            action:
+        vor_wischen:
+          name: Vor dem Saugen und Wischen (optional)
+          description: z. B. bei Roborock „Reinigungsmodus“ auf „vac_and_mop“.
+          default: []
+          selector:
+            action:
+    meldung:
+      name: Nachrichten
+      collapsed: true
+      input:
+        handys:
+          name: Handys
+          default: []
+          selector:
+            device:
+              multiple: true
+              filter:
+                - integration: mobile_app
+        skript:
+          name: Eigenes Skript (optional)
+          description: Für Telegram, Signal & Co. Bekommt die Variablen `titel` und `nachricht`.
+          default: []
+          selector:
+            entity:
+              multiple: true
+              filter:
+                - domain: script
+        fertig_melden:
+          name: Melden, wenn er fertig ist
+          default: true
+          selector:
+            boolean:
+
+mode: single
+max_exceeded: silent
+
+triggers:
+  - trigger: time
+    at: !input uhrzeit
+
+variables:
+  sauger: !input sauger
+  saugen_tage: !input saugen_tage
+  wischen_tage: !input wischen_tage
+  pause: !input pause
+  arbeitstag: !input arbeitstag
+  nur_wenn_weg: !input nur_wenn_weg
+  spaetestens: !input spaetestens
+  handys: !input handys
+  skript: !input skript
+  fertig_melden: !input fertig_melden
+  heute: "{{ ['mon','tue','wed','thu','fri','sat','sun'][now().weekday()] }}"
+  wischen: "{{ heute in wischen_tage }}"
+  name: "{{ state_attr(sauger, 'friendly_name') or sauger }}"
+  zuhause: "{{ states.person | selectattr('state', 'eq', 'home') | list | count }}"
+
+conditions:
+  - condition: template
+    value_template: "{{ heute in saugen_tage or heute in wischen_tage }}"
+  - condition: template
+    value_template: "{{ pause | select('is_state', 'on') | list | count == 0 }}"
+  - condition: template
+    value_template: >
+      {{ arbeitstag in ['', none] or now().weekday() >= 5 or is_state(arbeitstag, 'on') }}
+  - condition: template
+    value_template: "{{ states(sauger) in ['docked', 'idle'] }}"
+
+actions:
+  # Auf Wunsch warten, bis niemand mehr zu Hause ist.
+  - if:
+      - condition: template
+        value_template: "{{ nur_wenn_weg and zuhause > 0 }}"
+    then:
+      - variables:
+          rest: >
+            {% set ende = today_at(spaetestens) %}
+            {{ [0, (ende - now()).total_seconds() | int] | max }}
+      - wait_template: "{{ states.person | selectattr('state', 'eq', 'home') | list | count == 0 }}"
+        timeout:
+          seconds: "{{ rest }}"
+        continue_on_timeout: true
+  # Ist bis „spätestens“ noch jemand da (oder läuft er inzwischen), fällt die Runde aus.
+  - condition: template
+    value_template: "{{ not nur_wenn_weg or states.person | selectattr('state', 'eq', 'home') | list | count == 0 }}"
+  - condition: template
+    value_template: "{{ states(sauger) in ['docked', 'idle'] }}"
+  - if:
+      - condition: template
+        value_template: "{{ wischen }}"
+    then: !input vor_wischen
+    else: !input vor_saugen
+  - delay:
+      seconds: 2
+  - action: vacuum.start
+    target:
+      entity_id: "{{ sauger }}"
+  - variables:
+      start: "{{ as_timestamp(now()) }}"
+  - condition: template
+    value_template: "{{ fertig_melden and (handys | count + skript | count) > 0 }}"
+  # Warten, bis er wieder in der Station ist oder einen Fehler meldet.
+  - wait_template: "{{ states(sauger) in ['cleaning', 'returning'] }}"
+    timeout: "00:05:00"
+    continue_on_timeout: true
+  - wait_template: "{{ states(sauger) in ['docked', 'idle', 'error'] }}"
+    timeout: "05:00:00"
+    continue_on_timeout: true
+  - variables:
+      minuten: "{{ ((as_timestamp(now()) - start) / 60) | round(0) | int }}"
+      fehler: "{{ is_state(sauger, 'error') }}"
+      titel: "{{ '🧹 ' ~ name ~ (' hängt fest' if fehler else ' ist fertig') }}"
+      nachricht: >-
+        {% if fehler %}{{ name }} meldet einen Fehler – bitte nachsehen.
+        {%- elif not wait.completed %}{{ name }} ist nach 5 Stunden noch nicht zurück in der Station.
+        {%- else %}{{ 'Gesaugt und gewischt' if wischen else 'Gesaugt' }} in {{ minuten }} Minuten.{% endif %}
+  - repeat:
+      for_each: "{{ handys }}"
+      sequence:
+        - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+          continue_on_error: true
+          data:
+            title: "{{ titel }}"
+            message: "{{ nachricht }}"
+            data:
+              tag: "saugplan_{{ sauger }}"
+  - repeat:
+      for_each: "{{ skript }}"
+      sequence:
+        - action: script.turn_on
+          continue_on_error: true
+          target:
+            entity_id: "{{ repeat.item }}"
+          data:
+            variables:
+              titel: "{{ titel }}"
+              nachricht: "{{ nachricht }}"

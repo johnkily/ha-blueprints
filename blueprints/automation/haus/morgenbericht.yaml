@@ -1,0 +1,339 @@
+blueprint:
+  name: Morgenbericht – Was war nachts los?
+  description: >
+    Sammelt nachts in eine To-do-Liste, was auffällt: Türen und Fenster, die
+    aufgehen, Schlösser, die aufgeschlossen werden, Bewegung draußen, Geräte,
+    die nicht mehr erreichbar sind, und auf Wunsch ein ungewöhnlich hoher
+    Stromverbrauch. Morgens steht der Bericht in der Liste (passt als Karte
+    aufs Dashboard). Eine Nachricht aufs Handy kommt nur, wenn wirklich etwas
+    war – kein tägliches „alles ruhig“.
+
+
+    Anleitung: https://github.com/johnkily/ha-blueprints/blob/main/docs/morgenbericht.md
+    – gefällt er dir? Ein ⭐ auf GitHub hilft anderen, ihn zu finden.
+
+
+    Morning report: collects what happened at night (doors, locks, motion,
+    unavailable devices, unusual power use) in a to-do list and only notifies
+    you if there was something. Like it? A ⭐ on GitHub helps others find it.
+  domain: automation
+  author: johnkily
+  homeassistant:
+    min_version: 2024.10.0
+  source_url: https://github.com/johnkily/ha-blueprints/blob/main/blueprints/automation/haus/morgenbericht.yaml
+  input:
+    liste:
+      name: To-do-Liste für den Bericht
+      description: >
+        Eine eigene „Lokale To-do-Liste“, z. B. „Nachtbericht“. Sie wird jeden
+        Abend geleert – nichts anderes hineinschreiben.
+      selector:
+        entity:
+          filter:
+            - domain: todo
+    beginn:
+      name: Nacht beginnt um
+      default: "23:00:00"
+      selector:
+        time:
+    ende:
+      name: Nacht endet um
+      default: "06:00:00"
+      selector:
+        time:
+    bericht:
+      name: Bericht um
+      description: Zu dieser Zeit steht der Bericht fest, und falls etwas war, kommt die Nachricht.
+      default: "07:00:00"
+      selector:
+        time:
+    tueren:
+      name: Türen und Fenster
+      description: Geht einer davon nachts auf, steht es im Bericht – und auch, wenn er am Morgen noch offen ist.
+      default: []
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - domain: binary_sensor
+    schloesser:
+      name: Schlösser
+      description: Wird nachts aufgeschlossen oder ist am Morgen nicht abgeschlossen → steht im Bericht.
+      default: []
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - domain: lock
+    bewegung:
+      name: Bewegung draußen (optional)
+      description: z. B. Bewegungsmelder oder Personenerkennung der Kamera an der Einfahrt.
+      default: []
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - domain: binary_sensor
+    ausfaelle:
+      name: Geräte, die erreichbar sein sollen (optional)
+      description: >
+        Ist eines davon nachts länger als 30 Minuten „nicht verfügbar“, steht
+        es im Bericht – z. B. Kühlschrank-Steckdose, Rauchmelder, Türkontakte.
+      default: []
+      selector:
+        entity:
+          multiple: true
+    strom:
+      name: Stromverbrauch
+      collapsed: true
+      input:
+        zaehler:
+          name: Stromzähler (optional)
+          description: >
+            Ein Energie-Sensor in kWh, der hochzählt (z. B. der Netzbezug aus
+            dem Energie-Dashboard). Braucht Home Assistant 2026.10 oder neuer.
+          default: ""
+          selector:
+            entity:
+              filter:
+                - domain: sensor
+                  device_class: energy
+        grenze:
+          name: Melden ab
+          description: Verbraucht das Haus in der Nacht mehr als das, steht es im Bericht.
+          default: 5
+          selector:
+            number:
+              min: 0.5
+              max: 50
+              step: 0.5
+              unit_of_measurement: kWh
+    meldung:
+      name: Nachrichten
+      collapsed: true
+      input:
+        handys:
+          name: Handys
+          default: []
+          selector:
+            device:
+              multiple: true
+              filter:
+                - integration: mobile_app
+        skript:
+          name: Eigenes Skript (optional)
+          description: Für Telegram, Signal & Co. Bekommt die Variablen `titel` und `nachricht`.
+          default: []
+          selector:
+            entity:
+              multiple: true
+              filter:
+                - domain: script
+        ruhig_melden:
+          name: Auch „Nacht ruhig“ als Nachricht schicken
+          description: Aus = nur eine Nachricht, wenn etwas war. In der Liste steht „Nacht ruhig“ trotzdem.
+          default: false
+          selector:
+            boolean:
+
+mode: queued
+max: 25
+
+triggers:
+  - trigger: time
+    at: !input beginn
+    id: beginn
+  - trigger: time
+    at: !input ende
+    id: ende
+  - trigger: time
+    at: !input bericht
+    id: bericht
+  - trigger: state
+    entity_id: !input tueren
+    not_from: [unavailable, unknown]
+    to: "on"
+    id: tuer
+  - trigger: state
+    entity_id: !input schloesser
+    not_from: [unavailable, unknown]
+    to: unlocked
+    id: schloss
+  - trigger: state
+    entity_id: !input bewegung
+    not_from: [unavailable, unknown]
+    to: "on"
+    id: bewegung
+  - trigger: state
+    entity_id: !input ausfaelle
+    to: unavailable
+    for: "00:30:00"
+    id: ausfall
+
+variables:
+  liste: !input liste
+  beginn: !input beginn
+  ende_zeit: !input ende
+  tueren: !input tueren
+  schloesser: !input schloesser
+  zaehler: !input zaehler
+  grenze: !input grenze
+  handys: !input handys
+  skript: !input skript
+  ruhig_melden: !input ruhig_melden
+  nachts: >
+    {% set b = today_at(beginn) %}{% set e = today_at(ende_zeit) %}
+    {{ (now() >= b or now() < e) if b > e else (b <= now() < e) }}
+
+conditions:
+  - condition: template
+    value_template: "{{ trigger.id in ['beginn', 'ende', 'bericht'] or nachts }}"
+
+actions:
+  - choose:
+      # ------------------------------------------------------------ Abend: Liste leeren
+      - conditions:
+          - condition: trigger
+            id: beginn
+        sequence:
+          - action: todo.get_items
+            target:
+              entity_id: "{{ liste }}"
+            response_variable: alt
+          - if:
+              - condition: template
+                value_template: "{{ alt[liste]['items'] | count > 0 }}"
+            then:
+              - action: todo.remove_item
+                target:
+                  entity_id: "{{ liste }}"
+                data:
+                  item: "{{ alt[liste]['items'] | map(attribute='uid') | list }}"
+      # ------------------------------------------------------------ Morgen: was ist noch offen, Strom
+      - conditions:
+          - condition: trigger
+            id: ende
+        sequence:
+          - variables:
+              offen: >
+                {{ tueren | select('is_state', 'on') | map('state_attr', 'friendly_name') | map('string') | map('regex_replace', '^', '🪟 ') | map('regex_replace', '$', ' am Morgen noch offen') | list
+                   + schloesser | reject('is_state', 'locked') | map('state_attr', 'friendly_name') | map('string') | map('regex_replace', '^', '🔓 ') | map('regex_replace', '$', ' am Morgen nicht abgeschlossen') | list }}
+          - repeat:
+              for_each: "{{ offen }}"
+              sequence:
+                - action: todo.add_item
+                  target:
+                    entity_id: "{{ liste }}"
+                  data:
+                    item: "{{ repeat.item }}"
+          - if:
+              - condition: template
+                value_template: "{{ zaehler not in ['', none] }}"
+            then:
+              - variables:
+                  von: >
+                    {% set b = today_at(beginn) %}{{ (b - timedelta(days=1) if b > now() else b).isoformat() }}
+              - action: recorder.get_statistics
+                continue_on_error: true
+                data:
+                  statistic_ids: ["{{ zaehler }}"]
+                  start_time: "{{ von }}"
+                  end_time: "{{ now().replace(minute=0, second=0, microsecond=0).isoformat() }}"
+                  period: hour
+                  types: [change]
+                response_variable: stat
+              - variables:
+                  kwh: >
+                    {% set rows = stat.statistics[zaehler] if stat is defined and stat.statistics is defined and zaehler in stat.statistics else [] %}
+                    {{ rows | map(attribute='change') | reject('none') | sum | round(1) }}
+              - if:
+                  - condition: template
+                    value_template: "{{ kwh | float(0) > grenze | float(5) }}"
+                then:
+                  - action: todo.add_item
+                    target:
+                      entity_id: "{{ liste }}"
+                    data:
+                      item: "⚡ Nachts {{ kwh | string | replace('.', ',') }} kWh verbraucht (sonst unter {{ grenze | string | replace('.', ',') }})"
+      # ------------------------------------------------------------ Bericht
+      - conditions:
+          - condition: trigger
+            id: bericht
+        sequence:
+          - action: todo.get_items
+            target:
+              entity_id: "{{ liste }}"
+            response_variable: jetzt
+          - variables:
+              punkte: "{{ jetzt[liste]['items'] | map(attribute='summary') | reject('match', '✓') | list }}"
+              titel: "{{ '🌙 Nacht ruhig' if punkte | count == 0 else '🌙 Heute Nacht: ' ~ punkte | count ~ (' Hinweis' if punkte | count == 1 else ' Hinweise') }}"
+              nachricht: "{{ 'Nichts Auffälliges.' if punkte | count == 0 else punkte[:8] | join('\n') ~ ('\n…' if punkte | count > 8 else '') }}"
+          - if:
+              - condition: template
+                value_template: "{{ punkte | count == 0 and jetzt[liste]['items'] | count == 0 }}"
+            then:
+              - action: todo.add_item
+                target:
+                  entity_id: "{{ liste }}"
+                data:
+                  item: "✓ Nacht ruhig"
+          - condition: template
+            value_template: "{{ punkte | count > 0 or ruhig_melden }}"
+          - repeat:
+              for_each: "{{ handys }}"
+              sequence:
+                - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+                  continue_on_error: true
+                  data:
+                    title: "{{ titel }}"
+                    message: "{{ nachricht }}"
+                    data:
+                      tag: morgenbericht
+          - repeat:
+              for_each: "{{ skript }}"
+              sequence:
+                - action: script.turn_on
+                  continue_on_error: true
+                  target:
+                    entity_id: "{{ repeat.item }}"
+                  data:
+                    variables:
+                      titel: "{{ titel }}"
+                      nachricht: "{{ nachricht }}"
+    # ------------------------------------------------------------ nachts: Ereignis eintragen
+    default:
+      - variables:
+          name: "{{ state_attr(trigger.entity_id, 'friendly_name') or trigger.entity_id }}"
+          was: >
+            {{ {'tuer': ('🪟 ' if state_attr(trigger.entity_id, 'device_class') == 'window' else '🚪 ') ~ name ~ ' geöffnet', 'schloss': '🔓 ' ~ name ~ ' aufgeschlossen',
+                'bewegung': '👣 Bewegung: ' ~ name, 'ausfall': '⚠️ ' ~ name ~ ' nicht erreichbar'}[trigger.id] }}
+          zeit: "{{ (now() - timedelta(minutes=30) if trigger.id == 'ausfall' else now()).strftime('%H:%M') }}"
+      - action: todo.get_items
+        target:
+          entity_id: "{{ liste }}"
+        response_variable: da
+      - variables:
+          frueher: >
+            {% set ns = namespace(l=[]) %}
+            {% for i in da[liste]['items'] if i.summary.startswith(was ~ ' ') %}{% set ns.l = ns.l + [i] %}{% endfor %}
+            {{ ns.l }}
+      - if:
+          - condition: template
+            value_template: "{{ frueher | count == 0 }}"
+        then:
+          - action: todo.add_item
+            target:
+              entity_id: "{{ liste }}"
+            data:
+              item: "{{ was }} {{ zeit }}"
+        else:
+          - variables:
+              n: >
+                {% set m = frueher[0].summary | regex_findall_index('(\\d+)×') if '×' in frueher[0].summary else 1 %}
+                {{ m | int(1) + 1 }}
+          - action: todo.update_item
+            target:
+              entity_id: "{{ liste }}"
+            data:
+              item: "{{ frueher[0].uid }}"
+              rename: "{{ was }} {{ n }}×, zuletzt {{ zeit }}"
