@@ -2,6 +2,8 @@
 
 ## Seit v1.2
 
+**Neu: Glas-Kit** (`karten/glas/glas_vorlagen.yaml`) – unsere Optik zum Nachbauen: button-card-Vorlagen für Glas-Kacheln mit Aurora in der Bedeutungsfarbe, Licht-Kachel in der echten Lampenfarbe, Fenster/Tür mit Puls und „seit …“, und eine Statusleiste, die offene Fenster, Rollos, Lichter und Schlösser selbst zählt. Anleitung Deutsch und Englisch.
+
 **Neu: Haus-Wrapped-Karte** (eigenes Repo johnkily/haus-wrapped-card, über den Marketplace installierbar) – die Profi-Variante zum Monatsrückblick: eigene Karte im Stil unseres Haus-Wrapped mit Monatsname, Highlight, Kacheln mit Vergleich, bestem/schwächstem Tag, Tagesbalken und Herkunfts-Balken, Blättern durch die Monate. Rechnet selbst aus der Langzeitstatistik. Deutsch und Englisch.
 
 **Neu: Monatsrückblick – dein Haus-Wrapped** – am 1. jedes Monats eine Nachricht mit den Zahlen des letzten Monats aus der Langzeitstatistik (`recorder.get_statistics`, ab HA 2026.10): Zähler als Monatssumme, Messwerte als Durchschnitt und Höchstwert, Vergleich zum Vormonat, Highlight des Monats, auf Wunsch Umrechnung in E-Auto-Kilometer. Ohne Hilfszähler. Anleitung Deutsch und Englisch.

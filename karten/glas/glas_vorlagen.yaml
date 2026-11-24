@@ -1,0 +1,149 @@
+# Glas-Kit für Home Assistant – Kily's World (https://kilysworld.com)
+# Vorlagen für button-card (Marketplace, früher HACS): Glas-Kachel, Licht, Kontakt, Statusleiste.
+#
+# So einbauen: Dashboard bearbeiten → ⋮ → „Raw-Konfigurationseditor“ → diesen Block GANZ OBEN einfügen
+# (vor „views:“). Danach nutzt jede Karte die Vorlage mit `template: glas_licht` usw.
+# Anleitung: https://github.com/johnkily/ha-blueprints/blob/main/docs/glas_karten.md
+#
+# Die vier Zutaten: (1) Glas = leichter Weißverlauf, dünner heller Rahmen, Unschärfe, weicher Schatten,
+# (2) Aurora = Farbschimmer von unten in der Bedeutung der Karte, (3) farbiger Rahmen nur, wenn er etwas
+# sagt, (4) Puls nur bei Warnungen. Gedacht für ein dunkles Design.
+# MIT-Lizenz · https://github.com/johnkily/ha-blueprints
+
+button_card_templates:
+
+  # ---------------------------------------------------------------- Grundform
+  glas_kachel:
+    variables:
+      farbe: "255,202,40"        # Farbe der Bedeutung als „R,G,B“
+      aktiv: >-
+        [[[ return ['on', 'open', 'opening', 'unlocked', 'home', 'playing', 'heat', 'cool'].includes(entity && entity.state); ]]]
+      puls: false
+      rahmen: false              # farbigen Rahmen zeigen (nur, wenn er etwas aussagt)
+    show_state: true
+    tap_action:
+      action: more-info
+    extra_styles: |
+      @keyframes glas-puls {
+        0%, 100% { box-shadow: 0 6px 20px rgba(0,0,0,.22), 0 0 0 0 rgba(var(--glas-farbe), .0); }
+        50%      { box-shadow: 0 6px 20px rgba(0,0,0,.22), 0 0 0 4px rgba(var(--glas-farbe), .35); }
+      }
+    styles:
+      card:
+        - --glas-farbe: "[[[ return variables.farbe; ]]]"
+        - border-radius: 18px
+        - padding: 14px 14px 12px
+        - color: "#fff"
+        - background: >-
+            [[[ return (variables.aktiv ? 'radial-gradient(ellipse at 20% 135%, rgba(' + variables.farbe + ',.42) 0%, transparent 62%), ' : '')
+                 + 'linear-gradient(160deg, rgba(255,255,255,.07) 0%, rgba(255,255,255,.02) 100%)'; ]]]
+        - border: >-
+            [[[ return '1px solid ' + ((variables.rahmen || variables.puls) && variables.aktiv
+                 ? 'rgba(' + variables.farbe + ',.55)' : 'rgba(255,255,255,.12)'); ]]]
+        - backdrop-filter: blur(10px)
+        - -webkit-backdrop-filter: blur(10px)
+        - box-shadow: 0 6px 20px rgba(0,0,0,.22)
+        - animation: "[[[ return variables.puls && variables.aktiv ? 'glas-puls 2.4s ease-in-out infinite' : 'none'; ]]]"
+      grid:
+        - grid-template-areas: '"i n" "i s"'
+        - grid-template-columns: 40px 1fr
+        - grid-template-rows: auto auto
+        - column-gap: 10px
+      img_cell:
+        - width: 40px
+        - height: 40px
+        - border-radius: 12px
+        - background: >-
+            [[[ return variables.aktiv ? 'rgba(' + variables.farbe + ',.18)' : 'rgba(255,255,255,.06)'; ]]]
+      icon:
+        - width: 22px
+        - color: >-
+            [[[ return variables.aktiv ? 'rgb(' + variables.farbe + ')' : 'rgba(255,255,255,.45)'; ]]]
+        - filter: >-
+            [[[ return variables.aktiv ? 'drop-shadow(0 0 6px rgba(' + variables.farbe + ',.7))' : 'none'; ]]]
+      name:
+        - justify-self: start
+        - font-size: 14px
+        - font-weight: 600
+        - color: "rgba(255,255,255,.92)"
+      state:
+        - justify-self: start
+        - font-size: 12px
+        - color: "rgba(255,255,255,.6)"
+
+  # ---------------------------------------------------------------- Licht: Aurora in der echten Lampenfarbe
+  glas_licht:
+    template: glas_kachel
+    variables:
+      farbe: >-
+        [[[ const c = entity && entity.attributes.rgb_color;
+            return entity && entity.state === 'on' && c ? c.join(',') : '255,202,40'; ]]]
+    tap_action:
+      action: toggle
+    hold_action:
+      action: more-info
+    state_display: >-
+      [[[ if (!entity || entity.state !== 'on') return 'Aus';
+          const b = entity.attributes.brightness;
+          return b ? 'An · ' + Math.round(b / 2.55) + ' %' : 'An'; ]]]
+
+  # ---------------------------------------------------------------- Fenster / Tür: grün zu, rot und pulsierend offen
+  glas_kontakt:
+    template: glas_kachel
+    variables:
+      aktiv: true
+      farbe: "[[[ return entity && entity.state === 'on' ? '239,83,80' : '102,187,106'; ]]]"
+      puls: "[[[ return entity && entity.state === 'on'; ]]]"
+    state_display: >-
+      [[[ if (!entity) return '';
+          if (entity.state !== 'on') return 'Zu';
+          const min = Math.round((Date.now() - new Date(entity.last_changed)) / 60000);
+          return 'Offen · seit ' + (min < 60 ? min + ' min' : Math.round(min / 60) + ' h'); ]]]
+
+  # ---------------------------------------------------------------- Statusleiste: ein Segment zählt selbst
+  # variables.art: fenster | rollos | lichter | schloesser
+  glas_leiste:
+    template: glas_kachel
+    triggers_update: all
+    show_name: false
+    show_state: false
+    show_icon: false
+    variables:
+      zaehlung: >-
+        [[[ const S = Object.values(states);
+            const art = variables.art;
+            let offen = 0, gesamt = 0;
+            for (const s of S) {
+              const id = s.entity_id, dc = s.attributes.device_class;
+              let mit = false, an = false;
+              if (art === 'fenster' && id.startsWith('binary_sensor.') && ['window', 'door', 'opening', 'garage_door'].includes(dc)) { mit = true; an = s.state === 'on'; }
+              if (art === 'rollos' && id.startsWith('cover.')) { mit = true; an = s.state === 'open' || s.state === 'opening'; }
+              if (art === 'lichter' && id.startsWith('light.') && !s.attributes.entity_id) { mit = true; an = s.state === 'on'; }
+              if (art === 'schloesser' && id.startsWith('lock.')) { mit = true; an = s.state !== 'locked'; }
+              if (mit && !['unavailable', 'unknown'].includes(s.state)) { gesamt++; if (an) offen++; }
+            }
+            return { offen, gesamt }; ]]]
+      aktiv: true
+      farbe: >-
+        [[[ const n = variables.zaehlung.offen;
+            return { fenster: n ? '239,83,80' : '102,187,106', rollos: n ? '100,181,246' : '120,132,150',
+                     lichter: n ? '255,202,40' : '120,132,150', schloesser: n ? '239,83,80' : '102,187,106' }[variables.art]; ]]]
+      puls: "[[[ return ['fenster', 'schloesser'].includes(variables.art) && variables.zaehlung.offen > 0; ]]]"
+    custom_fields:
+      inhalt: >-
+        [[[ const n = variables.zaehlung.offen;
+            const t = { fenster: [n ? 'mdi:window-open-variant' : 'mdi:window-closed-variant', 'offen', 'Fenster zu'],
+                        rollos: [n ? 'mdi:window-shutter-open' : 'mdi:window-shutter', 'offen', 'Rollos zu'],
+                        lichter: [n ? 'mdi:lightbulb-group' : 'mdi:lightbulb-group-off', 'an', 'Alles aus'],
+                        schloesser: [n ? 'mdi:lock-open-variant' : 'mdi:lock-check', 'offen', 'Alles zu ✓'] }[variables.art];
+            return '<div style="display:flex;align-items:center;gap:8px;justify-content:center">'
+              + '<ha-icon icon="' + t[0] + '" style="margin:0;width:20px;color:rgb(' + variables.farbe + ')"></ha-icon>'
+              + (n ? '<b style="font-size:18px">' + n + '</b><span style="opacity:.7;font-size:12px">' + t[1] + '</span>'
+                   : '<span style="opacity:.75;font-size:12px">' + t[2] + '</span>')
+              + '</div>'; ]]]
+    styles:
+      card:
+        - padding: 12px 8px
+      grid:
+        - grid-template-areas: '"inhalt"'
+        - grid-template-columns: 1fr
