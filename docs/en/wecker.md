@@ -8,7 +8,8 @@ Wake up to a sunrise instead of a beep: before your alarm time a lamp slowly tur
 
 ## What it does
 
-- **Sunrise** over an adjustable time (default 30 minutes); a warm-white-only option for lamps without colour
+- **Sunrise** over an adjustable time (default 20 minutes), either **before** the alarm time or **from** the alarm time; brightness rises slowly first, then faster, ending exactly in the chosen colour temperature; a white-only option for lamps without colour
+- **Bedside button:** one press jumps straight to the full light
 - **Radio** at alarm time, optionally with a fixed volume – directly or via Music Assistant
 - **Only on chosen days**, optionally not on public holidays, and **paused** while a switch like “holiday” is on
 - **Manual stop:** turning the light off ends the sunrise
@@ -27,9 +28,12 @@ Wake up to a sunrise instead of a beep: before your alarm time a lamp slowly tur
 | An diesen Tagen (*on these days*) | default Monday to Friday |
 | Arbeitstag-Sensor (*workday sensor*) | optional – then no alarm on public holidays |
 | Pausieren, wenn eingeschaltet (*pause while on*) | e.g. holiday mode |
-| Licht / Dauer / Helligkeit (*light / duration / brightness*) | bedside lamp, sunrise length, final brightness |
+| Licht / Dauer (*light / duration*) | bedside lamp, sunrise length (default 20 min) |
+| Wann der Sonnenaufgang läuft (*when*) | before or from the alarm time |
+| Lichtfarbe am Ende / Helligkeit am Ende (*final colour / brightness*) | warm white in kelvin (default 3500 K) and final brightness |
+| Taster beendet den Sonnenaufgang (*button*) | optional event or action entity of a wireless button |
 | Farbverlauf (*colour*) | “Sonnenaufgang” for colour lamps, “Warmweiß” for white-only lamps |
-| Licht aus nach der Weckzeit (*light off after*) | default 60 min, 0 = stays on |
+| Licht aus nach dem Sonnenaufgang (*light off after*) | default 60 min, 0 = stays on |
 | Lautsprecher / Sender (*speaker / station*) | speaker and the stream URL (find it on radio-browser.info) |
 | Über Music Assistant abspielen | on if you use Music Assistant |
 | Lautstärke (*volume*) | 0 = leave as is |

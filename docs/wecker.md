@@ -4,16 +4,27 @@
 
 Aufwachen mit Sonnenaufgang statt mit Piepen: Vor der Weckzeit geht eine Lampe ganz langsam an, von tiefem Rot über Orange zu warmem Weiß. Zur Weckzeit startet auf Wunsch das Radio. Beides geht auch einzeln – nur Licht oder nur Radio.
 
-Bei uns weckt eine Lightstripe am Bett mit Sonnenaufgang, und auf dem Nachttisch meiner Frau läuft werktags um 7 der Lokalsender.
+Bei uns weckt eine Hue-Lightstripe am Bett mit einem Sonnenaufgang über 20 Minuten, und auf dem Nachttisch meiner Frau läuft werktags um 7 der Lokalsender. Ein Funktaster neben dem Bett beendet den Wecker sofort.
 
 ## Was der Blueprint kann
 
-- **Sonnenaufgang** über eine einstellbare Zeit (Vorgabe 30 Minuten), rot → orange → warmweiß, heller werdend. Für Lampen ohne Farbe gibt es einen Verlauf in Weißtönen.
+- **Sonnenaufgang** über eine einstellbare Zeit (Vorgabe 20 Minuten), rot → orange → warmweiß – wahlweise **vor** der Weckzeit (zur Weckzeit ist es hell) oder **ab** der Weckzeit (das Licht weckt). Die Helligkeit steigt nicht gleichmäßig, sondern erst langsam, dann schneller – so, wie das Auge es wahrnimmt. Am Ende steht genau die gewählte Lichtfarbe, bei uns dieselbe wie abends bei der Bettlampe. Für Lampen ohne Farbe gibt es einen Verlauf in Weißtönen.
+- **Taster neben dem Bett:** Ein Druck springt sofort zum hellen Endlicht.
 - **Radio** zur Weckzeit, auf Wunsch mit fester Lautstärke – direkt über den Lautsprecher oder über Music Assistant.
 - **Nur an den gewählten Tagen**, auf Wunsch nicht an Feiertagen, und **pausiert**, solange ein Schalter wie „Urlaub“ an ist.
 - **Abbruch von Hand:** Wer das Licht ausmacht, beendet den Sonnenaufgang.
 - **Gedimmt aus:** Nach der Weckzeit geht das Licht aus – vorher kurz auf gedimmt warm. Sonst kommt die Lampe abends beim normalen Einschalten im hellen Weck-Zustand hoch.
 - **Radio aus** nach einer Weile, aber nur, wenn noch dieser Sender läuft. Hat jemand inzwischen etwas anderes gestartet, bleibt es an.
+
+## Was du brauchst
+
+| | |
+|---|---|
+| **Eine Farblampe oder einen LED-Streifen** | bei uns ein [Philips Hue Lightstrip](https://www.amazon.de/dp/B0GHS99N3N?tag=elcamdob-21)\* am Bett – geht aber mit jeder dimmbaren Lampe |
+| **Einen Funktaster** *(optional)* | z. B. den [BILRESA von IKEA](https://www.ikea.com/de/de/p/bilresa-fernbedienung-weiss-smart-dualschalter-10604165/) (Matter über Thread) – bei uns noch der ältere IKEA-Schalter mit Zigbee |
+| **Einen Lautsprecher** *(optional)* | für das Radio |
+
+\* Affiliate-Link: Kaufst du darüber, bekomme ich eine kleine Provision – für dich ändert sich am Preis nichts.
 
 ## 1. Helfer anlegen
 
@@ -31,9 +42,12 @@ Bei uns weckt eine Lightstripe am Bett mit Sonnenaufgang, und auf dem Nachttisch
 | An diesen Tagen | Vorgabe Montag bis Freitag |
 | Arbeitstag-Sensor | optional, aus der Integration „Arbeitstag“ – dann bleibt der Wecker an Feiertagen still |
 | Pausieren, wenn eingeschaltet | z. B. Urlaubsmodus |
-| Licht / Dauer / Helligkeit | die Lampe am Bett, wie lange der Sonnenaufgang dauert, wie hell es am Ende wird |
+| Licht / Dauer | die Lampe am Bett, wie lange der Sonnenaufgang dauert (Vorgabe 20 Minuten) |
+| Wann der Sonnenaufgang läuft | vor der Weckzeit oder ab der Weckzeit |
+| Lichtfarbe am Ende / Helligkeit am Ende | Warmweiß in Kelvin (Vorgabe 3500 K) und wie hell es wird |
+| Taster beendet den Sonnenaufgang | optional: Ereignis- oder Aktions-Entität eines Funktasters (z. B. von Zigbee2MQTT) |
 | Farbverlauf | „Sonnenaufgang“ für Farblampen, „Warmweiß“ für Lampen, die nur Weißtöne können |
-| Licht aus nach der Weckzeit | Vorgabe 60 Minuten, 0 = bleibt an |
+| Licht aus nach dem Sonnenaufgang | Vorgabe 60 Minuten, 0 = bleibt an |
 | Lautsprecher / Sender | z. B. ein Google- oder Sonos-Lautsprecher und die Adresse des Radio-Streams |
 | Über Music Assistant abspielen | an, wenn du Music Assistant nutzt – dann geht als Sender auch `library://radio/1` |
 | Lautstärke | 0 = so lassen, wie sie am Lautsprecher steht |

@@ -1,0 +1,242 @@
+blueprint:
+  name: Smartladen mit Abfahrtszeit (evcc)
+  description: >
+    Abfahrt und Ladeziel in Home Assistant einstellen, evcc lädt in den
+    günstigsten Viertelstunden bis kurz vor der Abfahrt. Home Assistant übergibt
+    nur den Ladeplan, rechnen tut evcc. Zur Abfahrtszeit oder wenn du Smartladen
+    ausschaltest, wird der Plan wieder gelöscht – 100-%-Pläne bleiben in evcc
+    sonst einfach stehen. Steckst du das Auto erst später an, wird der Plan neu
+    übergeben. Auf Wunsch kommt eine Nachricht aufs Handy.
+
+
+    Anleitung: https://github.com/johnkily/ha-blueprints/blob/main/docs/smartladen.md
+    – gefällt er dir? Ein ⭐ auf GitHub hilft anderen, ihn zu finden.
+  domain: automation
+  author: johnkily
+  homeassistant:
+    min_version: 2024.10.0
+  source_url: https://github.com/johnkily/ha-blueprints/blob/main/blueprints/automation/autos/smartladen.yaml
+  input:
+    fahrzeug:
+      name: Fahrzeug in evcc
+      description: >
+        Die Fahrzeug-Kennung aus evcc, z. B. „db:6“ oder der Name aus der
+        evcc.yaml. Steht in der Anleitung, wo du sie findest.
+      selector:
+        text: {}
+    aktiv:
+      name: Schalter „Smartladen“
+      description: Ein Schalter-Helfer. An = Plan an evcc geben, aus = Plan löschen.
+      selector:
+        entity:
+          filter:
+            - domain: input_boolean
+    abfahrt:
+      name: Abfahrt
+      description: Ein Datum/Uhrzeit-Helfer mit Datum UND Uhrzeit.
+      selector:
+        entity:
+          filter:
+            - domain: input_datetime
+    ziel:
+      name: Ladeziel
+      description: Ein Zahlen-Helfer von 20 bis 100 (Prozent).
+      selector:
+        entity:
+          filter:
+            - domain: input_number
+    puffer:
+      name: Fertig so viele Minuten vor der Abfahrt
+      default: 30
+      selector:
+        number:
+          min: 0
+          max: 120
+          unit_of_measurement: min
+    angesteckt:
+      name: Auto angesteckt (optional)
+      description: >
+        Z. B. binary_sensor.…_connected aus der evcc-Integration. Steckst du
+        das Auto erst nach dem Einschalten an, wird der Plan neu übergeben.
+      default: ""
+      selector:
+        entity:
+          filter:
+            - domain: binary_sensor
+    meldung:
+      name: Nachrichten
+      collapsed: true
+      input:
+        handys:
+          name: Handys
+          default: []
+          selector:
+            device:
+              multiple: true
+              filter:
+                - integration: mobile_app
+        skript:
+          name: Eigenes Skript (optional)
+          description: Für Telegram, Signal & Co. Bekommt die Variablen `titel` und `nachricht`.
+          default: []
+          selector:
+            entity:
+              multiple: true
+              filter:
+                - domain: script
+    technik:
+      name: Für Fortgeschrittene
+      collapsed: true
+      input:
+        dienst_plan:
+          name: Aktion zum Setzen des Plans
+          description: >
+            Vorgabe ist die evcc-Integration aus dem Marketplace. Wer evcc anders
+            anbindet, trägt hier ein eigenes Skript ein (bekommt vehicle, soc, startdate).
+          default: evcc_intg.set_vehicle_plan
+          selector:
+            text: {}
+        dienst_loeschen:
+          name: Aktion zum Löschen des Plans
+          default: evcc_intg.del_vehicle_plan
+          selector:
+            text: {}
+
+mode: queued
+max: 5
+
+triggers:
+  - trigger: state
+    entity_id: !input aktiv
+    from: "off"
+    to: "on"
+    id: planen
+  - trigger: state
+    entity_id:
+      - !input abfahrt
+      - !input ziel
+    id: planen
+  - trigger: template
+    value_template: "{{ angesteckt not in ['', none] and is_state(angesteckt, 'on') }}"
+    for: "00:01:30"
+    id: planen
+  - trigger: state
+    entity_id: !input aktiv
+    from: "on"
+    to: "off"
+    id: loeschen
+  - trigger: time
+    at: !input abfahrt
+    id: abfahrt
+
+trigger_variables:
+  angesteckt: !input angesteckt
+
+variables:
+  fahrzeug: !input fahrzeug
+  aktiv: !input aktiv
+  abfahrt: !input abfahrt
+  ziel: !input ziel
+  puffer: !input puffer
+  handys: !input handys
+  skript: !input skript
+  dienst_plan: !input dienst_plan
+  dienst_loeschen: !input dienst_loeschen
+  abfahrt_ts: "{{ as_timestamp(states(abfahrt), 0) }}"
+  fertig_ts: "{{ abfahrt_ts - (puffer | int) * 60 }}"
+  ziel_prozent: "{{ states(ziel) | int(100) }}"
+  abfahrt_text: "{{ abfahrt_ts | timestamp_custom('%a %d.%m. %H:%M') | replace('Mon', 'Mo') | replace('Tue', 'Di') | replace('Wed', 'Mi') | replace('Thu', 'Do') | replace('Fri', 'Fr') | replace('Sat', 'Sa') | replace('Sun', 'So') }}"
+
+actions:
+  - choose:
+      # ------------------------------------------------------------ Plan an evcc geben
+      - conditions:
+          - condition: trigger
+            id: planen
+          - condition: template
+            value_template: "{{ is_state(aktiv, 'on') }}"
+        sequence:
+          - variables:
+              zu_nah: "{{ fertig_ts < as_timestamp(now()) + 600 }}"
+              titel: "{{ '🚗 Smartladen' if zu_nah else '🚗 Smartladen: Plan steht' }}"
+              nachricht: >-
+                {% if zu_nah %}Abfahrt {{ abfahrt_text }} liegt zu nah oder in der Vergangenheit – Smartladen bleibt aus.
+                {%- else %}{{ ziel_prozent }} % bis {{ fertig_ts | timestamp_custom('%H:%M') }}, Abfahrt {{ abfahrt_text }}. evcc lädt in den günstigsten Viertelstunden.
+                {%- if angesteckt not in ['', none] and not is_state(angesteckt, 'on') %} Auto ist noch nicht angesteckt.{% endif %}{% endif %}
+          - if:
+              - condition: template
+                value_template: "{{ zu_nah }}"
+            then:
+              - action: input_boolean.turn_off
+                target:
+                  entity_id: "{{ aktiv }}"
+            else:
+              - action: "{{ dienst_plan }}"
+                data:
+                  vehicle: "{{ fahrzeug }}"
+                  soc: "{{ ziel_prozent }}"
+                  startdate: "{{ fertig_ts | timestamp_custom('%Y-%m-%d %H:%M:%S') }}"
+          - repeat:
+              for_each: "{{ handys }}"
+              sequence:
+                - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+                  continue_on_error: true
+                  data:
+                    title: "{{ titel }}"
+                    message: "{{ nachricht }}"
+                    data:
+                      tag: smartladen
+          - repeat:
+              for_each: "{{ skript }}"
+              sequence:
+                - action: script.turn_on
+                  continue_on_error: true
+                  target:
+                    entity_id: "{{ repeat.item }}"
+                  data:
+                    variables:
+                      titel: "{{ titel }}"
+                      nachricht: "{{ nachricht }}"
+      # ------------------------------------------------------------ Plan löschen
+      - conditions:
+          - condition: trigger
+            id: loeschen
+        sequence:
+          - action: "{{ dienst_loeschen }}"
+            continue_on_error: true
+            data:
+              vehicle: "{{ fahrzeug }}"
+      # ------------------------------------------------------------ Abfahrt: Smartladen aus (löscht den Plan)
+      - conditions:
+          - condition: trigger
+            id: abfahrt
+          - condition: template
+            value_template: "{{ is_state(aktiv, 'on') }}"
+        sequence:
+          - action: input_boolean.turn_off
+            target:
+              entity_id: "{{ aktiv }}"
+          - variables:
+              titel: "🚗 Gute Fahrt"
+              nachricht: "Abfahrtszeit erreicht – Smartladen ist aus, evcc lädt wieder nur mit Sonne."
+          - repeat:
+              for_each: "{{ handys }}"
+              sequence:
+                - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+                  continue_on_error: true
+                  data:
+                    title: "{{ titel }}"
+                    message: "{{ nachricht }}"
+                    data:
+                      tag: smartladen
+          - repeat:
+              for_each: "{{ skript }}"
+              sequence:
+                - action: script.turn_on
+                  continue_on_error: true
+                  target:
+                    entity_id: "{{ repeat.item }}"
+                  data:
+                    variables:
+                      titel: "{{ titel }}"
+                      nachricht: "{{ nachricht }}"
