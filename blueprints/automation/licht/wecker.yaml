@@ -1,0 +1,324 @@
+blueprint:
+  name: Licht- und Radiowecker
+  description: >
+    Weckt sanft: Vor der Weckzeit geht ein Licht langsam an, von tiefem Rot über
+    Orange zu warmem Weiß wie ein Sonnenaufgang. Zur Weckzeit startet auf Wunsch
+    das Radio. Beides lässt sich einzeln nutzen. Nur an den gewählten Tagen, nicht
+    im Urlaub. Wer das Licht ausschaltet, beendet den Sonnenaufgang. Danach geht
+    die Lampe gedimmt aus, damit sie abends nicht im hellen Weckzustand angeht.
+
+
+    Anleitung: https://github.com/johnkily/ha-blueprints/blob/main/docs/wecker.md
+    – gefällt er dir? Ein ⭐ auf GitHub hilft anderen, ihn zu finden.
+  domain: automation
+  author: johnkily
+  homeassistant:
+    min_version: 2024.10.0
+  source_url: https://github.com/johnkily/ha-blueprints/blob/main/blueprints/automation/licht/wecker.yaml
+  input:
+    weckzeit:
+      name: Weckzeit
+      description: >
+        Ein Datum/Uhrzeit-Helfer (nur Uhrzeit). Anlegen unter Einstellungen →
+        Geräte & Dienste → Helfer → Datum und/oder Uhrzeit. So lässt sich die
+        Weckzeit im Dashboard verstellen.
+      selector:
+        entity:
+          filter:
+            - domain: input_datetime
+    tage:
+      name: An diesen Tagen
+      default: [mon, tue, wed, thu, fri]
+      selector:
+        select:
+          multiple: true
+          options:
+            - { label: Montag, value: mon }
+            - { label: Dienstag, value: tue }
+            - { label: Mittwoch, value: wed }
+            - { label: Donnerstag, value: thu }
+            - { label: Freitag, value: fri }
+            - { label: Samstag, value: sat }
+            - { label: Sonntag, value: sun }
+    feiertage:
+      name: Arbeitstag-Sensor (optional)
+      description: >
+        Z. B. binary_sensor.workday_sensor aus der Integration „Arbeitstag“ – dann
+        bleibt der Wecker an Feiertagen still. Leer = nur die Wochentage zählen.
+      default: ""
+      selector:
+        entity:
+          filter:
+            - domain: binary_sensor
+    pause:
+      name: Pausieren, wenn eingeschaltet
+      description: Z. B. ein Urlaubsmodus-Schalter. Ist einer davon an, bleibt der Wecker still.
+      default: []
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - domain: [input_boolean, binary_sensor, switch]
+    licht_teil:
+      name: Sonnenaufgang
+      input:
+        licht:
+          name: Licht
+          description: Leer = kein Lichtwecker, nur Radio.
+          default: ""
+          selector:
+            entity:
+              filter:
+                - domain: light
+        dauer:
+          name: Dauer des Sonnenaufgangs
+          description: So viele Minuten vor der Weckzeit geht es los.
+          default: 30
+          selector:
+            number:
+              min: 1
+              max: 60
+              unit_of_measurement: min
+        helligkeit:
+          name: Helligkeit zur Weckzeit
+          default: 100
+          selector:
+            number:
+              min: 10
+              max: 100
+              unit_of_measurement: "%"
+        verlauf:
+          name: Farbverlauf
+          description: >
+            „Sonnenaufgang“ braucht eine Farblampe. Für Lampen, die nur Weißtöne
+            können, „Warmweiß“ nehmen.
+          default: sonne
+          selector:
+            select:
+              options:
+                - { label: "Sonnenaufgang (rot → orange → warmweiß)", value: sonne }
+                - { label: "Warmweiß (2200 K → 4000 K)", value: weiss }
+        licht_aus:
+          name: Licht aus nach der Weckzeit
+          description: So viele Minuten nach der Weckzeit geht das Licht aus – vorher gedimmt, damit es abends nicht hell angeht. 0 = bleibt an.
+          default: 60
+          selector:
+            number:
+              min: 0
+              max: 240
+              unit_of_measurement: min
+    radio_teil:
+      name: Radio
+      collapsed: true
+      input:
+        lautsprecher:
+          name: Lautsprecher
+          description: Leer = kein Radio.
+          default: ""
+          selector:
+            entity:
+              filter:
+                - domain: media_player
+        sender:
+          name: Sender
+          description: >
+            Adresse des Radio-Streams, z. B. von radio-browser.info. Mit Music
+            Assistant auch z. B. library://radio/1.
+          default: ""
+          selector:
+            text: {}
+        music_assistant:
+          name: Über Music Assistant abspielen
+          default: false
+          selector:
+            boolean: {}
+        lautstaerke:
+          name: Lautstärke
+          description: 0 = so lassen, wie sie am Lautsprecher eingestellt ist.
+          default: 0
+          selector:
+            number:
+              min: 0
+              max: 100
+              unit_of_measurement: "%"
+        radio_aus:
+          name: Radio aus nach
+          description: >
+            So viele Minuten nach der Weckzeit geht es aus – aber nur, wenn noch
+            dieser Sender läuft. 0 = läuft weiter.
+          default: 60
+          selector:
+            number:
+              min: 0
+              max: 240
+              unit_of_measurement: min
+
+mode: parallel
+max: 4
+
+triggers:
+  # Sonnenaufgang: „dauer“ Minuten vor der Weckzeit (Vorlage rechnet jede Minute neu)
+  - trigger: template
+    value_template: >-
+      {% set w = states(weckzeit) %}
+      {{ w not in ['unknown', 'unavailable', ''] and licht not in ['', none] and
+         now().strftime('%H:%M') == (today_at(w) - timedelta(minutes=dauer | int)).strftime('%H:%M') }}
+    id: licht
+  - trigger: time
+    at: !input weckzeit
+    id: radio
+
+trigger_variables:
+  weckzeit: !input weckzeit
+  licht: !input licht
+  dauer: !input dauer
+
+variables:
+  tage: !input tage
+  feiertage: !input feiertage
+  pause: !input pause
+  helligkeit: !input helligkeit
+  verlauf: !input verlauf
+  licht_aus: !input licht_aus
+  lautsprecher: !input lautsprecher
+  sender: !input sender
+  music_assistant: !input music_assistant
+  lautstaerke: !input lautstaerke
+  radio_aus: !input radio_aus
+  schritte: "{{ [dauer | int * 2, 60] | min }}"
+  takt: "{{ (dauer | int * 60 / schritte) | round(0) }}"
+
+conditions:
+  - condition: template
+    value_template: "{{ ['mon','tue','wed','thu','fri','sat','sun'][now().weekday()] in tage }}"
+  - condition: template
+    value_template: "{{ feiertage in ['', none] or is_state(feiertage, 'on') }}"
+  - condition: template
+    value_template: "{{ pause | select('is_state', 'on') | list | count == 0 }}"
+
+actions:
+  - choose:
+      # ------------------------------------------------------------ Sonnenaufgang
+      - conditions:
+          - condition: trigger
+            id: licht
+        sequence:
+          - repeat:
+              count: "{{ schritte }}"
+              sequence:
+                # Abbruch, wenn jemand das Licht ausgemacht hat (erst ab dem 2. Schritt –
+                # vorher meldet manche Bridge das Einschalten noch nicht zurück)
+                - if:
+                    - condition: template
+                      value_template: "{{ repeat.index > 1 and is_state(licht, 'off') }}"
+                  then:
+                    - stop: Licht wurde von Hand ausgeschaltet
+                - variables:
+                    # erster Schritt = tiefrot und ganz dunkel, letzter = Zielhelligkeit zur Weckzeit
+                    f: "{{ (repeat.index - 1) / ([schritte - 1, 1] | max) }}"
+                    hell: "{{ [1, (f * helligkeit) | round(0)] | max }}"
+                    farbe: >-
+                      {% set stuetz = [[255, 40, 0], [255, 110, 20], [255, 170, 80], [255, 214, 170]] %}
+                      {% set x = f * 3 %}{% set i = [x | int, 2] | min %}{% set r = x - i %}
+                      {% set a, b = stuetz[i], stuetz[i + 1] %}
+                      {{ [ (a[0] + (b[0] - a[0]) * r) | round(0) | int, (a[1] + (b[1] - a[1]) * r) | round(0) | int,
+                           (a[2] + (b[2] - a[2]) * r) | round(0) | int ] }}
+                    kelvin: "{{ (2200 + f * 1800) | round(0) | int }}"
+                - if:
+                    - condition: template
+                      value_template: "{{ verlauf == 'sonne' }}"
+                  then:
+                    - action: light.turn_on
+                      target:
+                        entity_id: "{{ licht }}"
+                      data:
+                        brightness_pct: "{{ hell }}"
+                        rgb_color: "{{ farbe }}"
+                        transition: "{{ takt }}"
+                  else:
+                    - action: light.turn_on
+                      target:
+                        entity_id: "{{ licht }}"
+                      data:
+                        brightness_pct: "{{ hell }}"
+                        color_temp_kelvin: "{{ kelvin }}"
+                        transition: "{{ takt }}"
+                - if:
+                    - condition: template
+                      value_template: "{{ repeat.index == 1 }}"
+                  then:
+                    - wait_template: "{{ is_state(licht, 'on') }}"
+                      timeout: 15
+                - delay: "{{ takt }}"
+          # Nach der Weckzeit: gedimmt ausschalten, damit die Lampe abends nicht hell angeht
+          - if:
+              - condition: template
+                value_template: "{{ licht_aus | int > 0 }}"
+            then:
+              - delay:
+                  minutes: "{{ licht_aus | int }}"
+              - if:
+                  - condition: template
+                    value_template: "{{ is_state(licht, 'on') }}"
+                then:
+                  - action: light.turn_on
+                    target:
+                      entity_id: "{{ licht }}"
+                    data:
+                      brightness_pct: 30
+                      color_temp_kelvin: 2200
+                  - delay: 2
+                  - action: light.turn_off
+                    target:
+                      entity_id: "{{ licht }}"
+      # ------------------------------------------------------------ Radio
+      - conditions:
+          - condition: trigger
+            id: radio
+          - condition: template
+            value_template: "{{ lautsprecher not in ['', none] and sender not in ['', none] }}"
+        sequence:
+          - if:
+              - condition: template
+                value_template: "{{ lautstaerke | int > 0 }}"
+            then:
+              - action: media_player.volume_set
+                continue_on_error: true
+                target:
+                  entity_id: "{{ lautsprecher }}"
+                data:
+                  volume_level: "{{ lautstaerke | int / 100 }}"
+          - if:
+              - condition: template
+                value_template: "{{ music_assistant }}"
+            then:
+              - action: music_assistant.play_media
+                target:
+                  entity_id: "{{ lautsprecher }}"
+                data:
+                  media_id: "{{ sender }}"
+                  media_type: radio
+            else:
+              - action: media_player.play_media
+                target:
+                  entity_id: "{{ lautsprecher }}"
+                data:
+                  media_content_id: "{{ sender }}"
+                  media_content_type: music
+          - if:
+              - condition: template
+                value_template: "{{ radio_aus | int > 0 }}"
+            then:
+              - delay:
+                  minutes: "{{ radio_aus | int }}"
+              # Nur ausmachen, wenn noch dieser Sender läuft – sonst hat jemand etwas anderes gestartet
+              - if:
+                  - condition: template
+                    value_template: >-
+                      {{ is_state(lautsprecher, 'playing') and
+                         (state_attr(lautsprecher, 'media_content_id') or '') in [sender, ''] }}
+                then:
+                  - action: media_player.media_stop
+                    continue_on_error: true
+                    target:
+                      entity_id: "{{ lautsprecher }}"

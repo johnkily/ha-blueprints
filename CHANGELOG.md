@@ -2,6 +2,8 @@
 
 ## Seit v1.2
 
+**Neu: Licht- und Radiowecker** – Sonnenaufgang vor der Weckzeit (rot → orange → warmweiß, oder nur Weißtöne), zur Weckzeit das Radio (direkt oder über Music Assistant). Nur an gewählten Tagen, auf Wunsch nicht an Feiertagen, pausiert im Urlaub. Licht von Hand aus beendet den Sonnenaufgang, danach geht die Lampe gedimmt aus, und das Radio nur, wenn noch derselbe Sender läuft. Anleitung Deutsch und Englisch.
+
 **Neu: Prognose mit Preisband** – Vorlage `glas_preisband` im Glas-Kit (Strompreis als farbiges Band, Jetzt-Preis, günstigste Stunden, die noch kommen, Solar-Prognose heute/morgen; liest Tibber-, Nord-Pool- und EPEX-Spot-Listen in Euro oder Cent) und die Tageskurve `karten/glas/energie_tageskurve.yaml` für die apexcharts-card. Anleitung Deutsch und Englisch.
 
 **Neu: Glas-Kit** (`karten/glas/glas_vorlagen.yaml`) – unsere Optik zum Nachbauen: button-card-Vorlagen für Glas-Kacheln mit Aurora in der Bedeutungsfarbe, Licht-Kachel in der echten Lampenfarbe, Fenster/Tür mit Puls und „seit …“, und eine Statusleiste, die offene Fenster, Rollos, Lichter und Schlösser selbst zählt. Anleitung Deutsch und Englisch.
