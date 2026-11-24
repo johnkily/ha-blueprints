@@ -85,6 +85,8 @@ Die Statusleiste zählt selbst: offene Fenster und Türen (alle Kontakte mit Ger
 
 ![Glas-Kit auf dem Handy](bilder/glas_handy.png)
 
+**Noch eine Vorlage im Kit:** `glas_preisband` – der Strompreis als farbiges Band. Wie man sie nutzt, steht unter [Prognose mit Preisband](energie_prognose.md).
+
 ## 3. Hintergrund (optional)
 
 Glas braucht etwas dahinter. In der Ansicht (*Ansicht bearbeiten → Hintergrund*) oder im Raw-Editor bei der Ansicht:

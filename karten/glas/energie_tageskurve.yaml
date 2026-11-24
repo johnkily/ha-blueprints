@@ -1,0 +1,101 @@
+# Tageskurve zur Prognose mit Preisband – Kily's World (https://kilysworld.com)
+# Braucht die apexcharts-card aus dem Marketplace (früher HACS). Entitäten unten durch deine ersetzen:
+#   PV-Leistung (W), Solar-Prognose mit Attribut detailedForecast (Solcast), Hausverbrauch (W), Akkustand (%).
+# Anleitung: https://github.com/johnkily/ha-blueprints/blob/main/docs/energie_prognose.md
+type: custom:apexcharts-card
+graph_span: 24h
+span:
+  start: day
+header:
+  show: false
+now:
+  show: true
+  color: "rgba(255,255,255,0.5)"
+  label: jetzt
+apex_config:
+  chart:
+    height: 220
+    toolbar: { show: false }
+    zoom: { enabled: false }
+  legend:
+    show: true
+    position: bottom
+    labels: { colors: "rgba(255,255,255,0.7)" }
+  grid:
+    borderColor: "rgba(255,255,255,0.08)"
+  xaxis:
+    labels:
+      style: { colors: "rgba(255,255,255,0.5)" }
+      datetimeFormatter: { hour: HH }
+  tooltip:
+    theme: dark
+    x: { format: HH:mm }
+yaxis:
+  - id: kw
+    min: 0
+    decimals: 1
+    apex_config:
+      tickAmount: 4
+      labels: { style: { colors: "rgba(255,255,255,0.5)" } }
+      title: { text: kW, style: { color: "rgba(255,255,255,0.5)" } }
+  - id: soc
+    min: 0
+    max: 100
+    opposite: true
+    decimals: 0
+    apex_config:
+      tickAmount: 4
+      labels: { style: { colors: "rgba(179,136,255,0.7)" } }
+      title: { text: Akku %, style: { color: "rgba(179,136,255,0.7)" } }
+series:
+  - entity: sensor.pv_leistung                 # ← deine PV-Leistung in W
+    name: Sonne
+    type: area
+    color: "#FFCA28"
+    opacity: 0.35
+    stroke_width: 2
+    yaxis_id: kw
+    unit: kW
+    transform: return x / 1000;
+    group_by: { func: avg, duration: 10min }
+    extend_to: now
+  - entity: sensor.solcast_pv_forecast_prognose_heute   # ← Solcast „Prognose heute“
+    name: Prognose
+    type: line
+    color: "#FFE082"
+    stroke_width: 2
+    stroke_dash: 5
+    yaxis_id: kw
+    unit: kW
+    data_generator: >-
+      return (entity.attributes.detailedForecast || []).map(p => [new Date(p.period_start).getTime() + 15 * 60 * 1000, p.pv_estimate]);
+  - entity: sensor.hausverbrauch               # ← dein Hausverbrauch in W
+    name: Haus
+    type: line
+    color: "#64B5F6"
+    stroke_width: 2
+    yaxis_id: kw
+    unit: kW
+    transform: return x / 1000;
+    group_by: { func: avg, duration: 10min }
+    extend_to: now
+  - entity: sensor.akku_ladestand              # ← dein Akkustand in % (oder ganz weglassen)
+    name: Akku
+    type: line
+    color: "#B388FF"
+    stroke_width: 1.5
+    yaxis_id: soc
+    unit: "%"
+    group_by: { func: last, duration: 10min }
+    extend_to: now
+# Optional mit card-mod (Marketplace): Glas-Optik wie die anderen Karten
+card_mod:
+  style: |
+    ha-card {
+      background: radial-gradient(ellipse at 28% -12%, rgba(255,202,40,.10) 0%, transparent 55%),
+                  linear-gradient(160deg, rgba(255,255,255,.07) 0%, rgba(255,255,255,.02) 100%);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 18px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 6px 20px rgba(0,0,0,.22);
+    }

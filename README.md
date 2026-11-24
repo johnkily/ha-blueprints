@@ -24,6 +24,8 @@ Die Startseite: Strompreis, Müll, Hausgeräte – und alles, was auf den AWTRIX
 | **Müll – Plan für die Kachel-Karte** | Sammelt die Termine je Tonne für die Müll-Kachel-Karte | [![Importieren](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fmuell%2Fmuell_plan.yaml) |
 | **Monatsrückblick – dein Haus-Wrapped** | Am 1. eine Nachricht mit den Zahlen des letzten Monats: PV, Netz, Verbrauch, Temperaturen – mit Vergleich zum Vormonat, Highlight und auf Wunsch „reicht für X km im E-Auto“. Aus der Langzeitstatistik, ohne Hilfszähler. Dazu die [Haus-Wrapped-Karte](docs/monatsrueckblick.md#profi-die-haus-wrapped-karte) als Profi-Variante | [![Importieren](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fhaus%2Fmonatsrueckblick.yaml) |
 
+**Energie:** die [Prognose mit Preisband](docs/energie_prognose.md) – Strompreis als farbiges Band mit den günstigsten Stunden, Solar-Prognose und Tageskurve.
+
 **Unsere Optik zum Nachbauen:** das [Glas-Kit](docs/glas_karten.md) – button-card-Vorlagen für Glas-Kacheln, Licht in Lampenfarbe, Fenster mit Puls und eine Statusleiste.
 
 **Dazu passend:** die [Müll-Kachel-Karte fürs Dashboard](docs/muell.md#2-kachel-karte) – nur eingebaute Karten, zum Einfügen per Kopieren – und die [Profi-Variante](docs/muell.md#profi-variante-unsere-karte-mit-button-card) mit button-card, so wie bei uns.
@@ -103,7 +105,7 @@ Bitte ein [Issue](https://github.com/johnkily/ha-blueprints/issues) anlegen – 
 
 Ready-made Home Assistant automations: click **Import**, pick your devices, done. Like them? [Buy me a coffee on Ko-fi](https://ko-fi.com/johnkily).
 
-**Step-by-step guides in English:** [AWTRIX blueprints](docs/en/awtrix.md) · [Doorbell](docs/en/klingel.md) · [Sun protection](docs/en/sonnenschutz.md) · [Washing machine & co.](docs/en/geraet_fertig.md) · [Waste bins](docs/en/muell.md) (with an English tile card) · [Lock the doors](docs/en/tueren_abschliessen.md) · [Zigbee watchdog](docs/en/zigbee_waechter.md) · [Silent devices](docs/en/stumme_geraete.md) · [Welcome light](docs/en/willkommenslicht.md) · [Good night](docs/en/gute_nacht.md) · [Monthly review](docs/en/monatsrueckblick.md) · [Glass kit for cards](docs/en/glas_karten.md) · [Ticket board card](docs/en/ticket_board.md)
+**Step-by-step guides in English:** [AWTRIX blueprints](docs/en/awtrix.md) · [Doorbell](docs/en/klingel.md) · [Sun protection](docs/en/sonnenschutz.md) · [Washing machine & co.](docs/en/geraet_fertig.md) · [Waste bins](docs/en/muell.md) (with an English tile card) · [Lock the doors](docs/en/tueren_abschliessen.md) · [Zigbee watchdog](docs/en/zigbee_waechter.md) · [Silent devices](docs/en/stumme_geraete.md) · [Welcome light](docs/en/willkommenslicht.md) · [Good night](docs/en/gute_nacht.md) · [Monthly review](docs/en/monatsrueckblick.md) · [Glass kit for cards](docs/en/glas_karten.md) · [Forecast with price band](docs/en/energie_prognose.md) · [Ticket board card](docs/en/ticket_board.md)
 
 | Blueprint | What it does | Import |
 |---|---|---|

@@ -2,6 +2,8 @@
 
 ## Seit v1.2
 
+**Neu: Prognose mit Preisband** – Vorlage `glas_preisband` im Glas-Kit (Strompreis als farbiges Band, Jetzt-Preis, günstigste Stunden, die noch kommen, Solar-Prognose heute/morgen; liest Tibber-, Nord-Pool- und EPEX-Spot-Listen in Euro oder Cent) und die Tageskurve `karten/glas/energie_tageskurve.yaml` für die apexcharts-card. Anleitung Deutsch und Englisch.
+
 **Neu: Glas-Kit** (`karten/glas/glas_vorlagen.yaml`) – unsere Optik zum Nachbauen: button-card-Vorlagen für Glas-Kacheln mit Aurora in der Bedeutungsfarbe, Licht-Kachel in der echten Lampenfarbe, Fenster/Tür mit Puls und „seit …“, und eine Statusleiste, die offene Fenster, Rollos, Lichter und Schlösser selbst zählt. Anleitung Deutsch und Englisch.
 
 **Neu: Haus-Wrapped-Karte** (eigenes Repo johnkily/haus-wrapped-card, über den Marketplace installierbar) – die Profi-Variante zum Monatsrückblick: eigene Karte im Stil unseres Haus-Wrapped mit Monatsname, Highlight, Kacheln mit Vergleich, bestem/schwächstem Tag, Tagesbalken und Herkunfts-Balken, Blättern durch die Monate. Rechnet selbst aus der Langzeitstatistik. Deutsch und Englisch.
