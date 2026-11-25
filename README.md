@@ -2,6 +2,8 @@
 
 # Home-Assistant-Blueprints aus Kily's World
 
+[![Blueprints geprüft](https://github.com/johnkily/ha-blueprints/actions/workflows/pruefen.yml/badge.svg)](https://github.com/johnkily/ha-blueprints/actions/workflows/pruefen.yml) [![Release](https://img.shields.io/github/v/release/johnkily/ha-blueprints)](https://github.com/johnkily/ha-blueprints/releases) [![Lizenz: MIT](https://img.shields.io/badge/Lizenz-MIT-blue)](LICENSE)
+
 Fertige Automationen für [Home Assistant](https://www.home-assistant.io/) – mit einem Klick importieren, Geräte auswählen, fertig. Kein YAML, kein Kopieren von Code.
 
 🇬🇧 *English: guides and overview [below](#english).*
@@ -24,12 +26,6 @@ Die Startseite: Strompreis, Müll, Hausgeräte – und alles, was auf den AWTRIX
 | **Müll – Plan für die Kachel-Karte** | Sammelt die Termine je Tonne für die Müll-Kachel-Karte | [![Importieren](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fmuell%2Fmuell_plan.yaml) |
 | **Monatsrückblick – dein Haus-Wrapped** | Am 1. eine Nachricht mit den Zahlen des letzten Monats: PV, Netz, Verbrauch, Temperaturen – mit Vergleich zum Vormonat, Highlight und auf Wunsch „reicht für X km im E-Auto“. Aus der Langzeitstatistik, ohne Hilfszähler. Dazu die [Haus-Wrapped-Karte](docs/monatsrueckblick.md#profi-die-haus-wrapped-karte) als Profi-Variante | [![Importieren](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fhaus%2Fmonatsrueckblick.yaml) |
 | **Morgenbericht – Was war nachts los?** | Sammelt nachts Türen, Schlösser, Bewegung, Ausfälle und hohen Stromverbrauch in einer To-do-Liste – eine Nachricht kommt nur, wenn wirklich etwas war | [![Importieren](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fhaus%2Fmorgenbericht.yaml) |
-
-**Energie:** die [Prognose mit Preisband](docs/energie_prognose.md) – Strompreis als farbiges Band mit den günstigsten Stunden, Solar-Prognose und Tageskurve.
-
-**Unsere Optik zum Nachbauen:** das [Glas-Kit](docs/glas_karten.md) – button-card-Vorlagen für Glas-Kacheln, Licht in Lampenfarbe, Fenster mit Puls und eine Statusleiste.
-
-**Dazu passend:** die [Müll-Kachel-Karte fürs Dashboard](docs/muell.md#2-kachel-karte) – nur eingebaute Karten, zum Einfügen per Kopieren – und die [Profi-Variante](docs/muell.md#profi-variante-unsere-karte-mit-button-card) mit button-card, so wie bei uns.
 
 ## Kamera
 
@@ -60,8 +56,6 @@ Die Startseite: Strompreis, Müll, Hausgeräte – und alles, was auf den AWTRIX
 | **Zigbee-Wächter** | Hängt der Zigbee-Koordinator, startet Home Assistant Chip und Zigbee2MQTT selbst neu und sagt Bescheid – fragt dafür alle 5 Minuten aktiv nach, statt auf Stille zu warten | [![Importieren](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fzigbee%2Fzigbee_waechter.yaml) |
 | **Stumme Geräte melden** | Meldet Zigbee-Geräte, die sich nicht mehr melden – meist ist die Batterie leer, Home Assistant zeigt aber weiter den letzten Wert. Nach dem Tausch „Wieder da“, auf Wunsch Wochenübersicht | [![Importieren](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fzigbee%2Fstumme_geraete.yaml) |
 
-➡️ **Schritt-für-Schritt-Anleitungen:** [AWTRIX-Blueprints](docs/awtrix.md) · [Klingel](docs/klingel.md) · [Klingel aufs TV](docs/klingel_tv.md) · [Sonnenschutz](docs/sonnenschutz.md) · [Waschmaschine & Co.](docs/geraet_fertig.md) · [Müll](docs/muell.md) · [Türen abschließen](docs/tueren_abschliessen.md) · [Zigbee-Wächter](docs/zigbee_waechter.md) · [Stumme Geräte](docs/stumme_geraete.md) · [Gute Nacht](docs/gute_nacht.md) · [Wecker](docs/wecker.md) · [Smartladen](docs/smartladen.md) · [Saugroboter](docs/saugplan.md) · [Morgenbericht](docs/morgenbericht.md) · [Monatsrückblick](docs/monatsrueckblick.md)
-
 **Was soll als Nächstes kommen?** Wünsche gern unter [Ideen](https://github.com/johnkily/ha-blueprints/discussions/categories/ideas) oder in den Kommentaren im Blog.
 
 ## Hausmeisterei
@@ -75,6 +69,20 @@ Unser Ticketsystem für alles, was im Haus zu tun ist – zum Nachbauen in drei 
 | **Ticket-Board einfach – Abhaken schiebt weiter** | Board aus zwei oder drei To-do-Listen mit eingebauten Karten: Abhaken schiebt einen Eintrag in die nächste Spalte, auf Wunsch mit Nachricht. Nichts zu installieren | [![Importieren](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Ftickets%2Fticket_board_einfach.yaml) |
 | **Ticket-Board** | Kanban-Board für Wünsche und Aufgaben: Spalten, Priorität, Zuständige mit Foto, Fälligkeit, Herzchen, Verlauf und Abnahme. Daten in einer normalen To-do-Liste von Home Assistant. Installation über den Marketplace | [![Marketplace](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=johnkily&repository=ticket-board-card&category=plugin) [So geht's](docs/ticket_board.md) |
 | **Ticket-Board – Erinnerungen** | Ergänzung zur Karte: jeden Morgen eine Nachricht mit Fälligem, Überfälligem, wartenden Abnahmen und liegengebliebenen „Brennt“-Tickets, jeder Zuständige bekommt seine eigenen. Neue „Brennt“-Tickets sofort | [![Importieren](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Ftickets%2Fticket_board_erinnerungen.yaml) |
+
+## Dashboard-Karten & Optik
+
+| Karte | Was sie zeigt | Anleitung |
+|---|---|---|
+| [Glas-Kit](docs/glas_karten.md) | Unsere Optik zum Nachbauen: button-card-Vorlagen für Glas-Kacheln, Licht in Lampenfarbe, Fenster mit Puls und eine Statusleiste | [Anleitung](docs/glas_karten.md) |
+| [Prognose mit Preisband](docs/energie_prognose.md) | Strompreis als farbiges Band mit den günstigsten Stunden, Solar-Prognose und Tageskurve | [Anleitung](docs/energie_prognose.md) |
+| [Müll-Kachel-Karte](docs/muell.md#2-kachel-karte) | Welche Tonne als Nächstes raus muss – nur eingebaute Karten, dazu eine [Profi-Variante](docs/muell.md#profi-variante-unsere-karte-mit-button-card) mit button-card | [Anleitung](docs/muell.md#2-kachel-karte) |
+| [Haus-Wrapped-Karte](https://github.com/johnkily/haus-wrapped-card) | Monatsrückblick wie bei Spotify, direkt aus der Langzeitstatistik – eigene Karte aus dem Marketplace | [Anleitung](docs/monatsrueckblick.md) |
+| [Ticket-Board-Karte](https://github.com/johnkily/ticket-board-card) | Kanban-Board für alles, was im Haus zu tun ist – eigene Karte aus dem Marketplace | [Anleitung](docs/ticket_board.md) |
+
+## Alle Anleitungen
+
+➡️ [AWTRIX-Blueprints](docs/awtrix.md) · [Klingel](docs/klingel.md) · [Klingel aufs TV](docs/klingel_tv.md) · [Sonnenschutz](docs/sonnenschutz.md) · [Waschmaschine & Co.](docs/geraet_fertig.md) · [Müll](docs/muell.md) · [Türen abschließen](docs/tueren_abschliessen.md) · [Zigbee-Wächter](docs/zigbee_waechter.md) · [Stumme Geräte](docs/stumme_geraete.md) · [Willkommenslicht](docs/willkommenslicht.md) · [Gute Nacht](docs/gute_nacht.md) · [Wecker](docs/wecker.md) · [Smartladen](docs/smartladen.md) · [Saugroboter](docs/saugplan.md) · [Morgenbericht](docs/morgenbericht.md) · [Monatsrückblick](docs/monatsrueckblick.md) · [Ticket-Board](docs/ticket_board.md) · [Glas-Kit](docs/glas_karten.md) · [Prognose mit Preisband](docs/energie_prognose.md)
 
 ## So funktioniert der Import
 
@@ -109,6 +117,8 @@ Bitte ein [Issue](https://github.com/johnkily/ha-blueprints/issues) anlegen – 
 ## English
 
 Ready-made Home Assistant automations: click **Import**, pick your devices, done. Like them? [Buy me a coffee on Ko-fi](https://ko-fi.com/johnkily).
+
+**Dashboard cards:** [Glass kit](docs/en/glas_karten.md) (our look as button-card templates) · [Forecast with price band](docs/en/energie_prognose.md) · [Waste bin tile card](docs/en/muell.md) · [Home Wrapped card](https://github.com/johnkily/haus-wrapped-card) · [Ticket board card](https://github.com/johnkily/ticket-board-card)
 
 **Step-by-step guides in English:** [AWTRIX blueprints](docs/en/awtrix.md) · [Doorbell](docs/en/klingel.md) · [Doorbell on the TV](docs/en/klingel_tv.md) · [Sun protection](docs/en/sonnenschutz.md) · [Washing machine & co.](docs/en/geraet_fertig.md) · [Waste bins](docs/en/muell.md) (with an English tile card) · [Lock the doors](docs/en/tueren_abschliessen.md) · [Zigbee watchdog](docs/en/zigbee_waechter.md) · [Silent devices](docs/en/stumme_geraete.md) · [Welcome light](docs/en/willkommenslicht.md) · [Good night](docs/en/gute_nacht.md) · [Alarm clock](docs/en/wecker.md) · [Smart charging](docs/en/smartladen.md) · [Robot vacuum schedule](docs/en/saugplan.md) · [Morning report](docs/en/morgenbericht.md) · [Monthly review](docs/en/monatsrueckblick.md) · [Glass kit for cards](docs/en/glas_karten.md) · [Forecast with price band](docs/en/energie_prognose.md) · [Ticket board card](docs/en/ticket_board.md)
 

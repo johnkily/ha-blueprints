@@ -1,6 +1,6 @@
 # Änderungen
 
-## Seit v1.2
+## v1.3 – 25.11.2026
 
 **Neu: Morgenbericht – Was war nachts los?** – schreibt nachts in eine Lokale To-do-Liste, was auffällt: Türen und Fenster, die aufgehen (und am Morgen noch offen sind), Schlösser, die aufgeschlossen werden oder nicht zu sind, Bewegung draußen, Geräte länger als 30 Minuten nicht erreichbar, auf Wunsch Stromverbrauch über einer Grenze. Wiederholungen werden hochgezählt statt doppelt eingetragen. Morgens eine Nachricht nur, wenn etwas war; sonst steht „✓ Nacht ruhig“ in der Liste. Idee von Steffen auf Facebook. Anleitung Deutsch und Englisch.
 
