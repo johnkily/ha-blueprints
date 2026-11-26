@@ -1,6 +1,6 @@
 # Änderungen
 
-## Nächstes Release (noch nicht veröffentlicht)
+## v1.4 – 26.11.2026
 
 **Neu: Monthly review – your home's "Wrapped" (Englisch)** – eigene englische Fassung des Monatsrückblicks mit englischen Feldnamen und englischer Nachricht (Zahlenformat 1,667 / 21.5). Logik identisch mit der deutschen, beide auf der Testinstanz geprüft. Die deutsche Fassung behält ihre Sprachauswahl.
 
