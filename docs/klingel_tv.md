@@ -86,3 +86,5 @@ QuickBars ist ein Projekt von [Trooped](https://github.com/Trooped/QuickBars) un
 ---
 
 *Mit \* gekennzeichnete Links sind Affiliate-Links. Kaufst du darüber, bekomme ich eine kleine Provision, für dich ändert sich am Preis nichts. Als Amazon-Partner verdiene ich an qualifizierten Verkäufen.*
+
+**Hat's geklappt?** Dann freue ich mich über einen [Kaffee auf Ko-fi ☕](https://ko-fi.com/johnkily).

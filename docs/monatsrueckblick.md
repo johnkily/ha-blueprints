@@ -133,3 +133,5 @@ kacheln:
 ---
 
 Unser eigenes Haus-Wrapped ist eine ganze Dashboard-Seite mit Waschgängen, Mähroboter und Tickets – wie es aussieht, steht im Blog: [Kily's World](https://kilysworld.com). Gefällt dir der Blueprint? Ein ⭐ auf [GitHub](https://github.com/johnkily/ha-blueprints) hilft anderen, ihn zu finden.
+
+**Hat's geklappt?** Dann freue ich mich über einen [Kaffee auf Ko-fi ☕](https://ko-fi.com/johnkily).

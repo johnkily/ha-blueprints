@@ -120,3 +120,5 @@ Eigene Farben für alles: Solar `255,202,40`, Netz `100,181,246`, Einspeisung `1
 ---
 
 Wie das bei uns im ganzen Dashboard aussieht, steht im Blog: [Kily's World](https://kilysworld.com). Gefällt es dir? Ein ⭐ auf [GitHub](https://github.com/johnkily/ha-blueprints) hilft anderen, es zu finden.
+
+**Hat's geklappt?** Dann freue ich mich über einen [Kaffee auf Ko-fi ☕](https://ko-fi.com/johnkily).

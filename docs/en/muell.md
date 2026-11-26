@@ -156,3 +156,4 @@ Questions and feedback are welcome in the [Home Assistant forum](https://communi
 
 **Like it?** A ⭐ on [GitHub](https://github.com/johnkily/ha-blueprints) helps others find it – questions and wishes are welcome as an [issue](https://github.com/johnkily/ha-blueprints/issues) or under [Ideas](https://github.com/johnkily/ha-blueprints/discussions/categories/ideas).
 
+**Did it work?** Then I'd be happy about a [coffee on Ko-fi ☕](https://ko-fi.com/johnkily).

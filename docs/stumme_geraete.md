@@ -72,3 +72,5 @@ Jede Meldung kommt einmal, nicht stündlich. Fallen mehr als die Hälfte der Ger
 | Ein Gerät meldet sich ständig als still | Es funkt seltener als die Grenze – unter „Nicht prüfen“ eintragen oder die Grenze erhöhen |
 
 **Gefällt dir der Blueprint?** Ein ⭐ auf [GitHub](https://github.com/johnkily/ha-blueprints) hilft anderen, ihn zu finden – und Fragen oder Wünsche gern als [Issue](https://github.com/johnkily/ha-blueprints/issues) oder unter [Ideen](https://github.com/johnkily/ha-blueprints/discussions/categories/ideas).
+
+**Hat's geklappt?** Dann freue ich mich über einen [Kaffee auf Ko-fi ☕](https://ko-fi.com/johnkily).

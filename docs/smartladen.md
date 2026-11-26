@@ -51,3 +51,5 @@ Abfahrt und Ladeziel einstellen, Schalter an – fertig. Die drei Helfer passen 
 ---
 
 Gefällt er dir? Ein ⭐ auf [GitHub](https://github.com/johnkily/ha-blueprints) hilft anderen, ihn zu finden.
+
+**Hat's geklappt?** Dann freue ich mich über einen [Kaffee auf Ko-fi ☕](https://ko-fi.com/johnkily).

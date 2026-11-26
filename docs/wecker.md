@@ -67,3 +67,5 @@ Bei uns weckt eine Hue-Lightstripe am Bett mit einem Sonnenaufgang über 20 Minu
 ---
 
 Gefällt er dir? Ein ⭐ auf [GitHub](https://github.com/johnkily/ha-blueprints) hilft anderen, ihn zu finden. Mehr aus unserem Haus: [Kily's World](https://kilysworld.com).
+
+**Hat's geklappt?** Dann freue ich mich über einen [Kaffee auf Ko-fi ☕](https://ko-fi.com/johnkily).

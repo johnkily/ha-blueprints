@@ -77,3 +77,5 @@ Die fertige Karte steht in [`energie_tageskurve.yaml`](https://github.com/johnki
 ---
 
 Wie das bei uns im ganzen Energie-Cockpit aussieht, steht im Blog: [Kily's World](https://kilysworld.com). Gefällt es dir? Ein ⭐ auf [GitHub](https://github.com/johnkily/ha-blueprints) hilft anderen, es zu finden.
+
+**Hat's geklappt?** Dann freue ich mich über einen [Kaffee auf Ko-fi ☕](https://ko-fi.com/johnkily).

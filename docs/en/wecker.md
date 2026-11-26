@@ -52,3 +52,5 @@ Wake up to a sunrise instead of a beep: before your alarm time a lamp slowly tur
 ---
 
 Like it? A ⭐ on [GitHub](https://github.com/johnkily/ha-blueprints) helps others find it.
+
+**Did it work?** Then I'd be happy about a [coffee on Ko-fi ☕](https://ko-fi.com/johnkily).
