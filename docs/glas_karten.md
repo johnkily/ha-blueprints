@@ -2,6 +2,8 @@
 
 *[English version](en/glas_karten.md)*
 
+*📰 Im Blog: [Eine Tour durch unser Home Assistant – und was als Nächstes kommt](https://kilysworld.com/2026/11/01/eine-tour-durch-unser-home-assistant-und-was-als-nachstes-kommt/) – wie wir das im Alltag nutzen, mit Fotos*
+
 Unser Dashboard sieht nicht nach Standard aus, und danach wurde oft gefragt. Das Geheimnis sind wenige Zutaten, die überall gleich sind. Hier gibt es sie als Vorlagen für die **button-card** zum Nachbauen.
 
 ![Glas-Kit am PC](bilder/glas_desktop.png)

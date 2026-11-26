@@ -2,6 +2,8 @@
 
 *[Deutsche Fassung](../muell.md)*
 
+*📰 From our house: [Kily's World in English](https://kilysworld.com/in-english/) – what our smart home looks like day to day*
+
 Everything from one waste collection calendar – no Marketplace add-ons (formerly HACS), no `configuration.yaml`:
 
 - **Tile card** for your dashboard: four bins with “in 6 days”, below them two weeks as a mini calendar with coloured dots, and “Next up”.

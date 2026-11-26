@@ -2,6 +2,8 @@
 
 *[English version](en/klingel.md)*
 
+*📰 Im Blog: [Türklingel für unter 10 €: Vibrationssensor + Home Assistant](https://kilysworld.com/2025/11/30/die-intelligente-turklingel-fur-unter-10e-wie-ich-mit-einem-vibrationssensor-und-home-assistant-meine-sicherheit-automatisiere/) – wie wir das im Alltag nutzen, mit Fotos*
+
 Klingelt es, kommt sofort eine Nachricht aufs Handy – mit einem Bild von der Tür, wenn du eine Kamera hast. Dazu braucht es keine neue Video-Klingel: Ein Vibrationssensor am alten Gong reicht.
 
 ## Was du brauchst

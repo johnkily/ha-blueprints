@@ -2,6 +2,8 @@
 
 *[English version](en/ticket_board.md)*
 
+*📰 Im Blog: [Unser Hausmeister ist eine KI: Wie Claude nachts unsere Smart-Home-Tickets abarbeitet](https://kilysworld.com/2026/11/22/unser-hausmeister-ist-eine-ki-wie-claude-nachts-unsere-smart-home-tickets-abarbeitet/) – wie wir das im Alltag nutzen, mit Fotos*
+
 Ein Kanban-Board für Home Assistant: Wünsche und Aufgaben landen als Ticket in Spalten, man sieht auf einen Blick, wer sich kümmert, was brennt und was fällig ist. Bei uns heißt das „Hausmeisterei“, und seitdem bleibt keine Idee mehr liegen.
 
 Die Tickets liegen in einer ganz normalen **To-do-Liste von Home Assistant**. Keine Skripte, keine `configuration.yaml`, und alles steckt automatisch in jeder Sicherung. Die Liste siehst du sogar in der HA-App.

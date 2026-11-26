@@ -2,6 +2,8 @@
 
 *[English version](en/sonnenschutz.md)*
 
+*📰 Im Blog: [Schluss mit Sauna-Feeling: automatische Beschattung mit Home Assistant](https://kilysworld.com/2025/11/23/schluss-mit-sauna-feeling-wie-home-assistant-deine-beschattung-im-sommer-komplett-autonom-regelt/) – wie wir das im Alltag nutzen, mit Fotos*
+
 Die Rollos einer Hausseite fahren herunter, wenn die Sonne wirklich auf diese Fassade scheint und es warm genug ist – und erst wieder hoch, wenn die Sonne weg ist. Keine Wolke bringt sie dazwischen hoch und wieder runter.
 
 **Pro Hausseite eine Automation** – Süd, West und Ost haben unterschiedliche Winkel.

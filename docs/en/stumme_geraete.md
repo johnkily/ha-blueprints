@@ -2,6 +2,8 @@
 
 *[Deutsche Fassung](../stumme_geraete.md)*
 
+*📰 From our house: [Kily's World in English](https://kilysworld.com/in-english/) – what our smart home looks like day to day*
+
 A window contact with an empty battery shows “closed” in Home Assistant for days – and 80 % battery on top. Home Assistant just keeps showing the last value, because a device with an empty battery doesn't say anything anymore. Our first run found five devices that were completely silent, the oldest since January.
 
 Every hour the blueprint checks when each Zigbee device last reported. If that is longer ago than the limit (default 48 hours), your phone gets a notification. After the battery swap you get “Back again”. Optionally there is a weekly overview of all silent devices and nearly empty batteries.

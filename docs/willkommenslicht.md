@@ -2,6 +2,8 @@
 
 *[English version](en/willkommenslicht.md)*
 
+*📰 Im Blog: [Willkommen zu Hause: Der Windfang leuchtet in der Farbe des Autos, das heimkommt](https://kilysworld.com/2026/11/25/willkommen-zu-hause-der-windfang-leuchtet-in-der-farbe-des-autos-das-heimkommt/) – wie wir das im Alltag nutzen, mit Fotos*
+
 Kommt jemand heim, leuchtet ein Licht im Eingang in „seiner“ Farbe. Bei uns sind das die Farben unserer Autos: Türkis für mich, Pink für meine Frau. Kommen beide kurz hintereinander, wechseln die Farben. Ist die Haustür wieder zu, ist das Licht nach 20 Sekunden wieder so wie vorher.
 
 ## Was du brauchst

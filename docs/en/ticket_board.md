@@ -2,6 +2,8 @@
 
 *[Deutsche Fassung](../ticket_board.md)*
 
+*📰 From our house: [Kily's World in English](https://kilysworld.com/in-english/) – what our smart home looks like day to day*
+
 A Kanban board for Home Assistant: wishes and tasks become tickets in columns, and you see at a glance who takes care of what, what's urgent and what's due. We call ours “Hausmeisterei” (the caretaker's office), and since then no idea gets lost.
 
 The tickets live in a normal **Home Assistant to-do list**. No scripts, no `configuration.yaml`, and everything is part of every backup automatically. You can even see the list in the HA app.

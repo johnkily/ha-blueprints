@@ -2,6 +2,8 @@
 
 *[Deutsche Fassung](../wecker.md)*
 
+*📰 From our house: [Kily's World in English](https://kilysworld.com/in-english/) – what our smart home looks like day to day*
+
 Wake up to a sunrise instead of a beep: before your alarm time a lamp slowly turns on, from deep red through orange to warm white. At alarm time the radio starts if you like. Both work on their own too.
 
 > The blueprint has German field names – this guide translates them.

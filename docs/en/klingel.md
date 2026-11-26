@@ -2,6 +2,8 @@
 
 *[Deutsche Fassung](../klingel.md)*
 
+*📰 From our house: [Kily's World in English](https://kilysworld.com/in-english/) – what our smart home looks like day to day*
+
 When someone rings, your phone gets a notification right away – with a picture of the door if you have a camera. You don't need a new video doorbell for this: a vibration sensor on your old chime is enough.
 
 > **Note:** the input labels inside the blueprint are German. This guide gives the German label as it appears in Home Assistant, followed by its meaning.

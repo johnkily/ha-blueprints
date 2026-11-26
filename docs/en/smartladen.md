@@ -2,6 +2,8 @@
 
 *[Deutsche Fassung](../smartladen.md)*
 
+*📰 From our house: [Kily's World in English](https://kilysworld.com/in-english/) – what our smart home looks like day to day*
+
 Set departure and target in Home Assistant, **evcc** picks the cheapest quarter hours and charges until shortly before departure. Home Assistant only hands over the charging plan and cleans up afterwards – **100 % plans otherwise stay in evcc**.
 
 > The blueprint has German field names – this guide translates them.

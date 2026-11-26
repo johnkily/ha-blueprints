@@ -2,6 +2,8 @@
 
 *[Deutsche Fassung](../morgenbericht.md)*
 
+*📰 From our house: [Kily's World in English](https://kilysworld.com/in-english/) – what our smart home looks like day to day*
+
 What happened last night? At night the blueprint writes into a to-do list whatever stands out: a door that opens, a lock that gets unlocked, motion on the driveway, a device that becomes unavailable, or unusually high power use. In the morning the report is in the list. You can put the list on your dashboard as a card.
 
 **You only get a notification when something actually happened.** A daily "all quiet" stops being read after a week. In that case the list simply says "✓ Nacht ruhig" (quiet night).

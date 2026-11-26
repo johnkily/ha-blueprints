@@ -2,6 +2,8 @@
 
 *[Deutsche Fassung](../energie_prognose.md)*
 
+*📰 From our house: [Kily's World in English](https://kilysworld.com/in-english/) – what our smart home looks like day to day*
+
 A page from our energy carousel: the solar forecast for today and tomorrow, below it today's electricity price as a **coloured band** (green cheap, yellow medium, red expensive) with the **cheapest hours still to come**, and the **day curve**: solar production, house consumption, battery and the forecast as a dashed line.
 
 ![Forecast with price band](../bilder/preisband_handy.png)

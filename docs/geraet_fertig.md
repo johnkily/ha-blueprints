@@ -2,6 +2,8 @@
 
 *[English version](en/geraet_fertig.md)*
 
+*📰 Im Blog: [Waschmaschine fertig? Home Assistant meldet es aufs Handy](https://kilysworld.com/2026/10/25/waschmaschine-fertig-das-handy-sagt-bescheid-mit-einer-steckdose-und-einem-blueprint/) – wie wir das im Alltag nutzen, mit Fotos*
+
 Eine Steckdose mit Strommessung erkennt, wann das Gerät läuft und wann es fertig ist. Dann kommt eine Nachricht aufs Handy – mit Laufzeit und auf Wunsch dem Verbrauch. Funktioniert mit jeder Waschmaschine, jedem Trockner und jeder Spülmaschine, egal wie alt.
 
 ## Was du brauchst

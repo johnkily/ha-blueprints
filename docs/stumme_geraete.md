@@ -2,6 +2,8 @@
 
 *[English version](en/stumme_geraete.md)*
 
+*📰 Im Blog: [Welcher Sensor ist still? So findet Home Assistant leere Batterien, bevor etwas schiefgeht](https://kilysworld.com/2026/11/11/welcher-sensor-ist-still-so-findet-home-assistant-leere-batterien-bevor-etwas-schiefgeht/) – wie wir das im Alltag nutzen, mit Fotos*
+
 Ein Fensterkontakt mit leerer Batterie meldet in Home Assistant tagelang „zu“ – und dazu noch 80 % Batterie. Home Assistant zeigt einfach den letzten Wert weiter, denn ein Gerät mit leerer Batterie sagt gar nichts mehr. Bei uns hat der erste Durchlauf fünf Geräte gefunden, die komplett still waren, der älteste seit Januar.
 
 Der Blueprint schaut jede Stunde, wann sich jedes Zigbee-Gerät zuletzt gemeldet hat. Ist das länger her als die Grenze (Vorgabe 48 Stunden), kommt eine Nachricht aufs Handy. Nach dem Batterietausch kommt „Wieder da“. Auf Wunsch gibt es einmal pro Woche eine Übersicht mit allen stummen Geräten und fast leeren Batterien.

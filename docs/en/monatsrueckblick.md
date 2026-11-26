@@ -2,6 +2,8 @@
 
 *[Deutsche Fassung](../monatsrueckblick.md)*
 
+*📰 From our house: [Kily's World in English](https://kilysworld.com/in-english/) – what our smart home looks like day to day*
+
 Spotify shows you what you listened to at the end of the year. This blueprint does that every month for your home. On the 1st you get a message with last month's numbers, compared to the month before, plus a highlight:
 
 ```

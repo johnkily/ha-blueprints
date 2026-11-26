@@ -2,6 +2,8 @@
 
 *[Deutsche Fassung](../zigbee_waechter.md)*
 
+*📰 From our house: [Kily's World in English](https://kilysworld.com/in-english/) – what our smart home looks like day to day*
+
 Sometimes the Zigbee chip in the coordinator gets stuck: Zigbee2MQTT is running, Home Assistant is running, but no device reports anymore and every command fails (in the Zigbee2MQTT log e.g. `SRSP - AF - dataRequest after 6000ms`). Lights, switches and automations using Zigbee stop working – and at night or on holiday nobody notices.
 
 The watchdog asks a Zigbee device for its state every 5 minutes and waits for the answer. If none of the selected devices answers, it restarts the Zigbee chip and Zigbee2MQTT, checks whether Zigbee answers again and notifies you.

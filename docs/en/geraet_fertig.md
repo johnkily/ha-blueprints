@@ -2,6 +2,8 @@
 
 *[Deutsche Fassung](../geraet_fertig.md)*
 
+*📰 From our house: [Kily's World in English](https://kilysworld.com/in-english/) – what our smart home looks like day to day*
+
 A plug with power metering detects when the appliance is running and when it's done. Then your phone gets a notification – with the run time and, if you like, the energy used. Works with any washing machine, dryer or dishwasher, however old.
 
 > **Note:** the input labels inside the blueprint are German. This guide gives the German label as it appears in Home Assistant, followed by its meaning. The notification is German for now: *“✅ Waschmaschine ist fertig – Nach 1:12 h, 0,85 kWh.”* – the appliance name in it is whatever you enter (e.g. “Washing machine”).

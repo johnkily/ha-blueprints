@@ -2,6 +2,8 @@
 
 *[Deutsche Fassung](../awtrix.md)*
 
+*📰 From our house: [Kily's World in English](https://kilysworld.com/in-english/) – what our smart home looks like day to day*
+
 Four blueprints for the AWTRIX pixel clock:
 
 - **Electricity price** – its own app on the clock shows the current price, e.g. `24.1` in green, `29.0` in yellow, `33.0` in red.

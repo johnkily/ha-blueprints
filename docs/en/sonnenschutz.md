@@ -2,6 +2,8 @@
 
 *[Deutsche Fassung](../sonnenschutz.md)*
 
+*📰 From our house: [Kily's World in English](https://kilysworld.com/in-english/) – what our smart home looks like day to day*
+
 The blinds on one side of the house go down when the sun really shines on that façade and it's warm enough – and only go back up once the sun has gone. A passing cloud doesn't send them up and down in between.
 
 **One automation per side of the house** – south, west and east have different angles.

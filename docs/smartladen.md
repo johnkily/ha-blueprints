@@ -2,6 +2,8 @@
 
 *[English version](en/smartladen.md)*
 
+*📰 Im Blog: [Günstig E-Auto laden: Home Assistant, evcc und Tibber](https://kilysworld.com/2025/11/25/kostengunstig-elektro-auto-fahren-unser-setup-mit-home-assistant-evcc-und-dynamischen-strompreisen/) – wie wir das im Alltag nutzen, mit Fotos*
+
 „Morgen um 7 muss das Auto voll sein“ – und zwar mit dem günstigsten Strom der Nacht. In Home Assistant stellst du Abfahrt und Ladeziel ein, **evcc** sucht sich die günstigsten Viertelstunden aus und lädt bis kurz vor der Abfahrt. Danach lädt die Wallbox wieder wie gewohnt, bei uns nur mit Sonne.
 
 Rechnen tut evcc – es kennt die Preise, die Ladeleistung und das Auto. Home Assistant übergibt nur den Ladeplan und räumt hinterher auf: **100-%-Pläne bleiben in evcc sonst einfach stehen** und laden beim nächsten Mal wieder voll.

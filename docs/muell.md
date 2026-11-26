@@ -2,6 +2,8 @@
 
 *[English version](en/muell.md)*
 
+*📰 Im Blog: [Welche Tonne muss raus? Müll-Karte und Erinnerung für Home Assistant](https://kilysworld.com/2026/10/28/welche-tonne-muss-raus-muell-karte-und-erinnerung-fuer-home-assistant/) – wie wir das im Alltag nutzen, mit Fotos*
+
 Alles aus einem Abfallkalender – ohne Erweiterungen aus dem Marketplace (früher HACS), ohne `configuration.yaml`:
 
 - **Kachel-Karte** fürs Dashboard: vier Tonnen mit „in 6 Tagen“, darunter zwei Wochen als Mini-Kalender mit farbigen Punkten und „Als Nächstes“ – wahlweise als [Profi-Variante](#profi-variante-unsere-karte-mit-button-card) mit farbigen Kacheln (button-card).

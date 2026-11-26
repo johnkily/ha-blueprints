@@ -2,6 +2,8 @@
 
 *[Deutsche Fassung](../saugplan.md)*
 
+*📰 From our house: [Kily's World in English](https://kilysworld.com/in-english/) – what our smart home looks like day to day*
+
 The robot vacuums on the days you pick in Home Assistant, and on other days it vacuums and mops. On holiday it stays in the dock, optionally on public holidays too. If you like, it waits until nobody is home. When it's done or gets stuck, you get a notification.
 
 Why not just use the timer in the app? Because the app knows nothing about your holiday and doesn't notice that someone is still working from home.

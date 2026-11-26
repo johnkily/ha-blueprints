@@ -2,6 +2,8 @@
 
 *[Deutsche Fassung](../gute_nacht.md)*
 
+*📰 From our house: [Kily's World in English](https://kilysworld.com/in-english/) – what our smart home looks like day to day*
+
 “Hey Google, good night.” That's all we say in the evening. Google switches on a helper in Home Assistant, and Home Assistant does the rest: lights off, blinds down, doors locked. The hallway light stays on for a few minutes until we're upstairs. If a window is still open, the speaker tells you.
 
 Why not do it all in Google? Because Home Assistant knows more. It checks that the front door is closed before locking and can switch scenes, blinds and locks of any brand. Google is just the button.

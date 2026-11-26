@@ -2,6 +2,8 @@
 
 *[Deutsche Fassung](../klingel_tv.md)*
 
+*📰 From our house: [Kily's World in English](https://kilysworld.com/in-english/) – what our smart home looks like day to day*
+
 When someone rings while the TV is on, playback pauses. The door camera appears as picture-in-picture in the top right corner, and a notification in the top left offers two buttons: **Weiterschauen** (continue watching) and **Bild schließen** (close picture). Playback only resumes when you press "continue". Whoever goes to the door doesn't miss anything.
 
 It works through the **QuickBars for Home Assistant** app on the TV. No extra integration is needed in Home Assistant: the app listens to Home Assistant itself, and the blueprint just tells it what to show.

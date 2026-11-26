@@ -2,6 +2,8 @@
 
 *[English version](en/energie_prognose.md)*
 
+*📰 Im Blog: [Unser Energie-Cockpit: PV, Hausakku und Strompreis in Home Assistant](https://kilysworld.com/2026/11/04/unser-energie-cockpit-in-home-assistant-pv-hausakku-dynamischer-strompreis-und-wallbox-auf-einen-blick/) – wie wir das im Alltag nutzen, mit Fotos*
+
 Eine Seite aus unserem Energie-Karussell zum Nachbauen: oben die Solar-Prognose für heute und morgen, darunter der Strompreis des Tages als **farbiges Band** (grün günstig, gelb mittel, rot teuer) mit den **günstigsten Stunden**, die noch kommen. Darunter die **Tageskurve**: was das Dach erzeugt, was das Haus braucht, der Akku und gestrichelt die Prognose.
 
 ![Prognose mit Preisband auf dem Handy](bilder/preisband_handy.png)

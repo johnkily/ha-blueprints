@@ -2,6 +2,8 @@
 
 *[Deutsche Fassung](../willkommenslicht.md)*
 
+*📰 From our house: [Kily's World in English](https://kilysworld.com/in-english/) – what our smart home looks like day to day*
+
 When someone comes home, a light in the entrance glows in "their" colour. Ours are the colours of our cars: turquoise for me, pink for my wife. If both arrive shortly after each other, the colours alternate. 20 seconds after the front door is closed, the light is back to what it was before.
 
 > The blueprint has German field names – this guide translates them.

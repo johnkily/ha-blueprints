@@ -2,6 +2,8 @@
 
 *[English version](en/zigbee_waechter.md)*
 
+*📰 Im Blog: [Zigbee hängt? Home Assistant startet den Koordinator selbst neu](https://kilysworld.com/2026/11/18/zigbee-haengt-home-assistant-startet-den-koordinator-selbst-neu/) – wie wir das im Alltag nutzen, mit Fotos*
+
 Manchmal hängt der Zigbee-Chip im Koordinator: Zigbee2MQTT läuft, Home Assistant läuft, aber kein Gerät meldet sich mehr und jeder Befehl scheitert (im Log von Zigbee2MQTT z. B. `SRSP - AF - dataRequest after 6000ms`). Licht, Schalter und Automationen mit Zigbee gehen dann ins Leere – und nachts oder im Urlaub merkt es niemand.
 
 Der Wächter fragt alle 5 Minuten ein Zigbee-Gerät nach seinem Zustand und wartet auf die Antwort. Antwortet keines der ausgewählten Geräte, startet er den Zigbee-Chip und Zigbee2MQTT neu, prüft danach, ob Zigbee wieder antwortet, und sagt dir Bescheid.

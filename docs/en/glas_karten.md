@@ -2,6 +2,8 @@
 
 *[Deutsche Fassung](../glas_karten.md)*
 
+*📰 From our house: [Kily's World in English](https://kilysworld.com/in-english/) – what our smart home looks like day to day*
+
 Our dashboard doesn't look like the default, and people asked how it's done. The secret is a handful of ingredients that are the same everywhere. Here they are as **button-card** templates.
 
 ![Glass kit on a desktop](../bilder/glas_desktop.png)

@@ -2,6 +2,8 @@
 
 *[Deutsche Fassung](../tueren_abschliessen.md)*
 
+*📰 From our house: [Kily's World in English](https://kilysworld.com/in-english/) – what our smart home looks like day to day*
+
 Once everybody has left, Home Assistant waits a while and then locks the smart locks that are still unlocked. If a door is actually standing open, it is **not** locked – the bolt would shoot into thin air and the door couldn't be pushed shut any more – instead your phone gets a warning. There is only a notification when something happened; if the doors were already locked, it stays quiet.
 
 > **English version** with English labels and notifications (since November 2026). The original German blueprint stays available and works the same – see the [German guide](../tueren_abschliessen.md).

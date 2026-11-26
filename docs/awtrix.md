@@ -2,6 +2,8 @@
 
 *[English version](en/awtrix.md)*
 
+*📰 Im Blog: [Strompreis und Hausakku auf der AWTRIX-Uhr – mit Home Assistant und einem Klick](https://kilysworld.com/2026/10/23/strompreis-und-hausakku-auf-der-awtrix-uhr-jetzt-mit-einem-klick/) – wie wir das im Alltag nutzen, mit Fotos*
+
 Vier Blueprints für die Pixeluhr AWTRIX:
 
 - **Strompreis** – eine eigene App auf der Uhr zeigt den aktuellen Preis, z. B. `24,1` in Grün, `29,0` in Gelb, `33,0` in Rot.
