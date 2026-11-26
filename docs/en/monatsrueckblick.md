@@ -19,7 +19,7 @@ There's also a [pro version](#pro-the-home-wrapped-card): a card that shows the 
 
 The numbers come from Home Assistant's **long-term statistics** – no helper counters, no scripts. Any sensor that shows months of history in the energy dashboard or a history graph works.
 
-> The blueprint has German field names – this guide translates them. Set “Sprache der Nachricht” to **English** for English messages.
+> There is an English blueprint (below) with English field names and English messages. The German one stays available for German messages.
 
 ## What you need
 
@@ -31,20 +31,20 @@ The numbers come from Home Assistant's **long-term statistics** – no helper co
 
 ## 1. Import the blueprint
 
-[![Import](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fhaus%2Fmonatsrueckblick.yaml)
+[![Import](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fjohnkily%2Fha-blueprints%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fen%2Fhome%2Fmonthly_review.yaml)
 
 ## 2. Create the automation
 
-*Settings → Automations & scenes → Blueprints* → **Monatsrückblick – dein Haus-Wrapped**
+*Settings → Automations & scenes → Blueprints* → **Monthly review – your home's "Wrapped"**
 
 | Field | What to enter |
 |---|---|
-| Sensoren für den Rückblick (*sensors*) | five to eight sensors, in the order of the message |
-| Uhrzeit am 1. des Monats (*time on the 1st*) | default 10:00 |
-| Vergleich zum Vormonat (*compare to last month*) | arrow with percent for meters, difference for measurements |
-| Umrechnen in E-Auto-Kilometer (*convert to EV km*) | e.g. PV yield, plus your car's consumption (default 18 kWh/100 km) |
-| Handys / Auch in Home Assistant / Eigenes Skript | where the message goes (phones, HA notification, own script) |
-| Dashboard-Pfad (*dashboard path*) | tapping the message opens e.g. your energy dashboard |
+| Sensors for the review | five to eight sensors, in the order of the message |
+| Time on the 1st of the month | default 10:00 |
+| Compare with the month before *(Extras)* | arrow with percent for meters, difference for measurements |
+| Convert into EV kilometres / EV consumption *(Extras)* | e.g. your solar yield, plus your car's consumption (default 18 kWh/100 km) |
+| Phones / Also show in Home Assistant / Your own script | where the message goes (phones, HA notification, own script) |
+| Dashboard path | tapping the message opens e.g. your energy dashboard |
 
 **To try it** without waiting for the 1st: open the automation → ⋮ → **Run**. You get last month's review right away.
 

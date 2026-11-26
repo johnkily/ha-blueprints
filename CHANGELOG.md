@@ -1,5 +1,11 @@
 # Änderungen
 
+## Nächstes Release (noch nicht veröffentlicht)
+
+**Neu: Monthly review – your home's "Wrapped" (Englisch)** – eigene englische Fassung des Monatsrückblicks mit englischen Feldnamen und englischer Nachricht (Zahlenformat 1,667 / 21.5). Logik identisch mit der deutschen, beide auf der Testinstanz geprüft. Die deutsche Fassung behält ihre Sprachauswahl.
+
+**README:** Neben jedem Import-Knopf steht die Anleitung, die Import-Hilfe ist nach oben gerückt, und `docs/README.md` ist jetzt das Inhaltsverzeichnis. Jede Anleitung verweist oben auf ihren Blogbeitrag.
+
 ## v1.3 – 25.11.2026
 
 **Neu: Morgenbericht – Was war nachts los?** – schreibt nachts in eine Lokale To-do-Liste, was auffällt: Türen und Fenster, die aufgehen (und am Morgen noch offen sind), Schlösser, die aufgeschlossen werden oder nicht zu sind, Bewegung draußen, Geräte länger als 30 Minuten nicht erreichbar, auf Wunsch Stromverbrauch über einer Grenze. Wiederholungen werden hochgezählt statt doppelt eingetragen. Morgens eine Nachricht nur, wenn etwas war; sonst steht „✓ Nacht ruhig“ in der Liste. Idee von Steffen auf Facebook. Anleitung Deutsch und Englisch.
