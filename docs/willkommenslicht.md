@@ -10,7 +10,7 @@ Kommt jemand heim, leuchtet ein Licht im Eingang in „seiner“ Farbe. Bei uns 
 
 | | |
 |---|---|
-| **Ein farbiges Licht** | z. B. ein LED-Streifen mit WLED – bei uns mit diesem [WLED-Controller](https://www.amazon.de/dp/B0D8LKXTTK?tag=elcamdob-21)\* –, eine farbige Lampe oder ein [Philips Hue Lightstrip](https://www.amazon.de/dp/B0GHS99N3N?tag=elcamdob-21)\* geht genauso |
+| **Ein farbiges Licht** | z. B. ein LED-Streifen mit WLED – bei uns [dieser Streifen](https://www.amazon.de/dp/B0BTVB7WRY?tag=elcamdob-21)\* mit diesem [WLED-Controller](https://www.amazon.de/dp/B0D8LKXTTK?tag=elcamdob-21)\* –, eine farbige Lampe oder ein [Philips Hue Lightstrip](https://www.amazon.de/dp/B0GHS99N3N?tag=elcamdob-21)\* geht genauso |
 | **Handys** | die Home-Assistant-App, damit Home Assistant weiß, wer heimkommt (Personen unter *Einstellungen → Personen*) |
 | **Türkontakt** *(empfohlen)* | an der Haustür für das saubere Ende, z. B. von [SONOFF](https://www.amazon.de/dp/B0HB933HR1?tag=elcamdob-21)\* oder [Aqara](https://www.amazon.de/dp/B09TP7VMKB?tag=elcamdob-21)\* |
 

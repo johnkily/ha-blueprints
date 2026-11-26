@@ -12,7 +12,7 @@ When someone comes home, a light in the entrance glows in "their" colour. Ours a
 
 | | |
 |---|---|
-| **A colour light** | e.g. an LED strip with WLED – ours runs on this [WLED controller](https://www.amazon.de/dp/B0D8LKXTTK?tag=elcamdob-21)\* –, a colour bulb or a [Philips Hue Lightstrip](https://www.amazon.de/dp/B0GHS99N3N?tag=elcamdob-21)\* works just as well |
+| **A colour light** | e.g. an LED strip with WLED – ours is [this strip](https://www.amazon.de/dp/B0BTVB7WRY?tag=elcamdob-21)\* on this [WLED controller](https://www.amazon.de/dp/B0D8LKXTTK?tag=elcamdob-21)\* –, a colour bulb or a [Philips Hue Lightstrip](https://www.amazon.de/dp/B0GHS99N3N?tag=elcamdob-21)\* works just as well |
 | **Phones** | the Home Assistant app, so Home Assistant knows who's coming home (persons under *Settings → People*) |
 | **Door contact** *(recommended)* | on the front door for a clean end, e.g. from [SONOFF](https://www.amazon.de/dp/B0HB933HR1?tag=elcamdob-21)\* or [Aqara](https://www.amazon.de/dp/B09TP7VMKB?tag=elcamdob-21)\* |
 
