@@ -23,7 +23,7 @@
  *
  * MIT-Lizenz · https://github.com/johnkily/haus-wrapped-card
  */
-const HW_VERSION = "1.0.0";
+const HW_VERSION = "1.0.1";
 
 const HW_TEXTE = {
   de: {
@@ -140,7 +140,9 @@ class HausWrappedCard extends HTMLElement {
   }
 
   _art(k, id) {
-    if (k.art) return k.art === "mittel" || k.art === "mean" ? "mittel" : "summe";
+    // „type: sum/mean“ (englisch) oder „art: summe/mittel“ (deutsch); jeweils auch das andere Wort
+    const art = k.type || k.art;
+    if (art) return ["mittel", "mean"].includes(String(art).toLowerCase()) ? "mittel" : "summe";
     const st = this._hass.states[id];
     const sc = st && st.attributes.state_class;
     return sc === "measurement" ? "mittel" : "summe";
