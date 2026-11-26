@@ -110,7 +110,7 @@ tiles:
 | `chart: true` | daily bars for the month |
 | `parts` | instead of `entity`: several meters as a source bar; the big number is the sum of the parts with `own: true` |
 | `highlight: true` | use this tile as the highlight; otherwise the one with the biggest change |
-| `art: summe` / `art: mittel` | only if the card mixes up meter and measurement |
+| `type: sum` / `type: mean` | only if the card mixes up meter and measurement (German: `art: summe` / `art: mittel`) |
 
 **With the blueprint:** set the page with the card as “Dashboard-Pfad” in the blueprint. On the 1st the message arrives, and tapping it opens the whole review.
 

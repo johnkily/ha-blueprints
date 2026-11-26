@@ -117,7 +117,7 @@ kacheln:
 | `verlauf: true` | Tagesbalken für den Monat |
 | `anteile` | statt `entity`: mehrere Zähler als Herkunfts-Balken; die große Zahl ist die Summe der Teile mit `eigen: true` |
 | `highlight: true` | diese Kachel als Highlight; sonst nimmt die Karte die mit der größten Veränderung |
-| `art: summe` / `art: mittel` | nur nötig, wenn die Karte Zähler und Messwert falsch erkennt |
+| `art: summe` / `art: mittel` | nur nötig, wenn die Karte Zähler und Messwert falsch erkennt (englisch: `type: sum` / `type: mean`) |
 | `motto`, `titel` | Text unter dem Monat bzw. statt „HAUS-WRAPPED“ |
 
 **Zusammen mit dem Blueprint:** Stell im Blueprint unter „Dashboard-Pfad“ die Seite mit der Karte ein. Dann kommt am 1. die Nachricht, und ein Tipp darauf öffnet den ganzen Rückblick.
