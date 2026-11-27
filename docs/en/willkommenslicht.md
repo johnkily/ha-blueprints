@@ -39,7 +39,7 @@ When someone comes home, a light in the entrance glows in "their" colour. Ours a
 
 - Only people who were away for at least 15 minutes get greeted – otherwise every trip to the letterbox would trigger it.
 - The phone usually reports the arrival a minute or two before the door opens. If it only reports once you're already inside, the light just glows briefly.
-- If the second person arrives while it's still glowing, the colours alternate every few seconds.
+- If a second person (or more) arrives while it's still glowing, the colours alternate every 3 seconds. If several arrive at once, the light cycles through all their colours. Everyone who came home in the last ten minutes counts.
 - Afterwards Home Assistant restores the previous state (on/off, colour, brightness).
 - Extra lights only switch on when it's dark and they were off – and only those switch off again after the run-on time.
 

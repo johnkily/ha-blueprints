@@ -37,7 +37,7 @@ Kommt jemand heim, leuchtet ein Licht im Eingang in „seiner“ Farbe. Bei uns 
 
 - Begrüßt wird nur, wer vorher mindestens 15 Minuten weg war – sonst würde jeder Gang zum Briefkasten das Licht auslösen.
 - Das Handy meldet die Ankunft meist ein, zwei Minuten bevor die Tür aufgeht. Kommt die Meldung erst, wenn man schon drin ist, leuchtet es nur kurz.
-- Kommt die zweite Person, während es noch leuchtet, wechseln die Farben alle paar Sekunden.
+- Kommt eine zweite Person (oder weitere), während es noch leuchtet, wechseln die Farben alle 3 Sekunden. Kommen mehrere gleichzeitig, wechselt das Licht zwischen allen ihren Farben. Es zählt, wer in den letzten zehn Minuten heimgekommen ist.
 - Danach stellt Home Assistant den Zustand von vorher wieder her (an/aus, Farbe, Helligkeit).
 - Zusätzliche Lampen gehen nur an, wenn es dunkel ist und sie aus waren – und nur diese gehen nach der Nachlaufzeit wieder aus.
 
