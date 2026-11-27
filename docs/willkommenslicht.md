@@ -24,10 +24,11 @@ Kommt jemand heim, leuchtet ein Licht im Eingang in „seiner“ Farbe. Bei uns 
 
 | Feld | Was eintragen |
 |---|---|
-| Personen | wer begrüßt wird, bis zu drei – die Reihenfolge bestimmt die Farbe |
+| Personen | wer begrüßt wird, bis zu fünf – die Reihenfolge bestimmt die Farbe |
 | Farbe 1 | Farbe der ersten Person (Vorgabe Türkis) |
 | Farbe 2 | Farbe der zweiten Person (Vorgabe Pink) |
 | Farbe 3 | Farbe der dritten Person (Vorgabe Orange) |
+| Farbe 4 / Farbe 5 | für die vierte und fünfte Person (Vorgabe Lila und Grün) |
 | Licht im Eingang | dein farbiges Licht |
 | Türkontakt der Haustür | 20 Sekunden nachdem sie zu ist, endet die Begrüßung |
 | *Feinheiten (aufklappen)* | wie lange jemand weg gewesen sein muss (Vorgabe 15 min), Höchstdauer (5 min), eine weitere Tür (z. B. Hintertür – geht sie auf, endet es sofort), Helligkeit tagsüber und nachts (0–6 Uhr), ein Effekt (z. B. „Breathe“ bei WLED für sanftes Pulsieren), Lampen, die bei Dunkelheit zusätzlich angehen (z. B. Einfahrt und Flur), und wie lange |

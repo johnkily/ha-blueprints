@@ -26,10 +26,11 @@ When someone comes home, a light in the entrance glows in "their" colour. Ours a
 
 | Field | What to enter |
 |---|---|
-| Personen – *persons* | who gets greeted, up to three – the order decides the colour |
+| Personen – *persons* | who gets greeted, up to five – the order decides the colour |
 | Farbe 1 – *colour 1* | colour of the first person (default turquoise) |
 | Farbe 2 – *colour 2* | colour of the second person (default pink) |
 | Farbe 3 – *colour 3* | colour of the third person (default orange) |
+| Farbe 4 / Farbe 5 – *colour 4 / 5* | for the fourth and fifth person (default purple and green) |
 | Licht im Eingang – *light in the entrance* | your colour light |
 | Türkontakt der Haustür – *front door contact* | 20 seconds after it closes, the greeting ends |
 | *Feinheiten – fine-tuning (expand)* | how long someone must have been away (default 15 min), maximum duration (5 min), another door (e.g. back door – if it opens, it ends right away), brightness by day and at night (0–6 am), an effect (e.g. “Breathe” on WLED for soft pulsing), lights that also switch on when it's dark (e.g. driveway and hallway), and for how long |

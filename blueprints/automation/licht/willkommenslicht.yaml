@@ -19,8 +19,8 @@ blueprint:
     personen:
       name: Personen
       description: >
-        Wer begrüßt wird – bis zu drei. Die Reihenfolge bestimmt die Farbe:
-        die erste Person bekommt Farbe 1, die zweite Farbe 2, die dritte Farbe 3.
+        Wer begrüßt wird – bis zu fünf. Die Reihenfolge bestimmt die Farbe:
+        die erste Person bekommt Farbe 1, die zweite Farbe 2 und so weiter.
       selector:
         entity:
           multiple: true
@@ -39,6 +39,16 @@ blueprint:
     farbe_3:
       name: Farbe 3
       default: [255, 170, 0]
+      selector:
+        color_rgb: {}
+    farbe_4:
+      name: Farbe 4
+      default: [140, 80, 255]
+      selector:
+        color_rgb: {}
+    farbe_5:
+      name: Farbe 5
+      default: [120, 220, 60]
       selector:
         color_rgb: {}
     licht:
@@ -147,6 +157,8 @@ variables:
   f1: !input farbe_1
   f2: !input farbe_2
   f3: !input farbe_3
+  f4: !input farbe_4
+  f5: !input farbe_5
   licht: !input licht
   haustuer: !input haustuer
   andere_tuer: !input andere_tuer
@@ -200,11 +212,11 @@ actions:
       sequence:
         - variables:
             jetzt: "{{ now().timestamp() }}"
-            alle_farben: "{{ [f1, f2, f3] }}"
+            alle_farben: "{{ [f1, f2, f3, f4, f5] }}"
             # wer in den letzten 10 Minuten heimgekommen ist – in der Farbe seines Platzes
             farben: >-
               {% set ns = namespace(f=[]) %}
-              {% for p in personen[:3] %}
+              {% for p in personen[:5] %}
                 {% if states[p] is not none and is_state(p, 'home')
                       and (jetzt - as_timestamp(states[p].last_changed)) < 600 %}
                   {% set ns.f = ns.f + [alle_farben[loop.index0]] %}
