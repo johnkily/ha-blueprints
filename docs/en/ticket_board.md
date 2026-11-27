@@ -68,7 +68,7 @@ All levels use **Home Assistant to-do lists**. Going from level 2 to 3 loses not
 
 [![Open in the Marketplace](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=johnkily&repository=ticket-board-card&category=plugin)
 
-The button opens the card in the Marketplace → **Download**, then reload the browser or app. Without the button: *Settings → Marketplace → ⋮ → Custom repositories* → `https://github.com/johnkily/ticket-board-card`, type **Dashboard**.
+The button opens the card in the Marketplace → **Download**, then reload the browser or app. Without the button: search for **Ticket Board Card** in the Marketplace – it's in the default list since 27 November 2026.
 
 **Or by hand:**
 

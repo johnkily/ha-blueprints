@@ -66,7 +66,7 @@ Alle Stufen arbeiten mit **To-do-Listen von Home Assistant**. Von Stufe 2 auf 3 
 
 [![Im Marketplace öffnen](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=johnkily&repository=ticket-board-card&category=plugin)
 
-Der Knopf öffnet die Karte im Marketplace → **Herunterladen**, danach Browser bzw. App neu laden. Ohne Knopf: *Einstellungen → Marketplace → ⋮ → Benutzerdefinierte Repositories* → `https://github.com/johnkily/ticket-board-card`, Typ **Dashboard**.
+Der Knopf öffnet die Karte im Marketplace → **Herunterladen**, danach Browser bzw. App neu laden. Ohne Knopf: im Marketplace nach **Ticket Board Card** suchen – seit 27.11.2026 steht die Karte in der Standardliste.
 
 **Oder von Hand:**
 
