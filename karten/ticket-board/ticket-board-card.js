@@ -13,7 +13,7 @@
  *
  * MIT-Lizenz · https://github.com/johnkily/ticket-board-card
  */
-const TB_VERSION = "1.1.0";
+const TB_VERSION = "1.1.2";
 const TB_MARKE = "\n\n⚙ ";
 
 const TB_TEXTE = {
@@ -464,6 +464,6 @@ window.customCards = window.customCards || [];
 if (!window.customCards.find((c) => c.type === "ticket-board-card")) {
   window.customCards.push({ type: "ticket-board-card", name: "Ticket-Board", preview: false,
     description: "Kanban-Board für alles, was im Haus zu tun ist – Daten in einer To-do-Liste.",
-    documentationURL: "https://github.com/johnkily/ha-blueprints/blob/main/docs/ticket_board.md" });
+    documentationURL: "https://github.com/johnkily/ticket-board-card" });
 }
 console.info("%c TICKET-BOARD %c " + TB_VERSION + " ", "background:#1e88e5;color:#fff;border-radius:3px 0 0 3px;padding:1px 4px", "background:#424242;color:#fff;border-radius:0 3px 3px 0;padding:1px 4px");

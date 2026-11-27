@@ -23,7 +23,7 @@
  *
  * MIT-Lizenz · https://github.com/johnkily/haus-wrapped-card
  */
-const HW_VERSION = "1.0.1";
+const HW_VERSION = "1.0.2";
 
 const HW_TEXTE = {
   de: {
@@ -376,7 +376,8 @@ if (!customElements.get("haus-wrapped-card")) customElements.define("haus-wrappe
 window.customCards = window.customCards || [];
 if (!window.customCards.find((c) => c.type === "haus-wrapped-card")) {
   window.customCards.push({ type: "haus-wrapped-card", name: "Haus-Wrapped", preview: false,
-    description: "Monatsrückblick fürs Haus aus der Langzeitstatistik / Monthly review of your home from long-term statistics" });
+    description: "Monatsrückblick fürs Haus aus der Langzeitstatistik / Monthly review of your home from long-term statistics",
+    documentationURL: "https://github.com/johnkily/haus-wrapped-card" });
 }
 console.info("%c HAUS-WRAPPED %c " + HW_VERSION + " ", "background:#ab47bc;color:#fff;border-radius:3px 0 0 3px;padding:1px 4px",
   "background:#424242;color:#fff;border-radius:0 3px 3px 0;padding:1px 4px");
