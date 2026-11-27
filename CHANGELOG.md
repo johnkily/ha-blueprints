@@ -4,6 +4,8 @@
 
 **Verbessert: Willkommenslicht** – bis zu fünf Personen statt drei (Farbe 4 und 5 mit Vorgabe Lila und Grün). Wunsch aus der Diskussion #2. Bestehende Automationen laufen unverändert weiter.
 
+**Behoben: Müll – Plan für die Kachel-Karte (Deutsch und Englisch)** – ist der Text-Helfer nur 100 Zeichen lang (die Voreinstellung), kürzt der Blueprint jetzt den Zwei-Wochen-Streifen passend, statt gar nichts zu schreiben. Vorher blieb der Helfer leer und die Karte zeigte „Noch keine Abholtermine“, ohne Fehler im Trace – Home Assistant lehnt zu lange Texte still ab. Gemeldet auf simon42. Die nächsten Termine je Tonne passen immer hinein; mit 255 Zeichen ändert sich nichts. Anleitung um den Fall ergänzt.
+
 ## v1.4 – 26.11.2026
 
 **Neu: Monthly review – your home's "Wrapped" (Englisch)** – eigene englische Fassung des Monatsrückblicks mit englischen Feldnamen und englischer Nachricht (Zahlenformat 1,667 / 21.5). Logik identisch mit der deutschen, beide auf der Testinstanz geprüft. Die deutsche Fassung behält ihre Sprachauswahl.

@@ -45,7 +45,7 @@ The blueprints recognise a bin by **words in the event title**. The defaults of 
 
 The card needs the dates **per bin**. A blueprint collects them in a text helper.
 
-**a) Create the helper:** *Settings → Devices & services → Helpers → Create helper → **Text***. Name **Waste plan**, maximum length **255**. (Home Assistant then calls it `input_text.waste_plan`.)
+**a) Create the helper:** *Settings → Devices & services → Helpers → Create helper → **Text***. Name **Waste plan**, maximum length **255** – under *Advanced settings*, the default is only 100. (Home Assistant then calls it `input_text.waste_plan`.)
 
 **b) Blueprint “Waste – plan for the tile card”:**
 
@@ -153,6 +153,7 @@ Questions and feedback are welcome in the [Home Assistant forum](https://communi
 | Problem | Solution |
 |---|---|
 | “No pickups yet” | Is the *Waste – plan* blueprint running? Open the automation and tap **Run** (top right) once. If your helper isn't called `input_text.waste_plan`, change line 14 of the card. |
+| The strip shows only a few pickups, or “No pickups yet” although blueprint and calendar are set up | Open the *Waste plan* helper → gear → *Advanced settings* and set the maximum length to **255**. The default 100 characters only fit a few pickups. Versions of the blueprint before 28 Nov 2026 then wrote nothing at all – Home Assistant silently rejects text that is too long, with just a warning in the log. Re-import the blueprint and it shortens the strip to fit. |
 | A bin is missing | Your calendar calls it differently – add the keyword (see step 2). |
 | No reminder | *Automation → Traces*: is there an event tomorrow in the calendar? |
 

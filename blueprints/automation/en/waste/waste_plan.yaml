@@ -96,6 +96,9 @@ actions:
       #   “p2026-10-29 b2026-11-05 g2026-11-09 r2026-12-12 | 2026-10-29p 2026-11-05b”
       #   first the next pickup per bin (p paper, b organic, g recycling, r general),
       #   then all pickups of the next 14 days for the strip.
+      # Only as long as the helper allows (default 100 characters, 255 recommended): the
+      # first part always stays complete, the strip is shortened – never mid-date. Otherwise
+      # input_text.set_value fails and the card stays empty.
       plan: >
         {% set heute = now().date().isoformat() %}
         {% set grenze = (now() + timedelta(days=14)).date().isoformat() %}
@@ -113,7 +116,10 @@ actions:
             {% endfor %}
           {% endif %}
         {% endfor %}
-        {{ ns.n | join(' ') }} | {{ ns.s[:12] | join(' ') }}
+        {% set laenge = state_attr(ziel, 'max') | int(255) %}
+        {% set ns2 = namespace(t=ns.n | join(' ') ~ ' |') %}
+        {% for x in ns.s[:12] %}{% if (ns2.t ~ ' ' ~ x) | length <= laenge %}{% set ns2.t = ns2.t ~ ' ' ~ x %}{% endif %}{% endfor %}
+        {{ ns2.t }}
   - action: input_text.set_value
     target:
       entity_id: "{{ ziel }}"

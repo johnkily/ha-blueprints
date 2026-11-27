@@ -28,7 +28,7 @@ Alternativ liefert die Integration [Waste Collection Schedule](https://github.co
 
 Die Karte braucht die Termine **je Tonne**. Die sammelt ein Blueprint in einem Text-Helfer.
 
-**a) Helfer anlegen:** *Einstellungen → Geräte & Dienste → Helfer → Helfer erstellen → **Text***. Name **Müll-Plan**, maximale Länge **255**. (Home Assistant nennt ihn dann `input_text.mull_plan` – das „ü“ wird zu „u“.)
+**a) Helfer anlegen:** *Einstellungen → Geräte & Dienste → Helfer → Helfer erstellen → **Text***. Name **Müll-Plan**, maximale Länge **255** – unter *Erweiterte Einstellungen*, voreingestellt sind nur 100. (Home Assistant nennt ihn dann `input_text.mull_plan` – das „ü“ wird zu „u“.)
 
 **b) Blueprint „Müll – Plan für die Kachel-Karte“:**
 
@@ -358,6 +358,7 @@ Fragen und Erfahrungen gern im [Home-Assistant-Forum](https://community.home-ass
 | Problem | Lösung |
 |---|---|
 | „Noch keine Abholtermine“ | Läuft der Blueprint *Müll – Plan*? Einmal in der Automation oben rechts auf **Ausführen** tippen. Heißt der Helfer anders als `input_text.mull_plan`, in Zeile 14 der Karte anpassen. |
+| Streifen zeigt nur wenige Termine, oder trotz Blueprint und Kalender „Noch keine Abholtermine“ | Beim Helfer *Müll-Plan* → Zahnrad → *Erweiterte Einstellungen* die maximale Länge auf **255** stellen. Mit den voreingestellten 100 Zeichen passen nur ein paar Termine hinein. Fassungen des Blueprints vor dem 28.11.2026 haben dann gar nichts geschrieben – Home Assistant lehnt zu lange Texte still ab, nur mit einer Warnung im Protokoll. Den Blueprint neu importieren, dann kürzt er den Streifen passend. |
 | Eine Tonne fehlt | Der Kalender nennt sie anders – Stichwort ergänzen (siehe oben). |
 | Keine Erinnerung | *Automation → Traces*: Ist morgen ein Termin im Kalender? |
 

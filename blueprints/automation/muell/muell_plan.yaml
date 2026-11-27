@@ -99,6 +99,9 @@ actions:
       #   „p2026-10-29 b2026-11-05 g2026-11-09 r2026-12-12 | 2026-10-29p 2026-11-05b“
       #   vorn der nächste Termin je Tonne (p Papier, b Bio, g Gelb, r Rest),
       #   hinten alle Termine der nächsten 14 Tage für den Streifen.
+      # Nur so lang, wie der Helfer erlaubt (Standard 100 Zeichen, empfohlen 255): vorn bleibt
+      # immer ganz, der Streifen wird gekürzt – nie mitten im Datum. Sonst bricht
+      # input_text.set_value ab und die Karte bleibt leer (simon42, 27.11.2026).
       plan: >
         {% set heute = now().date().isoformat() %}
         {% set grenze = (now() + timedelta(days=14)).date().isoformat() %}
@@ -116,7 +119,10 @@ actions:
             {% endfor %}
           {% endif %}
         {% endfor %}
-        {{ ns.n | join(' ') }} | {{ ns.s[:12] | join(' ') }}
+        {% set laenge = state_attr(ziel, 'max') | int(255) %}
+        {% set ns2 = namespace(t=ns.n | join(' ') ~ ' |') %}
+        {% for x in ns.s[:12] %}{% if (ns2.t ~ ' ' ~ x) | length <= laenge %}{% set ns2.t = ns2.t ~ ' ' ~ x %}{% endif %}{% endfor %}
+        {{ ns2.t }}
   - action: input_text.set_value
     target:
       entity_id: "{{ ziel }}"
