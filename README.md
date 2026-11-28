@@ -2,7 +2,7 @@
 
 # Home-Assistant-Blueprints aus Kily's World
 
-[![Blueprints geprüft](https://github.com/johnkily/ha-blueprints/actions/workflows/pruefen.yml/badge.svg)](https://github.com/johnkily/ha-blueprints/actions/workflows/pruefen.yml) [![Release](https://img.shields.io/github/v/release/johnkily/ha-blueprints)](https://github.com/johnkily/ha-blueprints/releases) [![Lizenz: MIT](https://img.shields.io/badge/Lizenz-MIT-blue)](LICENSE) [![Ko-fi](https://img.shields.io/badge/Ko--fi-Kaffee_spendieren-FF5E5B?logo=ko-fi&logoColor=white)](https://ko-fi.com/johnkily)
+[![Blueprints geprüft](https://github.com/johnkily/ha-blueprints/actions/workflows/pruefen.yml/badge.svg)](https://github.com/johnkily/ha-blueprints/actions/workflows/pruefen.yml) [![Release](https://img.shields.io/github/v/release/johnkily/ha-blueprints)](https://github.com/johnkily/ha-blueprints/releases) [![Lizenz: MIT](https://img.shields.io/badge/Lizenz-MIT-blue)](LICENSE) [![Ko-fi](https://img.shields.io/badge/Ko--fi-Kaffee_oder_Tee_spendieren-FF5E5B?logo=ko-fi&logoColor=white)](https://ko-fi.com/johnkily)
 
 Fertige Automationen für [Home Assistant](https://www.home-assistant.io/) – mit einem Klick importieren, Geräte auswählen, fertig. Kein YAML, kein Kopieren von Code.
 
@@ -95,7 +95,7 @@ Unser Ticketsystem für alles, was im Haus zu tun ist – zum Nachbauen in drei 
 
 ## Unterstützen
 
-Alles hier ist kostenlos und bleibt es. Hat dir ein Blueprint Zeit oder Strom gespart, freue ich mich über einen Kaffee:
+Alles hier ist kostenlos und bleibt es. Hat dir ein Blueprint Zeit oder Strom gespart, freue ich mich über einen Kaffee oder Tee:
 
 [![Unterstütze mich auf Ko-fi](https://storage.ko-fi.com/cdn/kofi2.png?v=3)](https://ko-fi.com/johnkily)
 
@@ -148,7 +148,7 @@ Ready-made Home Assistant automations: click **Import**, pick your devices, done
 
 Blueprints marked *(German labels)* show German field names in Home Assistant – the English guides explain every field. More English versions will follow; tell us in an [issue](https://github.com/johnkily/ha-blueprints/issues) which one you need first. Questions in English are welcome there or under [Ideas](https://github.com/johnkily/ha-blueprints/discussions/categories/ideas).
 
-**Did it work?** Everything here is free and stays free. If a blueprint saved you time or energy, I'd be happy about a coffee – or a ⭐ at the top right:
+**Did it work?** Everything here is free and stays free. If a blueprint saved you time or energy, I'd be happy about a coffee or tea – or a ⭐ at the top right:
 
 [![Support me on Ko-fi](https://storage.ko-fi.com/cdn/kofi2.png?v=3)](https://ko-fi.com/johnkily)
 

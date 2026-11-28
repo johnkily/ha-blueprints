@@ -65,4 +65,4 @@ Zwischen Wandsteckdose und Gerät stecken, in Home Assistant einbinden (Zigbee: 
 
 *Mit \* gekennzeichnete Links sind Affiliate-Links. Kaufst du darüber, bekomme ich eine kleine Provision, für dich ändert sich am Preis nichts. Als Amazon-Partner verdiene ich an qualifizierten Verkäufen.*
 
-**Hat's geklappt?** Dann freue ich mich über einen [Kaffee auf Ko-fi ☕](https://ko-fi.com/johnkily).
+**Hat's geklappt?** Dann freue ich mich über einen [Kaffee oder Tee auf Ko-fi 🍵](https://ko-fi.com/johnkily).

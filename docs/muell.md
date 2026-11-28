@@ -364,4 +364,4 @@ Fragen und Erfahrungen gern im [Home-Assistant-Forum](https://community.home-ass
 
 **Gefällt dir der Blueprint?** Ein ⭐ auf [GitHub](https://github.com/johnkily/ha-blueprints) hilft anderen, ihn zu finden – und Fragen oder Wünsche gern als [Issue](https://github.com/johnkily/ha-blueprints/issues) oder unter [Ideen](https://github.com/johnkily/ha-blueprints/discussions/categories/ideas).
 
-**Hat's geklappt?** Dann freue ich mich über einen [Kaffee auf Ko-fi ☕](https://ko-fi.com/johnkily).
+**Hat's geklappt?** Dann freue ich mich über einen [Kaffee oder Tee auf Ko-fi 🍵](https://ko-fi.com/johnkily).

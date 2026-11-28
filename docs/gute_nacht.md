@@ -95,4 +95,4 @@ Ist alles zu, kommt keine Nachricht – außer du willst sie jeden Abend („All
 
 Gefällt er dir? Ein ⭐ auf [GitHub](https://github.com/johnkily/ha-blueprints) hilft anderen, ihn zu finden. Wie wir das im Alltag nutzen: [Kily's World](https://kilysworld.com).
 
-**Hat's geklappt?** Dann freue ich mich über einen [Kaffee auf Ko-fi ☕](https://ko-fi.com/johnkily).
+**Hat's geklappt?** Dann freue ich mich über einen [Kaffee oder Tee auf Ko-fi 🍵](https://ko-fi.com/johnkily).

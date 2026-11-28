@@ -128,4 +128,4 @@ tiles:
 
 Like it? A ⭐ on [GitHub](https://github.com/johnkily/ha-blueprints) helps others find it.
 
-**Did it work?** Then I'd be happy about a [coffee on Ko-fi ☕](https://ko-fi.com/johnkily).
+**Did it work?** Then I'd be happy about a [coffee or tea on Ko-fi 🍵](https://ko-fi.com/johnkily).
